@@ -58,8 +58,7 @@ sub _init {
 
     # fetch the chromosome bands that cover this VC.
     my $kba         = $self->{'container'}->{'ka'};
-    my $bands       = $kba->fetch_all_by_chr_name($chr);
-    
+    my $bands       = $kba->fetch_all_by_chr_name($chr); 
     my $chr_length = 
       $self->{'container'}->{'ca'}->fetch_by_chr_name($chr)->length() || 1;
     # bottom align each chromosome!
@@ -92,119 +91,132 @@ sub _init {
         });
         $self->push($gpadding);        
     }
-    foreach my $band (@$bands){
-        my $bandname       = $band->name();
-        my $vc_band_start  = $band->start() + $v_offset;
-        my $vc_band_end    = $band->end() + $v_offset;
-        my $stain          = $band->stain();
+    if(@$bands) {
+	foreach my $band (@$bands){
+	    my $bandname       = $band->name();
+	    my $vc_band_start  = $band->start() + $v_offset;
+	    my $vc_band_end    = $band->end() + $v_offset;
+	    my $stain          = $band->stain();
 
-        my $HREF;
-        if($self->{'config'}->{'_band_links'}) {
-            $HREF = "/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$chr&vc_start=$vc_band_start&vc_end=$vc_band_end";
-        }
-        if ($stain eq "acen"){
-            my $gband;
-            if ($done_1_acen){
-                $gband = new Sanger::Graphics::Glyph::Poly({
-                    'points'       => [ 
-                                        $vc_band_start,$h_offset + $h_wid, 
-                                        $vc_band_end,$h_offset,
-                                        $vc_band_end,$h_offset + $wid,
-                                      ],
-                    'colour'       => $COL{$stain},
-                    'absolutey'    => 1,
-                    'href'         => $HREF
-                });
-            } else {
-                $gband = new Sanger::Graphics::Glyph::Poly({
-                    'points'       => [ 
-                                        $vc_band_start,$h_offset, 
-                                        $vc_band_end,$h_offset + $h_wid,
-                                        $vc_band_start,$h_offset + $wid,
-                                      ],
-                    'colour'       => $COL{$stain},
-                    'absolutey'    => 1,
-                    'href'         => $HREF
-                });
-                $done_1_acen = 1;
-            }
-            push @decorations, $gband;
-        } elsif ($stain eq "stalk"){
-            my $gband = new Sanger::Graphics::Glyph::Poly({
-                'points'           => [
-                                        $vc_band_start,$h_offset, 
-                                        $vc_band_end,$h_offset + $wid,
-                                        $vc_band_end,$h_offset,
-                                        $vc_band_start,$h_offset + $wid, 
-                                      ],
-                'colour'           => $COL{$stain},
-                'absolutey'        => 1,
-                'href'             => $HREF
-            });
-            push @decorations, $gband;
-            $gband = new Sanger::Graphics::Glyph::Rect({
-                'x'                => $vc_band_start,
-                'y'                => $h_offset+ int($wid/4),
-                'width'            => $vc_band_end - $vc_band_start,
-                'height'           => $h_wid,
-                'colour'           => $COL{$stain},
-                'absolutey'        => 1,
-                'href'             => $HREF
-            });
-            push @decorations, $gband;
-        } else {
-            $stain = 'gneg' if($self->{'config'}->{'_hide_bands'} eq 'yes' );
-            my $gband = new Sanger::Graphics::Glyph::Rect({
-                'x'                => $vc_band_start,
-                'y'                => $h_offset,
-                'width'            => $vc_band_end - $vc_band_start,
-                'height'           => $wid,
-                'colour'           => $COL{$stain},
-                'absolutey'        => 1,
-                'href'             => $HREF
-            });
-            $self->push($gband);
-            $gband = new Sanger::Graphics::Glyph::Line({
-                'x'                => $vc_band_start,
-                'y'                => $h_offset,
-                'width'            => $vc_band_end - $vc_band_start,
-                'height'           => 0,
-                'colour'           => $black,
-                'absolutey'        => 1,
-            });
-            $self->push($gband);
-            $gband = new Sanger::Graphics::Glyph::Line({
-                'x'                => $vc_band_start,
-                'y'                => $h_offset+$wid,
-                'width'            => $vc_band_end - $vc_band_start,
-                'height'           => 0,
-                'colour'           => $black,
-                'absolutey'        => 1,
-            });
-            $self->push($gband);
-        }
-        my $fontcolour;
+	    my $HREF;
+	    if($self->{'config'}->{'_band_links'}) {
+		$HREF = "/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$chr&vc_start=$vc_band_start&vc_end=$vc_band_end";
+	    }
+	    if ($stain eq "acen"){
+		my $gband;
+		if ($done_1_acen){
+		    $gband = new Sanger::Graphics::Glyph::Poly({
+			'points'       => [ 
+					    $vc_band_start,$h_offset + $h_wid, 
+					    $vc_band_end,$h_offset,
+					    $vc_band_end,$h_offset + $wid,
+					  ],
+			'colour'       => $COL{$stain},
+			'absolutey'    => 1,
+			'href'         => $HREF
+		    });
+		} else {
+		    $gband = new Sanger::Graphics::Glyph::Poly({
+			'points'       => [ 
+					    $vc_band_start,$h_offset, 
+					    $vc_band_end,$h_offset + $h_wid,
+					    $vc_band_start,$h_offset + $wid,
+					  ],
+			'colour'       => $COL{$stain},
+			'absolutey'    => 1,
+			'href'         => $HREF
+		    });
+		    $done_1_acen = 1;
+		}
+		push @decorations, $gband;
+	    } elsif ($stain eq "stalk"){
+		my $gband = new Sanger::Graphics::Glyph::Poly({
+		    'points'           => [
+					    $vc_band_start,$h_offset, 
+					    $vc_band_end,$h_offset + $wid,
+					    $vc_band_end,$h_offset,
+					    $vc_band_start,$h_offset + $wid, 
+					  ],
+		    'colour'           => $COL{$stain},
+		    'absolutey'        => 1,
+		    'href'             => $HREF
+		});
+		push @decorations, $gband;
+		$gband = new Sanger::Graphics::Glyph::Rect({
+		    'x'                => $vc_band_start,
+		    'y'                => $h_offset+ int($wid/4),
+		    'width'            => $vc_band_end - $vc_band_start,
+		    'height'           => $h_wid,
+		    'colour'           => $COL{$stain},
+		    'absolutey'        => 1,
+		    'href'             => $HREF
+		});
+		push @decorations, $gband;
+	    } else {
+		$stain = 'gneg' if($self->{'config'}->{'_hide_bands'} eq 'yes' );
+		my $gband = new Sanger::Graphics::Glyph::Rect({
+		    'x'                => $vc_band_start,
+		    'y'                => $h_offset,
+		    'width'            => $vc_band_end - $vc_band_start,
+		    'height'           => $wid,
+		    'colour'           => $COL{$stain},
+		    'absolutey'        => 1,
+		    'href'             => $HREF
+		});
+		$self->push($gband);
+		$gband = new Sanger::Graphics::Glyph::Line({
+		    'x'                => $vc_band_start,
+		    'y'                => $h_offset,
+		    'width'            => $vc_band_end - $vc_band_start,
+		    'height'           => 0,
+		    'colour'           => $black,
+		    'absolutey'        => 1,
+		});
+		$self->push($gband);
+		$gband = new Sanger::Graphics::Glyph::Line({
+		    'x'                => $vc_band_start,
+		    'y'                => $h_offset+$wid,
+		    'width'            => $vc_band_end - $vc_band_start,
+		    'height'           => 0,
+		    'colour'           => $black,
+		    'absolutey'        => 1,
+		});
+		$self->push($gband);
+	    }
+	    my $fontcolour;
 
-    #################################################################
-    # only add the band label if the box is big enough to hold it...
-    #################################################################
-        unless (    $stain eq "acen" || $stain eq "tip" || $stain eq "stalk" ||
-                    ($self->{'config'}->{'_band_labels'} ne 'on') ||
-                    ($h > ($vc_band_end - $vc_band_start))
-        ){
-            my $tglyph = new Sanger::Graphics::Glyph::Text({
-                'x'                => ($vc_band_end + $vc_band_start - $h)/2,
-                'y'                => $h_offset+$wid+4,
-                'width'            => $h,
-                'height'           => $w * length($bandname),
-                'font'             => 'Tiny',
-                'colour'           => $black,
-                'text'             => $bandname,
-                'absolutey'        => 1,
-                'href'             => $HREF        
-            });
-            $self->push($tglyph);
-        }
+	#################################################################
+	# only add the band label if the box is big enough to hold it...
+	#################################################################
+	    unless (    $stain eq "acen" || $stain eq "tip" || $stain eq "stalk" ||
+			($self->{'config'}->{'_band_labels'} ne 'on') ||
+			($h > ($vc_band_end - $vc_band_start))
+	    ){
+		my $tglyph = new Sanger::Graphics::Glyph::Text({
+		    'x'                => ($vc_band_end + $vc_band_start - $h)/2,
+		    'y'                => $h_offset+$wid+4,
+		    'width'            => $h,
+		    'height'           => $w * length($bandname),
+		    'font'             => 'Tiny',
+		    'colour'           => $black,
+		    'text'             => $bandname,
+		    'absolutey'        => 1,
+		    'href'             => $HREF        
+		});
+		$self->push($tglyph);
+	    }
+	}
+    } else {
+      foreach (0,$wid) {
+        $self->push(new Sanger::Graphics::Glyph::Line({
+          'x'                => $v_offset-1,
+          'y'                => $h_offset+$_,
+          'width'            => $chr_length,
+          'height'           => 0,
+          'colour'           => $black,
+          'absolutey'        => 1,
+        }));
+      }
     }
 
     foreach( @decorations ) {
@@ -219,8 +231,8 @@ sub _init {
         ( [8,5],[5,3],[4,1],[3,1],[2,1],[1,1],[1,1],[1,1] ) ;
     
     foreach my $end ( 
-        ( $bands->[ 0]->stain() eq 'tip' ? () : 0 ),
-        ( $bands->[-1]->stain() eq 'tip' ? () : 1 )
+        ( @$bands && $bands->[ 0]->stain() eq 'tip' ? () : 0 ),
+        ( @$bands && $bands->[-1]->stain() eq 'tip' ? () : 1 )
      ) {
         my $direction = $end ? -1 : 1;
         foreach my $I ( 0..$#lines ) {
