@@ -20,7 +20,7 @@ sub init_label {
         'href'      => qq[javascript:X=hw('@{[$self->{container}{_config_file_name_}]}','$ENV{'ENSEMBL_SCRIPT'}','$HELP_LINK')],
         'zmenu'     => {
             'caption'                     => 'HELP',
-            "02:Track information..."     => qq[javascript:X=hw(\\'@{[$self->{container}{_config_file_name_}]}\\',\\'$ENV{'ENSEMBL_SCRIPT'}\\',\\'$HELP_LINK\\')]
+            "02:Track information..."     => qq[javascript:X=hw(\'@{[$self->{container}{_config_file_name_}]}\',\'$ENV{'ENSEMBL_SCRIPT'}\',\'$HELP_LINK\')]
         }
     });
     if( $self->{'extras'} && $self->{'extras'}{'description'} ) {
@@ -138,18 +138,18 @@ sub _init {
             my $X = -1000000;
             my ($feature_colour, $label_colour, $part_to_colour) = $self->colour( $F[0][2]->id );
             foreach my $f ( @F ){
-                next if int($f->[1] * $pix_per_bp) == int( $X * $pix_per_bp );
+                next if int($f->[1] * $pix_per_bp) <= int( $X * $pix_per_bp );
                 $C++;
                 if($DRAW_CIGAR) {
                   $self->draw_cigar_feature($Composite, $f->[2], $h, $feature_colour, 'black', $pix_per_bp );
                 } else {
                   my $START = $f->[0] < 1 ? 1 : $f->[0];
                   my $END   = $f->[1] > $length ? $length : $f->[1];
-                  $X = $START;
+                  $X = $END;
                   $Composite->push(new Sanger::Graphics::Glyph::Rect({
-                    'x'          => $X-1,
+                    'x'          => $START-1,
                     'y'          => 0, # $y_pos,
-                    'width'      => $END-$X+1,
+                    'width'      => $END-$START+1,
                     'height'     => $h,
                     'colour'     => $feature_colour,
                     'absolutey'  => 1,
