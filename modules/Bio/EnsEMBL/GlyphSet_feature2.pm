@@ -80,6 +80,7 @@ sub _init {
 
     foreach my $f ( $self->features ){
         next if $strand_flag eq 'b' && $strand != $f->hstrand ;
+        warn( "START: ".$f->start." END: ".$f->end." XX" );
         next if $f->start > $f->end || $f->end < 1 || $f->start > $LEN;
         $id{$f->hseqname()} = [] unless $id{$f->hseqname()};
         push @{$id{$f->hseqname()}}, $f;
@@ -103,7 +104,8 @@ $self->errorTrack( "No ".$self->my_label." in this region" )
         foreach my $f (@{$id{$i}}){
             my $START = $f->start();
             my $END   = $f->end();
-            ($START,$END) = ($END, $START) if $END<$START;
+            $START = 1 if $START < 1;
+            $END = $LEN if $END > $LEN;
             unless (defined $has_origin){
                 $Composite->x($f->start());
                 $Composite->y(0);
