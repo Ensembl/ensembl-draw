@@ -97,8 +97,8 @@ next if (@exons == 0);
 	
 	    my($colour, $hilight) = $self->colour( $gene, $transcript, $colours, %highlights );
 	  
-            my $coding_start = $transcript->coding_start() || $transcript->start();
-            my $coding_end   = $transcript->coding_end()   || $transcript->end();
+            my $coding_region_start = $transcript->coding_region_start() || $transcript->start();
+            my $coding_region_end   = $transcript->coding_region_end()   || $transcript->end();
             my $Composite2 = new Sanger::Graphics::Glyph::Composite({'y'=>$y,'height'=>$h});
             for(my $i = 0; $i < @exons; $i++) {
 	         my $exon = @exons[$i];
@@ -116,7 +116,7 @@ next if (@exons == 0);
 	             $box_start = 1 if $box_start < 1 ;
                      $box_end = $exon->end();
 	             $box_end = $length if$box_end > $length;
-	             if($box_start < $coding_start || $box_end > $coding_end ) {
+	             if($box_start < $coding_region_start || $box_end > $coding_region_end ) {
 	      # The start of the transcript is before the start of the coding
 	      # region OR the end of the transcript is after the end of the
 	      # coding regions.  Non coding portions of exons, are drawn as
@@ -132,8 +132,8 @@ next if (@exons == 0);
 		        }));
             	     } 
 	    # Calculate and draw the coding region of the exon
-	             my $filled_start = $box_start < $coding_start ? $coding_start : $box_start;
-	             my $filled_end   = $box_end > $coding_end  ? $coding_end   : $box_end;
+	             my $filled_start = $box_start < $coding_region_start ? $coding_region_start : $box_start;
+	             my $filled_end   = $box_end > $coding_region_end  ? $coding_region_end   : $box_end;
 	    # only draw the coding region if there is such a region
 	             if( $filled_start <= $filled_end ) {
 	    #Draw a filled rectangle in the coding region of the exon
