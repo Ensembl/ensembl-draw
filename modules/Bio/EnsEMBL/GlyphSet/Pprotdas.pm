@@ -125,7 +125,7 @@ sub _init {
 	    #$Composite->push($text);
 	}
 
-	if ($Config->get('Ppfam', 'dep') > 0){ # we bump
+	#if ($Config->get('Pprotdas', 'dep') > 0){ # we bump
             my $bump_start = int($Composite->x() * $pix_per_bp);
             $bump_start = 0 if ($bump_start < 0);
 	    
@@ -137,8 +137,8 @@ sub _init {
 				      $bitmap_length,
 				      \@bitmap
 				      );
-            $Composite->y($Composite->y() + (1.5 * $row * ($h + $fontheight)));
-        }
+            $Composite->y($Composite->y() + $row * ($h + 2) );
+        #}
 	
 	$self->push($Composite);
     }
