@@ -74,10 +74,10 @@ sub _init {
 	    my %grouped;
 	    foreach my $f(@features){
 		    next unless ( $f->das_dsn() eq $self->{'extras'}->{'dsn'} );
-            if($f->id eq '__ERROR__') {
+            if($f->das_type_id eq '__ERROR__') {
                 $self->errorTrack(
 					'Error retrieving '.$self->{'extras'}->{'caption'}.
-					' features ('.$f->id.')'
+					' features'
 				);
 		    	return;
             }
@@ -181,10 +181,10 @@ sub _init {
 		foreach my $f(@features){
 ## Display if not stranded OR
     		next unless ( $f->das_dsn() eq $self->{'extras'}->{'dsn'} );
-        	if($f->id eq '__ERROR__') {
+        	if($f->das_type_id eq '__ERROR__') {
 				$self->errorTrack(
 					'Error retrieving '.$self->{'extras'}->{'caption'}.
-					' features ('.$f->id.')'
+					' features'
 				);
 		    	return;
         	}
