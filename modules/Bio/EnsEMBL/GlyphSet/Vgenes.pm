@@ -29,10 +29,9 @@ sub _init {
     my ($self) = @_;
     my $Config = $self->{'config'};
     my $chr      = $self->{'container'}->{'chr'};
-   	my $genes_col = $Config->get( 'Vgenes','col_genes' );
-   	my $xref_col  = $Config->get( 'Vgenes','col_xref' );
-   	my $known_col = $Config->get( 'Vgenes','col_known' );
-	
+    my $genes_col = $Config->get( 'Vgenes','col_genes' );
+    my $xref_col  = $Config->get( 'Vgenes','col_xref' );
+    my $known_col = $Config->get( 'Vgenes','col_known' );
 	
     my $known_genes = $self->{'container'}->{'da'}->get_density_per_chromosome_type($chr,'kngene');
     my $xref_genes = $self->{'container'}->{'da'}->get_density_per_chromosome_type($chr,'xrefgene');
@@ -40,20 +39,25 @@ sub _init {
 
     return unless $known_genes->size() && $genes->size();
 
-
-   	$genes->scale_to_fit( $Config->get( 'Vgenes', 'width' ) );
-	$genes->stretch(0);
+    $genes->scale_to_fit( $Config->get( 'Vgenes', 'width' ) );
+    if ($genes->{'_biggest_value'}){
 	my $Hscale_factor = $known_genes->{'_biggest_value'} / $genes->{'_biggest_value'};
-   	$known_genes->scale_to_fit( $Config->get( 'Vgenes', 'width' ) * $Hscale_factor );	
-	$known_genes->stretch(0);
+	$known_genes->scale_to_fit( $Config->get( 'Vgenes', 'width' ) * $Hscale_factor );	
 	$Hscale_factor = $xref_genes->{'_biggest_value'} / $genes->{'_biggest_value'};
-   	$xref_genes->scale_to_fit( $Config->get( 'Vgenes', 'width' ) * $Hscale_factor );	
-	$xref_genes->stretch(0);
-		
+	$xref_genes->scale_to_fit( $Config->get( 'Vgenes', 'width' ) * $Hscale_factor );	
+    }
+    else {
+	$known_genes->scale_to_fit( $Config->get( 'Vgenes', 'width' ) );
+	$xref_genes->scale_to_fit( $Config->get( 'Vgenes', 'width' ) );
+    }
+	
+    $genes->stretch(0);
+    $known_genes->stretch(0);
+    $xref_genes->stretch(0);
 
-	my @genes = $genes->get_binvalues();
-	my @xrefs = $xref_genes->get_binvalues();
-	my @known_genes = $known_genes->get_binvalues();	
+    my @genes = $genes->get_binvalues();
+    my @xrefs = $xref_genes->get_binvalues();
+    my @known_genes = $known_genes->get_binvalues();	
 
     foreach (@genes){
 		my $xref = shift @xrefs;	

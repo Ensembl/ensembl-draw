@@ -56,7 +56,7 @@ sub _init {
 	my @points  = [];
 	my $old_x = undef;
 	my $old_y = undef;
-    foreach (@repeats) {
+	foreach (@repeats) {
 	    my $g_x = new Sanger::Graphics::Glyph::Space({
 			'x'      => $_->{'chromosomestart'},
 			'y'      => 0,
