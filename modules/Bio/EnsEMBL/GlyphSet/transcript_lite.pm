@@ -96,15 +96,9 @@ sub text_label {
         $id .= $eid ? " ($eid)" : '';
     }
     unless( $short_labels ){
-	if( $eid ){
-	    $id .= " \nEnsembl known trans "; 
-	}
-	elsif( $transcript->translation->stable_id ){
-	    $id .= " \nEnsembl novel trans ";
-	}
-	else{
-	    $id .= " \nEnsembl pseudogene ";
-	}
+      $id .= $transcript->external_status eq  'PSEUDO' ? 
+            "\nEnsembl pseudogene" :
+            ( $eid ? "\nEnsembl known trans" : "\nEnsembl novel trans" );
     }
     return $id;
     #$self->{'config'}->{'_transcript_names_'} eq 'yes' ? IGNORED
