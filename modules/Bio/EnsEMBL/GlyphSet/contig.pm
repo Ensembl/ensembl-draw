@@ -74,6 +74,7 @@ sub _init {
     };
     print STDERR "Using assembly $useAssembly\n";
 
+    $useAssembly = 0;
     if ($useAssembly) {
        @map_contigs = $vc->each_AssemblyContig;
     } else {
@@ -85,11 +86,11 @@ sub _init {
         my $end;
 
         if ($useAssembly) {
-         $start     = $map_contigs[0]->chr_start - 1;
-         $end       = $map_contigs[-1]->chr_end;
+            $start     = $map_contigs[0]->chr_start - 1;
+            $end       = $map_contigs[-1]->chr_end;
         } else {
-         $start     = $map_contigs[0]->start -1;
-         $end       = $map_contigs[-1]->end;
+            $start     = $map_contigs[0]->start -1;
+            $end       = $map_contigs[-1]->end;
         }
         
         my $tot_width = $end - $start;
@@ -133,6 +134,9 @@ sub _init {
               $strand = $temp_rawcontig->strand();
             }
 
+            $rstart = 1 if $rstart < 1;
+            $rend   = $length if $rend > $length;
+            
             my $glyph = new Bio::EnsEMBL::Glyph::Rect({
                 'x'         => $rstart,
                 'y'         => $ystart+2,
@@ -147,12 +151,15 @@ sub _init {
                         $vc->_chr_name()."&vc_start=".
                         ($cstart)."&vc_end=".
                         ($cend);
-			$glyph->{'zmenu'} = {
-                    'caption' => $rid,
-                    "01:Clone: $clone"   => '',
-                    '02:Centre on contig' => $glyph->{'href'},
-                    "03:EMBL source file" => $self->{'config'}->{'ext_url'}->get_url( 'EMBL', $cid )
-			} if $show_navigation;
+
+	    $glyph->{'zmenu'} = 
+	      {
+	       'caption' => $rid,
+	       "01:Clone: $clone"    => '',
+	       '02:Centre on contig' => $glyph->{'href'},
+	       "03:EMBL source file" => 
+	         $self->{'config'}->{'ext_url'}->get_url( 'EMBL', $cid )
+	      } if $show_navigation;
 			
             $self->push($glyph);
 
