@@ -18,16 +18,17 @@ sub features {
 sub href {
     my ( $self, $id ) = @_;
     if($id =~ /^WZ/) {
-        return $self->{'config'}->{'ext_url'}->get_url('WZ_HOME',$id);
+	$id =~ s/^WZ//i;
+        return $self->ID_URL('WZ',$id);
     } else {
-        return $self->{'config'}->{'ext_url'}->get_url('IMCB_HOME',$id);
+        return $self->ID_URL('IMCB_HOME',$id);
     }
 }
 
 sub zmenu {
     my ($self, $id ) = @_;
     if($id =~ /^WZ/) {
-        return { 'caption' => "WZ cluster: $id", "WZ Home" => $self->href( $id ) };
+        return { 'caption' => "WZ cluster: $id", "$id details" => $self->href( $id ) };
     } else {
         return { 'caption' => "IMCB cluster: $id", "IMCB Home" => $self->href( $id ) };
     }
