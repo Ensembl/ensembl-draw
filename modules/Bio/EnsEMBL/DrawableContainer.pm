@@ -69,7 +69,7 @@ sub new {
             eval {
                 $GlyphSet = new $classname($Container, $Config, $highlights, $strand);
             };
-            if($@) {
+            if($@ || !$GlyphSet) {
                 print STDERR "GLYPHSET $classname failed\n";
             } else {
                 $tmp_glyphset_store->{$Config->get($row, 'pos')} = $GlyphSet;
