@@ -127,6 +127,8 @@ sub _init {
         	};
 			$zmenu->{"TYPE: ". $f->das_type_id()      } = ''
 				if $f->das_type_id() && uc($f->das_type_id()) ne 'NULL';
+			$zmenu->{"SCORE: ". $f->das_score()      } = ''
+				if $f->das_score() && uc($f->das_score()) ne 'NULL';
 			$zmenu->{"METHOD: ". $f->das_method_id()  } = ''
 				if $f->das_method_id() && uc($f->das_method_id()) ne 'NULL';
 			$zmenu->{"CATEGORY: ". $f->das_type_category() } = ''
@@ -266,14 +268,11 @@ sub _init {
 			my $zmenu = {
                 	'caption'                       => $self->{'extras'}->{'label'},
     	    };
-			$zmenu->{"TYPE: ". $f->das_type_id()      } = ''
-				if $f->das_type_id() && uc($f->das_type_id()) ne 'NULL';
-			$zmenu->{"METHOD: ". $f->das_method_id()  } = ''
-				if $f->das_method_id() && uc($f->das_method_id()) ne 'NULL';
-			$zmenu->{"CATEGORY: ". $f->das_type_category() } = ''
-				if $f->das_type_category() && uc($f->das_type_category()) ne 'NULL';
-			$zmenu->{"DAS LINK: ".$f->das_link_label() } = $f->das_link()
-				if $f->das_link() && uc($f->das_link()) ne 'NULL';
+			$zmenu->{"TYPE: ". $f->das_type_id()           } = ''             if $f->das_type_id()       && uc($f->das_type_id())       ne 'NULL';
+			$zmenu->{"SCORE: ". $f->das_score()            } = ''             if $f->das_score()         && uc($f->das_score())         ne 'NULL';
+			$zmenu->{"METHOD: ". $f->das_method_id()       } = ''             if $f->das_method_id()     && uc($f->das_method_id())     ne 'NULL';
+			$zmenu->{"CATEGORY: ". $f->das_type_category() } = ''             if $f->das_type_category() && uc($f->das_type_category()) ne 'NULL';
+			$zmenu->{"DAS LINK: ".$f->das_link_label()     } = $f->das_link() if $f->das_link()          && uc($f->das_link())          ne 'NULL';
             
    		# JS5: If we have an ID then we can add this to the Zmenu and
 		#      also see if we can make a link to any additional information
