@@ -1,4 +1,4 @@
-package Bio::EnsEMBL::GlyphSet::havana_gene_contig;
+package Bio::EnsEMBL::GlyphSet::vega_havana_gene_contig;
 use strict;
 use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet;

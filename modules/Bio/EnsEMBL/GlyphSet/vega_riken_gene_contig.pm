@@ -1,4 +1,4 @@
-package Bio::EnsEMBL::GlyphSet::riken_gene_contig;
+package Bio::EnsEMBL::GlyphSet::vega_riken_gene_contig;
 use strict;
 use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet;
