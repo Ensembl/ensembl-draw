@@ -1,26 +1,16 @@
 package Bio::EnsEMBL::GlyphSet::sanger_transcript_lite;
 use strict;
 use vars qw(@ISA);
-use Bio::EnsEMBL::GlyphSet_transcript;
-@ISA = qw(Bio::EnsEMBL::GlyphSet_transcript);
+use Bio::EnsEMBL::GlyphSet_transcript_vega;
+@ISA = qw(Bio::EnsEMBL::GlyphSet_transcript_vega);
 
 sub my_label {
     my $self = shift;
     return $self->{'config'}->{'_draw_single_Transcript'} || 'Sanger trans.';
 }
 
-sub colours {
-    my $self = shift;
-    my $Config = $self->{'config'};
-    return {
-        'hi'               => $Config->get('sanger_transcript_lite','hi'),
-        'superhi'          => $Config->get('sanger_transcript_lite','superhi'),
-        'HUMACE-Novel_CDS'        => $Config->get('sanger_transcript_lite','sanger_Novel_CDS'),
-        'HUMACE-Putative'         => $Config->get('sanger_transcript_lite','sanger_Putative'),
-        'HUMACE-Known'            => $Config->get('sanger_transcript_lite','sanger_Known'),
-        'HUMACE-Novel_Transcript' => $Config->get('sanger_transcript_lite','sanger_Novel_Transcript'),
-        'HUMACE-Pseudogene'       => $Config->get('sanger_transcript_lite','sanger_Pseudogene'),
-    };
+sub colours_d {
+   # deprecated
 }
 
 sub transcript_type {
@@ -29,21 +19,8 @@ sub transcript_type {
   return 'sanger';
 }
 
-sub colour {
-    my ($self, $gene, $transcript, $colours, %highlights) = @_;
-
-    my $highlight = undef;
-    my $colour = $colours->{$transcript->type()};
-
-    if(exists $highlights{$transcript->stable_id()}) {
-      $highlight = $colours->{'superhi'};
-    } elsif(exists $highlights{$transcript->external_name}) {
-      $highlight = $colours->{'superhi'};
-    } elsif(exists $highlights{$gene->stable_id()}) {
-      $highlight = $colours->{'hi'};
-    }
-
-    return ($colour, $highlight); 
+sub colour_d {
+   # deprecated;
   }
 
 sub href {
@@ -93,7 +70,18 @@ sub text_label {
 sub features {
   my ($self) = @_;
 
-  return $self->{'container'}->get_all_Genes_by_source('vega');
+my ($genes, @genes);
+
+my @logic_names = qw(havana genoscope sanger);
+
+
+  foreach my $ln (@logic_names) {
+$genes =  $self->{'container'}->get_all_Genes($ln);
+push @genes, @$genes;
+ 
+ }
+
+return \@genes;
 }
 
 
