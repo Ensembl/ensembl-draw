@@ -2,7 +2,6 @@ package Bio::EnsEMBL::Renderer;
 use strict;
 use Exporter;
 use vars qw(@ISA);
-use lib "../../../../modules";
 
 @ISA = qw(Exporter);
 
