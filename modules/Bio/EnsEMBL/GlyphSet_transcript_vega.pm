@@ -14,12 +14,21 @@ use Bio::EnsEMBL::Utils::Eprof qw(eprof_start eprof_end);
 sub init_label {
     my ($self) = @_;
     return if( defined $self->{'config'}->{'_no_label'} );
-    my $HELP_LINK = $self->check();
+    my $HELP_LINK = 'sanger_transcript_lite';
     my $label = new Sanger::Graphics::Glyph::Text({
         'text'      => $self->my_label(),
         'font'      => 'Small',
         'absolutey' => 1,
         'href'      => qq[javascript:X=window.open(\'/$ENV{'ENSEMBL_SPECIES'}/helpview?se=1&kw=$ENV{'ENSEMBL_SCRIPT'}#$HELP_LINK\',\'helpview\',\'height=400,width=500,left=100,screenX=100,top=100,screenY=100,resizable,scrollbars=yes\');X.focus();void(0)],
+
+
+   
+
+
+
+
+
+
 
         'zmenu'     => {
             'caption'                     => 'HELP',
