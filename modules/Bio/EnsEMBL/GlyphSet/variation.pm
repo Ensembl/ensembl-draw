@@ -105,6 +105,7 @@ sub zmenu {
  	       '01:SNP properties'   => $self->href( $f ),
  	       "02:bp: $pos"         => '',
  	       "03:status: ".($status || '-') => '',
+ 	       "03:variation type: ".($f->var_class || '-') => '',
  	       "07:ambiguity code: ".$f->ambig_code => '',
  	       "08:alleles: ".$f->allele_string => '',
 	      );
