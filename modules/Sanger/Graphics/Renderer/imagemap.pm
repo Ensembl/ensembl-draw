@@ -12,18 +12,17 @@ sub init_canvas {
     my ($self, $config, $im_width, $im_height) = @_;
     $self->canvas("");
     $self->{'show_zmenus'} = defined( $config->get("_settings","opt_zmenus") ) ? $config->get("_settings","opt_zmenus") : 1;
- #   print STDERR "XX: $self->{'show_zmenus'}\n";
+    $self->{'zmenu_behaviour'} = $config->get("_settings", "zmenu_behaviour");
 }
 
 sub add_canvas_frame {
-    my ($self, $config, $im_width, $im_height) = @_;
-	return(); # no-op!	
+    return;
 }
 
 sub render_Rect {
     my ($self, $glyph) = @_;
     my $href = $self->_getHref($glyph);
-	return unless(defined $href);
+    return unless(defined $href);
 
     my $x1 = int( $glyph->pixelx() );
     my $x2 = int( $glyph->pixelx() + $glyph->pixelwidth() );
@@ -39,12 +38,11 @@ sub render_Rect {
     $x2 += 1;
 
     $self->{'canvas'} = qq(<area coords="$x1 $y1 $x2 $y2"$href>\n).$self->{'canvas'};
-
 }
 
 sub render_Text {
     my ($self, $glyph) = @_;
-	$self->render_Rect($glyph);
+    $self->render_Rect($glyph);
 }
 
 sub render_Circle {
@@ -58,8 +56,9 @@ sub render_Intron {
 
 sub render_Poly {
     my ($self, $glyph) = @_;
-	my $href = $self->_getHref( $glyph );
-	return unless(defined $href);
+    my $href = $self->_getHref( $glyph );
+    return unless(defined $href);
+
     my $pointslist = join ' ',map { int } @{$glyph->pixelpoints()};
     $self->{'canvas'} = qq(<area shape="poly" coords="$pointslist"$href>\n).$self->{'canvas'} ; 
 }
@@ -72,7 +71,6 @@ sub render_Space {
 sub render_Composite {
     my ($self, $glyph) = @_;
     $self->render_Rect($glyph);
-#    $self->SUPER::render_Composite($glyph);
 }
 
 sub render_Line {
@@ -80,25 +78,42 @@ sub render_Line {
 
 sub _getHref {
     my ($self, $glyph) = @_;
-	my $onmouseover = $glyph->onmouseover();
-       $onmouseover = (defined $onmouseover) ? qq( onmouseover="$onmouseover") : "";
-    my $onmouseout = $glyph->onmouseout();
-       $onmouseout = (defined $onmouseout) ? qq( onmouseout="$onmouseout") : "";
-    my $href = $glyph->href();
-       $href = qq( href="$href") if(defined $href);
-    my $alt = $glyph->id();
-       $alt = (defined $alt) ? qq( alt="$alt")  : "";
+    my $onmouseover = $glyph->onmouseover();
+    my $onmouseout  = $glyph->onmouseout();
+    my $href        = $glyph->href();
+    my $alt         = $glyph->id();
+    my $title       = "";
+    $onmouseover    = (defined $onmouseover) ? qq( onmouseover="$onmouseover") : "";
+    $onmouseout     = (defined $onmouseout) ? qq( onmouseout="$onmouseout") : "";
+    $href           = qq( href="$href") if(defined $href);
+    $alt            = (defined $alt) ? qq( alt="$alt")  : "";
 
-    ######### zmenus will override existing href, alt, onmouseover & onmouseout attributes
-    if($self->{'show_zmenus'}==1) {
-        my $zmenu = $glyph->zmenu();
-        if(defined $zmenu) {
-    		$href        = qq( href="javascript:void(0);") unless( defined $href );
-    		$alt         = qq();
-    		$onmouseover = qq( onmouseover=") . &Sanger::Graphics::JSTools::js_menu($zmenu) . qq(");
-        }
+    #########
+    # zmenus will override existing href, alt, onmouseover & onmouseout attributes
+    #
+    if($self->{'show_zmenus'} == 1) {
+      my $zmenu = $glyph->zmenu();
+
+      if(defined $zmenu) {
+	my $behaviour = $self->{'zmenu_behaviour'} || "onmouseover";
+	my $jsmenu    = &Sanger::Graphics::JSTools::js_menu($zmenu);
+	$alt          = "";
+	
+	if($behaviour="onclick" && !defined $href) {
+	  $href        = qq( href="$jsmenu");
+	  $alt         = qq( alt="click for menu");
+	  $title       = qq( title="click for menu");
+	  $onmouseover = "";
+	  $onmouseout  = "";
+
+	} else {
+	  $href        = qq( href="javascript:void(0);") unless( defined $href );
+	  $onmouseover = qq( $behaviour="$jsmenu");
+	}
+      }
     }
-	return "$href$onmouseover$onmouseout$alt" if(defined $href);
-	return undef;
+    return "$href$onmouseover$onmouseout$alt$title" if(defined $href);
+    return undef;
 }
+
 1;
