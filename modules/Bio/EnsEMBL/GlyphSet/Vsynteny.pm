@@ -345,6 +345,7 @@ sub draw_chromosome {
     my $h_wid      = $wid/2;
     my $done_1_acen = 0;
     my $highlights = $params{'highlights'} || [];
+    if( @{$params{'bands'}||[]} ) {
     foreach my $band (@{$params{'bands'}}) {
         my $bandname       = $band->name();
         my $vc_band_start  = $band->start() * $scale + $v_offset;
@@ -421,8 +422,34 @@ sub draw_chromosome {
                 'absolutey'        => 1, 'absolutex'        => 1,'absolutewidth'=>1,
             }));
         }
-    }
-    
+      }
+    } else {
+            $self->unshift(new Sanger::Graphics::Glyph::Rect({
+                'x'          => $v_offset,
+                'y'          => $h_offset,
+                'width'      => $length,
+                'height'     => $wid,
+                'colour'     => $params{'white'},
+                'absolutey'  => 1,
+                'absolutex'  => 1,'absolutewidth'=>1,
+            }));
+            $self->push(new Sanger::Graphics::Glyph::Line({
+                'x'                => $v_offset,
+                'y'                => $h_offset,
+                'width'            => $length,
+                'height'           => 0,
+                'colour'           => $params{'black'},
+                'absolutey'        => 1, 'absolutex'        => 1,'absolutewidth'=>1,
+            }));
+            $self->push(new Sanger::Graphics::Glyph::Line({
+                'x'                => $v_offset,
+                'y'                => $h_offset+$wid,
+                'width'            => $length,
+                'height'           => 0,
+                'colour'           => $params{'black'},
+                'absolutey'        => 1, 'absolutex'        => 1,'absolutewidth'=>1,
+            }));
+    } 
     my @lines = $wid < 16 ? ( [8,6],[4,4],[2,2] ) :
                ( $wid < 30 ? ( [8,5],[5,3],[4,1],[3,1],[2,1],[1,1],[1,1],[1,1] ) :
                 ( [8,8],[5,3],[4,1],[3,1],[2,1],[1,1],[1,1],[1,1] ) );
@@ -431,10 +458,12 @@ sub draw_chromosome {
 ## This is the end of the         
 
 my @ends;
-if (@{$params{'bands'}}){
+    if (@{$params{'bands'}||[]}){
 	@ends = (( $params{'bands'}[ 0]->stain() eq 'tip' ? () : 1 ),
 		( $params{'bands'}[-1]->stain() eq 'tip' ? () : -1 ));
-}
+    } else {
+      @ends = (1,-1);
+    }
     foreach my $end (@ends){
         foreach my $I ( 0..$#lines ) {
             my ( $bg_x, $black_x ) = @{$lines[$I]};
