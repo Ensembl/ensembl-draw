@@ -84,11 +84,11 @@ sub _init {
     my $vc_start = $vc->chr_start();
     my @genes = ();
 
-        my $res = $vc->get_all_SangerGenes_startend_lite(); 
-        foreach my $g (@$res){ 
+        my @res = $vc->get_Genes_by_source( "sanger" ); 
+        foreach my $g (@res){ 
             my( $gene_col, $gene_label, $high); 
-            $high       = exists $highlights{ $g->{'stable_id'} } ? 1 : 0; 
-            $gene_label = $g->{'stable_id'}; 
+            $high       = exists $highlights{ $g->stable_id() } ? 1 : 0; 
+            $gene_label = $g->stable_id(); 
             $high       = 1 if(exists $highlights{ $gene_label }); 
             (my $T = $g->{'type'}) =~ s/HUMACE-//; 
             $gene_col = $sanger_colours->{ $T }; 
@@ -116,29 +116,31 @@ sub _init {
                 ]
             }  if(@$res>0);
         } 
-    my $res = $vc->get_all_VirtualGenes_startend_lite();
 
-    foreach(@$res) {
+    my @res = $vc->get_Genes_by_source( "core" ));
+    print STDERR ("Called get Genes in gene_lite.pm\n" );
+
+    for my $gene (@res) {
         my( $gene_col, $gene_label, $high);
-        $high = exists $highlights{$_->{'stable_id'}} ? 1 : 0;
-        if(defined $_->{'synonym'} && $_->{'synonym'} ne '') {
+        $high = exists $highlights{ $gene->stable_id() } ? 1 : 0;
+        if(defined $gene->external_name() && $gene->external_name() ne '') {
             $gene_col = $known_col;
-            $gene_label = $_->{'synonym'};
+            $gene_label = $gene->external_name;
             $high = 1 if(exists $highlights{$gene_label});
         } else {
             $gene_col = $unknown_col;
             $gene_label = 'NOVEL'; 
         }
         push @genes, {
-            'chr_start' => $_->{'chr_start'},
-            'chr_end'   => $_->{'chr_end'},
-            'start'     => $_->{'start'},
-            'strand'    => $_->{'strand'},
-            'end'       => $_->{'end'},
-            'ens_ID'    => $_->{'stable_id'},
+            'chr_start' => $gene->start + $vc->chr_start - 1,
+            'chr_end'   => $gene->end + $vc->chr_end - 1,
+            'start'     => $gene->start(),
+            'strand'    => $gene->strand(),
+            'end'       => $gene->end(),
+            'ens_ID'    => $gene->stable_id(),
             'label'     => $gene_label,
             'colour'    => $gene_col,
-            'ext_DB'    => $_->{'external_db'},
+            'ext_DB'    => $gene->external_db(),
             'high'      => $high,
             'type'      => 'ensembl'
         };
@@ -149,7 +151,7 @@ sub _init {
             'EnsEMBL predicted genes (known)' => $known_col,
             'EnsEMBL predicted genes (novel)' => $unknown_col
         ]
-    }  if(@$res>0);
+    }  if(@res>0);
     &eprof_end("gene-virtualgene_start-get");
 
     &eprof_start("gene-externalgene_start-get");
@@ -214,7 +216,8 @@ sub _init {
 				"length: ".($g->{'chr_end'}-$g->{'chr_start'}+1) 	=> ''
 			}; 
             if( $g->{'ens_ID'} ne '' ) {
-    			$rect->{'zmenu'}->{"Gene: $g->{'ens_ID'}"} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$g->{'ens_ID'}"; 
+  		$rect->{'zmenu'}->{"Gene: $g->{'ens_ID'}"} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$g->{'ens_ID'}"; 
+
                 $rect->{'href'} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$g->{'ens_ID'}" ;
             }
 		}

@@ -110,28 +110,28 @@ sub _init {
         }; 
     } 
 
-    my $res = $vc->get_all_VirtualGenes_startend_lite();
-    foreach(@$res) {
+    my @res = $vc->get_all_Genes();
+    foreach my $gene (@res) {
         my( $gene_col, $gene_label, $high);
-        $high = exists $highlights{$_->{'stable_id'}} ? 1 : 0;
-        if(defined $_->{'synonym'} && $_->{'synonym'} ne '') {
+        $high = exists $highlights{$gene->stable_id()} ? 1 : 0;
+        if(defined $gene->external_name && $gene->external_name() ne '') {
             $gene_col = $known_col;
-            $gene_label = $_->{'synonym'};
+            $gene_label = $gene->external_name();
             $high = 1 if(exists $highlights{$gene_label});
         } else {
             $gene_col = $unknown_col;
             $gene_label = 'NOVEL'; 
         }
         push @genes, {
-            'chr_start' => $_->{'chr_start'},
-            'chr_end'   => $_->{'chr_end'},
-            'start'     => $_->{'start'},
-            'strand'    => $_->{'strand'},
-            'end'       => $_->{'end'},
-            'ens_ID'    => $_->{'stable_id'},
+            'chr_start' => $gene->start() + $vc->chr_start - 1,
+            'chr_end'   => $gene->end() + $vc->chr_start - 1,
+            'start'     => $gene->start(),
+            'strand'    => $gene->strand(),
+            'end'       => $gene->end(),
+            'ens_ID'    => $gene->stable_id(),
             'label'     => $gene_label,
             'colour'    => $gene_col,
-            'ext_DB'    => $_->{'external_db'},
+            'ext_DB'    => $gene->external_db(),
             'high'      => $high
         };
     }
