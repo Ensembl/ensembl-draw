@@ -8,6 +8,7 @@ use Sanger::Graphics::Glyph::Rect;
 use Sanger::Graphics::Glyph::Text;
 use Sanger::Graphics::Glyph::Intron;
 use Sanger::Graphics::Bump;
+use Data::Dumper;
 use ExtURL;
 
 
@@ -19,11 +20,11 @@ sub init_label {
 qq[javascript:X=window.open(\'/$ENV{'ENSEMBL_SPECIES'}/externaldas?action=edit&key=$1\',\'dassources\',\'height=500,width=500,left=50,screenX=50,top=50,screenY=50,resizable,scrollbars=yes\');X.focus();void(0)] : qq[javascript:X=window.open(\'/$ENV{'ENSEMBL_SPECIES'}/helpview?se=1&kw=$ENV{'ENSEMBL_SCRIPT'}#das\',\'helpview\',\'height=400,width=500,left=100,screenX=100,top=100,screenY=100,resizable,scrollbars=yes\');X.focus();void(0)] ;
 
     (my $T = $URL)=~s/\'/\\\'/g;
- 
+    #####'###### 
     $self->label( new Sanger::Graphics::Glyph::Text({
         'text'      => $self->{'extras'}->{'caption'},
         'font'      => 'Small',
-        'colour'    => $self->{'config'}->colourmap()->id_by_name('contigblue2'),
+        'colour'    => 'contigblue2',
         'absolutey' => 1,
         'href'      => $URL,
         'zmenu'     => $self->das_name  =~/^managed_extdas/ ?
@@ -36,23 +37,15 @@ qq[javascript:X=window.open(\'/$ENV{'ENSEMBL_SPECIES'}/externaldas?action=edit&k
 
 
 sub _init {
-   
-####################
-#print "init called ";
-
- my ($self) = @_;
+    my ($self) = @_;
 
     my $Config          = $self->{'config'};
     ( my $das_name        = (my $das_config_key = $self->das_name() ) ) =~ s/managed_(extdas_)?//g;
     $das_config_key =~ s/^managed_das/das/;
 
-####################
-#print $das_name . "\n " . $das_config_key;
-
     my $strand          = $Config->get($das_config_key, 'str');
 # If strand is 'r' or 'f' then we display everything on one strand (either
 # at the top or at the bottom!
-
 
     return if( $strand eq 'r' && $self->strand() != -1 || $strand eq 'f' && $self->strand() != 1 );
 
@@ -62,6 +55,7 @@ sub _init {
     my $feature_colour  = $Config->get($das_config_key, 'col') || 'contigblue1';
     my $dep             = $Config->get($das_config_key, 'dep');
     my $group           = $Config->get($das_config_key, 'group');
+    my $use_style       = $Config->get($das_config_key, 'stylesheet') eq 'Y';
     my $vc              = $self->{'container'};
     my $border          = 'black' ;
     my $red             = 'red' ;
@@ -75,15 +69,19 @@ sub _init {
     my $h = $self->{'textheight'};
     
     my @features;
+    my ( $features, $styles ) = @{ $vc->get_all_DASFeatures()->{$self->{'extras'}{'dsn'}}||[] };
+    $use_style = 0 unless $styles && @{$styles};
 
-    
     eval{
-        @features = grep { $_->das_type_id() !~ /(contig|component|karyotype)/i } @{$vc->get_all_DASFeatures()->{$self->{'extras'}{'dsn'}}||[]};
+        @features = grep { $_->das_type_id() !~ /(contig|component|karyotype)/i } @{$features||[]};
     };
-
-
-
-#    print STDERR map { "DAS: ". $_->das_dsn. ": ". $_->das_start."-".$_->das_end."|\n"}  @features;
+    my %styles = ();
+    if( $use_style ) { 
+       foreach(@$styles) {
+          $styles{$_->{'category'}}{$_->{'type'}} = $_ unless $_->{'zoom'};
+       } 
+    }
+    # warn map { "DAS: ". $_->das_dsn. ": ". $_->das_start."-".$_->das_end."|\n"}  @features;
     if($@) {
         print STDERR "----------\n",$@,"---------\n";
         return;
@@ -102,17 +100,12 @@ sub _init {
     if($group==1) {
         my %grouped;
         foreach my $f(@features){
-
-	  
             if($f->das_type_id() eq '__ERROR__') {
                 $self->errorTrack( 'Error retrieving '.$self->{'extras'}->{'caption'}.' features ('.$f->id.')' );
                 return;
             }
             next if $strand eq 'b' && ( $f->strand() !=1 && $STRAND==1 || $f->strand() ==1 && $STRAND==-1);
             my $fid = $f->das_id;
-
-#######################
-	  #  print "id " . $fid . "<br>\n";
             next unless $fid;
             $fid  = "G:".$f->das_group_id if $f->das_group_id;
             push @{$grouped{$fid}}, $f;
@@ -139,23 +132,14 @@ sub _init {
             my $start = $features[0]->das_start;    # GET START AND END OF FEATURE....
             my $START = $start < 1 ? 1 : $start;
             my $end   = $features[-1]->das_end;
-
-
-
-
             
             $T += @features;
-            $T += @features-1 if $f->das_type_id =~ /(CDS|translation|transcript|exon)/i;
+            $T += @features-1 if ( $f->das_group_type || $f->das_type_id() ) =~ /(CDS|translation|transcript|exon)/i;
             ### A general list of features we don't want to draw via DAS ###
             # Compute the length of the label...
             my $ID    = $f->das_group_id || $f->das_id;
-
-#############################
-#print "<br> das group id" . $f->das_group_id;
-#print "<br> das id " . $f->das_id ;
-
-
-            my $label_length = $labelling * $self->{'textwidth'} * length(" $ID ") * 1.1; # add 10% for scaling text
+            my $label = $f->das_group_label || $f->das_feature_label || $ID;
+            my $label_length = $labelling * $self->{'textwidth'} * length(" $label ") * 1.1; # add 10% for scaling text
 
             my $row = $dep > 0 ? $self->bump( $START, $end, $label_length, $dep ) : 0;
 
@@ -172,7 +156,15 @@ sub _init {
             
             ## if we are dealing with a transcript (CDS/transcript/exon) then join with introns...
             
-            if( $f->das_type_id() =~ /(CDS|translation|transcript|exon)/i ) { ## TRANSCRIPT!
+                my $style;
+                my $colour;
+                if($use_style) {
+                  $style = $styles{$f->das_type_category}{$f->das_type_id} || $styles{$f->das_type_category}{'default'} || $styles{'default'}{'default'};
+                  $colour = $style->{'attrs'}{'fgcolor'}||$feature_colour;
+                } else {
+                  $colour = $feature_colour;
+                }
+            if( ( $f->das_group_type || $f->das_type_id() ) =~ /(CDS|translation|transcript|exon)/i ) { ## TRANSCRIPT!
                 my $f     = shift @features;
                 my $START = $f->das_start() < 1        ? 1       : $f->das_start();
                 my $END   = $f->das_end()   > $length  ? $length : $f->das_end();
@@ -185,7 +177,7 @@ sub _init {
                     'y'          => 0,
                     'width'      => $END-$START+1,
                     'height'     => 8,
-                    'colour'     => $feature_colour,
+                    'colour'     => $colour,
                     'absolutey'  => 1,
                     'zmenu'      => $zmenu
                 });
@@ -204,7 +196,7 @@ sub _init {
                         'y'         => 0,
                         'width'     => $f_start-$old_end,
                         'height'    => 8,
-                        'colour'    => $feature_colour,
+                        'colour'    => $colour,
                         'absolutey' => 1,
                         'strand'    => $STRAND,
                     }) );
@@ -213,7 +205,7 @@ sub _init {
                         'y'          => 0,
                         'width'      => $END-$f_start+1,
                         'height'     => 8,
-                        'colour'     => $feature_colour,
+                        'colour'     => $colour,
                         'absolutey' => 1,
                     }) );
                     $old_end = $END;
@@ -225,7 +217,7 @@ sub _init {
                     'absolutey'    => 1,
                     'zmenu'        => $zmenu,
                 });
-                $Composite2->bordercolour($feature_colour);
+                $Composite2->bordercolour($colour);
                 my $old_end = -1e9;
                 foreach(@features) {
              #       print STDERR "DAS: F ",$_->das_start,"-",$_->das_end," (",$_->das_id,"-",$_->das_group_id,")\n";
@@ -240,7 +232,7 @@ sub _init {
                         'y'          => 0,
                         'width'      => $END-$START+1,
                         'height'     => 8,
-                        'colour'     => $feature_colour,
+                        'colour'     => $colour,
                         'absolutey' => 1,
                         'zmenu'     => $zmenu
                     }) );
@@ -248,7 +240,7 @@ sub _init {
                 #$Composite2->{'href'} = $href if $href;
                 $Composite->push($Composite2);
             }
-            my $H =$self->feature_label( $Composite, $ID , $feature_colour, $start < 1 ? 1 : $start , $end > $length ? $length : $end );
+            my $H =$self->feature_label( $Composite, $label , $colour, $start < 1 ? 1 : $start , $end > $length ? $length : $end );
 #            $Composite->{'zmenu'}->{"SHIFT ($row) ".$tstrand*(1.4*$h+$H) * $row } = '';
             $Composite->y($Composite->y() - $tstrand*(1.4*$h+$H) * $row) if $row;
             $self->push($Composite);
@@ -265,6 +257,7 @@ sub _init {
             $empty_flag = 0; # We have a feature (its on one of the strands!)
             next if $strand eq 'b' && ( $f->strand() !=1 && $STRAND==1 || $f->strand() ==1 && $STRAND==-1);
             my $ID    = $f->das_id;
+            my $label = $f->das_group_label || $f->das_feature_label || $ID;
             my $label_length = $labelling * $self->{'textwidth'} * length(" $ID ") * 1.1; # add 10% for scaling text
 
             my $row = 0;
@@ -290,18 +283,25 @@ sub _init {
                 'zmenu'        => $zmenu,
             });
             $Composite->{'href'} = $href if $href;
-        
+                my $style;
+                my $colour;
+                if($use_style) {
+                  $style = $styles{$f->das_type_category}{$f->das_type_id} || $styles{$f->das_type_category}{'default'} || $styles{'default'}{'default'};
+                  $colour = $style->{'attrs'}{'fgcolor'}||$feature_colour;
+                } else {
+                  $colour = $feature_colour;
+                }
             $Composite->push( new Sanger::Graphics::Glyph::Rect({
                 'x'          => $START-1,
                 'y'          => 0,
                 'width'      => $END-$START+1,
                 'height'     => 8,
-                'colour'     => $feature_colour,
+                'colour'     => $colour,
                 'absolutey' => 1
             }) );
             #$glyph->{'href'} = $href if $href;
             # DONT DISPLAY IF BUMPING AND BUMP HEIGHT TOO GREAT
-            my $H =$self->feature_label( $Composite, $ID, $feature_colour, $START, $END );
+            my $H =$self->feature_label( $Composite, $label, $colour, $START, $END );
 #            $Composite->{'zmenu'}->{"SHIFT ($row) ".$tstrand*(1.4*$h+$H) * $row } = '';
             $Composite->y($Composite->y() - $tstrand*(1.4*$h+$H) * $row) if $row;
             $self->push($Composite);
