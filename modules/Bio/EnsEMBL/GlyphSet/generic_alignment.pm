@@ -12,9 +12,10 @@ use Sanger::Graphics::Bump;
 sub init_label {
   my ($self) = @_;
   return if( defined $self->{'config'}->{'_no_label'} );
-  my $HELP_LINK = $self->check();
+  my $HELP_LINK = 'compara_alignment';
+  my $code      = $self->check();
   $self->label( new Sanger::Graphics::Glyph::Text({
-    'text'      => $self->{'config'}->get($HELP_LINK,'label')||'---',
+    'text'      => $self->{'config'}->get($code,'label')||'---',
     'font'      => 'Small',
     'absolutey' => 1,
     'href'      => qq[javascript:X=hw('@{[$self->{container}{_config_file_name_}]}','$ENV{'ENSEMBL_SCRIPT'}','$HELP_LINK')],
@@ -23,7 +24,7 @@ sub init_label {
       "01:Track information..." => qq[javascript:X=hw(\'@{[$self->{container}{_config_file_name_}]}\',\'$ENV{'ENSEMBL_SCRIPT'}\',\'$HELP_LINK\')]
     }
   }));
-  $self->bumped( $self->{'config'}->get($HELP_LINK, 'compact') ? 'no' : 'yes' ) unless $self->{'config'}{'compara'};
+  $self->bumped( $self->{'config'}->get($code, 'compact') ? 'no' : 'yes' ) unless $self->{'config'}{'compara'};
 }
 
 sub colour   { return $_[0]->{'feature_colour'}, $_[0]->{'label_colour'}, $_[0]->{'part_to_colour'}; }
@@ -196,7 +197,7 @@ sub expanded_init {
     }
   }
 ## No features show "empty track line" if option set....
-  $self->errorTrack( "No ".$self->my_label." features in this region" ) unless( $C || $Config->get('_settings','opt_empty_tracks')==0 );
+  $self->errorTrack( "No ". $self->{'config'}->get($type,'label')." features in this region" ) unless( $C || $Config->get('_settings','opt_empty_tracks')==0 );
   0 && warn( ref($self), " $C out of a total of ($C1 unbumped) $T glyphs" );
 }
 
@@ -252,16 +253,19 @@ sub compact_init {
   my $X = -1e8;
   my $CONTIGVIEW_TEXT_LINK =  $compara ? 'Jump to ContigView' : 'Centre on this match' ;
   my $MCV_TEMPLATE  = "/$self_species/multicontigview?c=%s:%d&w=%d&s1=$other_species&c1=%s:%d&w1=%d$COMPARA_HTML_EXTRA";
-  foreach (
-    sort { $a->[0] <=> $b->[0] }
+  
+  my @T = sort { $a->[0] <=> $b->[0] }
     map { [$_->start, $_ ] }
-    grep { !($strand_flag eq 'b' && $strand != $_->hstrand || $_->start > $length || $_->end < 1) } @{$self->features( $other_species, $METHOD )}
-  ) {
+    grep { !( ($strand_flag eq 'b' && $strand != $_->hstrand) ||
+              ($_->start > $length) ||
+              ($_->end < 1)
+         ) } @{$self->features( $other_species, $METHOD )};
+  foreach (@T) {
     my $f       = $_->[1];
     my $START   = $_->[0];
     my $END     = $f->end;
     ($START,$END) = ($END, $START) if $END<$START; # Flip start end YUK!
-    my ( $rs, $re ) = $self->slice2sr( $START, $END );
+    my( $rs, $re ) = $self->slice2sr( $START, $END );
     $START      = 1 if $START < 1;
     $END        = $length if $END > $length;
     $T++; $C1++;
@@ -286,15 +290,15 @@ sub compact_init {
     unless( $domain ) {
       $href = sprintf $HREF_TEMPLATE, ($rs+$re)/2, $chr_2, ($s_2 + $e_2)/2;
       $zmenu->{ 'Dotter' }    = $href;
-      $zmenu->{ 'Alignment' } = "/$self_species/alignview?class=DnaDnaAlignFeature&l=$chr:$rs-$re&s1=$other_species&l1=$chr_2:$s_2-$e_2&type=$type";
+      $zmenu->{ 'Alignment' } = "/$self_species/alignview?class=DnaDnaAlignFeature&l=$chr:$rs-$re&s1=$other_species&l1=$chr_2:$s_2-$e_2&type=$METHOD";
       $zmenu->{ $MULTICONTIGVIEW_TEXT_LINK } = sprintf( $MCV_TEMPLATE, $chr, ($rs+$re)/2, $WIDTH/2, $chr_2, ($s_2+$e_2)/2, $WIDTH/2 );
     }
-    
+    $zmenu->{ 'Orientation: '.($f->hstrand * $f->strand>0?'Forward' : 'Reverse' ) } = undef;
     if($DRAW_CIGAR) {
       $TO_PUSH = new Sanger::Graphics::Glyph::Composite({
         'href'  => $href,
         'zmenu' => $zmenu,
-        'zmenu' => $self->unbumped_zmenu( @X , 'Orientation: '.($f->hstrand * $f->strand>0?'Forward' : 'Reverse' ), $f->{'alignment_type'} ) ,
+#        'zmenu' => $self->unbumped_zmenu( @X , 'Orientation: '.($f->hstrand * $f->strand>0?'Forward' : 'Reverse' ), $f->{'alignment_type'} ) ,
         'x'     => $START-1,
         'width' => 0,
         'y'     => 0
@@ -328,11 +332,10 @@ sub compact_init {
         $self->join_tag( $TO_PUSH, $TAG, 0, $Z, $join_col, 'fill', $join_z );
       }
     }
-    warn $TO_PUSH;
     $self->push( $TO_PUSH );
   }
 ## No features show "empty track line" if option set....
-  $self->errorTrack( "No ".$self->my_label." features in this region" ) unless( $C || $Config->get('_settings','opt_empty_tracks')==0 );
+  $self->errorTrack( "No ". $self->{'config'}->get($type,'label')." features in this region" ) unless( $C || $Config->get('_settings','opt_empty_tracks')==0 );
   0 && warn( ref($self), " $C out of a total of ($C1 unbumped) $T glyphs" );
 }
 
