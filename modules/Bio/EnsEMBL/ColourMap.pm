@@ -32,12 +32,12 @@ sub new {
     'Pseudogene'       => 'grey38',
     'Novel_Transcript' => 'skyblue3',
     'Ig_Segment'       => 'midnightblue',
-    'Ig_Pseudogene'    => 'mediumpurple4', 'Predicted_Gene'   =>  'steelblue4',
+    'Ig_Pseudogene'    => 'mediumpurple4', 
+    'Predicted_Gene'   =>  'steelblue4',
   );
 
 
-
-
+ 
 
 
 
