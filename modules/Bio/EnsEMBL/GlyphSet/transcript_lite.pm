@@ -49,14 +49,15 @@ sub zmenu {
     my ($self, $vt) = @_;
     my $vtid = $vt->{'stable_id'};
     my $id   = $vt->{'synonym'} eq '' ? $vtid : $vt->{'synonym'};
+    my $pepid = $vt->{'translation'};
     my $zmenu = {
         'caption'                       => $id,
         "00:Transcr:$vtid"              => "",
         "01:(Gene:$vt->{'gene'})"       => "",
         '03:Transcript information'     => "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$vt->{'gene'}",
-        '04:Protein information'        => "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=".$vt->{'translation'},
+        '04:Protein information'        => "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=$pepid",
         '05:Supporting evidence'        => "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$vtid",
-        '07:Protein sequence (FASTA)'   => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=$vtid",
+        '07:Protein sequence (FASTA)'   => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=$pepid",
         '08:cDNA sequence'              => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=cdna&id=$vtid",
     };
     my $DB = EnsWeb::species_defs->databases;
