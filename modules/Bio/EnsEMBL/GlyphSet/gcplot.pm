@@ -50,6 +50,7 @@ sub _init {
 	
     #print STDERR "Divs = $divs\n";
     my $seq = $VirtualContig->seq();
+    #print STDERR "Length = ", length($seq), "\n";
     my @gc = ();
     my $min = 100;
     my $max = 0;
@@ -57,7 +58,7 @@ sub _init {
     for (my $i=0; $i<$divs; $i++){
 	#print STDERR "Div: $i\n";
 	my $subseq = substr($seq, $i*$divlen, $divlen);
-	#$subseq =~ s/N//igo;
+	$subseq =~ s/N//igo;
 	my $G = $subseq =~ tr/G/G/;
 	my $C = $subseq =~ tr/C/C/;
 	next if (length($subseq) <= 0); # catch divide by zero....
