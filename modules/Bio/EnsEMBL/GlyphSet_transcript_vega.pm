@@ -303,7 +303,7 @@ next if (@exons == 0);
 sub colours {
     my $self = shift;
     my $Config = $self->{'config'};
-     return {
+    return {
 	     'unknown'   => $Config->get('_colours','unknown'),
 	     'xref'      => $Config->get('_colours','xref'),
 	     'pred'      => $Config->get('_colours','pred'),
@@ -317,11 +317,10 @@ sub colours {
 	     'Pseudogene'       => $Config->get('_colours','Pseudogene'),
 	     'Ig_Segment'       => $Config->get('_colours','Ig_Segment'), 	  
 	     'Ig_Pseudogene_Segment'   =>$Config->get('_colours','Ig_Pseudogene') , 
-	     'Predicted_Gene'  => $Config->get('_colours','Predicted_Gene'), 
-
+	     'Predicted_Gene'	=> $Config->get('_colours','Predicted_Gene'), 
+	     'Transposon'	=> $Config->get('_colours','Transposon'),
+	     'Polymorphic'      => $Config->get('_colours','Polymorphic'),
 	      }; 
-
-
 }
 
 # $Config->get('_colours','Known'),
@@ -429,21 +428,24 @@ sub text_label {
 
 sub legend {
     my ($self, $colours) = @_;
-
-
-    return ('genes', 1000,
-            [
-	     'Curated known genes'    => $colours->{'Known'},
-	     'Curated novel CDS'      => $colours->{'Novel_CDS'},
-	     'Curated putative'       => $colours->{'Putative'},
-	     'Curated novel Trans'    => $colours->{'Novel_Transcript'},
-	     'Curated pseudogenes'    => $colours->{'Pseudogene'},
-	     'Curated Ig Segment'   => $colours->{'Ig_Segment'},
-	     'Curated Ig Pseudogene'=> $colours->{'Ig_Pseudogene_Segment'},
-	     'Curated predicted' => $colours->{'Predicted_Gene'}, 
-            ]
-    );
-
+    my $gene_type_names = { 
+	   'Novel_CDS'        => 'Curated novel CDS',
+	   'Putative'         => 'Curated putative',
+	   'Known'            => 'Curated known genes',
+	   'Novel_Transcript' => 'Curated novel Trans',
+	   'Pseudogene'       => 'Curated pseudogenes',
+	   'Ig_Segment'       => 'Curated Ig Segment',
+	   'Ig_Pseudogene_Segment'   => 'Curated Ig Pseudogene',
+	   'Predicted_Gene'   => 'Curated predicted',
+	   'Transposon'	      => 'Curated Transposon',
+	   'Polymorphic'      => 'Curated Polymorphic',
+    }; 
+    my @legend = ('genes', 1000, []);
+    foreach my $gene_type (sort keys %{ EnsWeb::species_defs->VEGA_GENE_TYPES || {}} ) {
+	push(@{@legend[2]}, "$gene_type_names->{$gene_type}" => $colours->{$gene_type} );
+	
+    }
+    return @legend;
 }
 
 sub error_track_name { return 'transcripts'; }

@@ -33,14 +33,10 @@ sub new {
     'Novel_Transcript' => 'skyblue3',
     'Ig_Segment'       => 'midnightblue',
     'Ig_Pseudogene'    => 'mediumpurple4', 
-    'Predicted_Gene'   =>  'steelblue4',
+    'Predicted_Gene'   => 'steelblue4',
+    'Transposon'       => 'steelblue3',
+    'Polymorphic'      => 'blue4',
   );
-
-
- 
-
-
-
   $self->colourSet( 'est_gene',
     'hi'         => 'highlight1',
     'superhi'    => 'highlight2',

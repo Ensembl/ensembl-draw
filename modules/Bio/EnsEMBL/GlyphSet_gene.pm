@@ -84,7 +84,22 @@ sub _init {
            'Pseudogene'       => $Config->get('_colours','Pseudogene'), 
 	   'Ig_Segment'       => $Config->get('_colours','Ig_Segment'), 	  
 	   'Ig_Pseudogene_Segment'   =>$Config->get('_colours','Ig_Pseudogene') , 
-	   'Predicted_Gene'  => $Config->get('_colours','Predicted_Gene')
+	   'Predicted_Gene'   => $Config->get('_colours','Predicted_Gene'),
+	   'Transposon'	      => $Config->get('_colours','Transposon'),
+	   'Polymorphic'      => $Config->get('_colours','Polymorphic'),
+    }; 
+
+    my $gene_type_names = { 
+           'Novel_CDS'        => 'Curated novel CDS',
+           'Putative'         => 'Curated putative',
+           'Known'            => 'Curated known genes',
+           'Novel_Transcript' => 'Curated novel Trans',
+           'Pseudogene'       => 'Curated pseudogenes',
+	   'Ig_Segment'       => 'Curated Ig Segment',
+	   'Ig_Pseudogene_Segment'   => 'Curated Ig Pseudogene',
+	   'Predicted_Gene'   => 'Curated predicted',
+	   'Transposon'	      => 'Curated Transposon',
+	   'Polymorphic'      => 'Curated Polymorphic',
     }; 
 
     my $pix_per_bp    = $Config->transform->{'scalex'};
@@ -137,24 +152,17 @@ sub _init {
             };
     } 
     if($F>0) {
-      $Config->{'legend_features'}->{'sanger_genes'} = {
-       'priority' => 1000,
-       'legend'  => [
-	 'Curated known genes'=> $sanger_colours->{'Known'},
-         'Curated novel CDS'  => $sanger_colours->{'Novel_CDS'},
-         'Curated putative'   => $sanger_colours->{'Putative'},
-         'Curated novel Trans'=> $sanger_colours->{'Novel_Transcript'},
-         'Curated pseudogenes'=> $sanger_colours->{'Pseudogene'}, 
-	 'Curated Ig Segment'   => $sanger_colours->{'Ig_Segment'},
-         'Curated Ig Pseudogene Segment'=> $sanger_colours->{'Ig_Pseudogene_Segment'},
-         'Predicted Gene'=> $sanger_colours->{'Predicted_Gene'}, 
-] };
+	# push all gene types present in the DB to the legend array
+	$Config->{'legend_features'}->{'sanger_genes'} = {
+	    'priority' => 1000,
+	    'legend'  => [],
+	};
+	foreach my $gene_type (sort keys %{ EnsWeb::species_defs->VEGA_GENE_TYPES || {}} ) {
+	    push(@{$Config->{'legend_features'}->{'sanger_genes'}->{'legend'}}, "$gene_type_names->{$gene_type}" => $sanger_colours->{$gene_type} );
+	    
+	}
     } 
 
-
-    #
-   
-  
     my @gene_glyphs = ();
     foreach my $g (@genes) {
         my $start = $g->{'start'};

@@ -56,23 +56,23 @@ sub _init {
    #    'refseq' => $Config->get('gene_lite','refseq'), 
    # }; 
     my $sanger_colours = { 
-        
  #	    'unknown'   =>  $Config->get('_colours','_');
  #	    'xref'      => $Config->get('_colours','_XREF');
  #	    'pred'      => $Config->get('_colours','PRED');
  #	   'known'     =>  $Config->get('_colours','_KNOWN');
  #	    'hi'        => $Config->get('_colours','hi'),
  #	    'superhi'   => $Config->get('_colours','superhi'),
-	   'Novel_CDS'        => $Config->get('_colours','Novel_CDS'), 
+           'Novel_CDS'        => $Config->get('_colours','Novel_CDS'), 
            'Putative'         => $Config->get('_colours','Putative'), 
            'Known'            => $Config->get('_colours','Known'), 
            'Novel_Transcript' => $Config->get('_colours','Novel_Transcript'), 
            'Pseudogene'       => $Config->get('_colours','Pseudogene'), 
 	   'Ig_Segment'       => $Config->get('_colours','Ig_Segment'), 	  
 	   'Ig_Pseudogene_Segment'   =>$Config->get('_colours','Ig_Pseudogene') , 
-	   'Predicted_Gene'  => $Config->get('_colours','Predicted_Gene')      
-
-			 };
+	   'Predicted_Gene'   => $Config->get('_colours','Predicted_Gene'),
+	   'Transposon'	      => $Config->get('_colours','Transposon'),
+	   'Polymorphic'      => $Config->get('_colours','Polymorphic'),
+    };
 
 ##############################################################################
 # Stage 1b: Now the virtual contig                                           #
