@@ -12,21 +12,30 @@ use SiteDefs;
 sub init_label {
     my ($self) = @_;
     my $Config = $self->{'config'};	
-    my $label = new Sanger::Graphics::Glyph::Text({
-		'text'      => 'Putative',
+    my $chr      = $self->{'container'}->{'chr'};
+
+
+ my $genecount1 = $self->{'container'}->{'da'}->get_density_per_chromosome_type($chr,'putative');
+my $genecount2 = $self->{'container'}->{'da'}->get_density_per_chromosome_type($chr,'predicted');
+my $text1 = ""; my $text2 = "";
+
+    if ($genecount1->{'_biggest_value'}) { $text1  = 'Putative';  }
+    if ($genecount2->{'_biggest_value'}) {$text2 = 'Predicted'; }
+
+ my $label = new Sanger::Graphics::Glyph::Text({
+		'text'      => $text1,
 		'font'      => 'Small',
 		'colour'	=> $Config->get('Vannot_predicted_and_putative','col_put'),
 		'absolutey' => 1,
-    });
-    my $label2 = new Sanger::Graphics::Glyph::Text({
-		'text'      => 'Predicted',
+    }); $self->label($label);
+
+ my $label2 = new Sanger::Graphics::Glyph::Text({
+		'text'      => $text2,
 		'font'      => 'Small',
 		'colour'	=>  $Config->get('Vannot_predicted_and_putative','col_pred'),		
 		'absolutey' => 1,
-    });
-		
-    $self->label($label);
-    $self->label2($label2);
+    }); $self->label2($label2);
+
 }
 
 sub _init {
@@ -54,29 +63,21 @@ sub _init {
 return unless (($known_max > 0) || ($genes_max >0));
 
 
-
 my $Hscale_factor = 1;
     if  (($genes_max > 0) && ($known_max > 0)){
 	$Hscale_factor = ($known_max / $genes_max);
   } 
-
 
    	$genes->scale_to_fit( $Config->get( 'Vannot_predicted_and_putative', 'width' ) );
 	$genes->stretch(0);
 
    	$known_genes->scale_to_fit( $Config->get( 'Vannot_predicted_and_putative', 'width' ) * $Hscale_factor );
 
-	$known_genes->stretch(0);
+    $known_genes->stretch(0);
 	
-	my @genes = $genes->get_binvalues() ;
-
-   
-   
-       my @known_genes = $known_genes->get_binvalues() ;
+    my @genes = $genes->get_binvalues() ;
+    my @known_genes = $known_genes->get_binvalues() ;
     
-
-	
-
 
     foreach (@genes){
 		my $known_gene = shift @known_genes;	
