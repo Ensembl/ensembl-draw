@@ -20,6 +20,7 @@ sub colours {
 
 sub colour {
     my ($self, $gene, $transcript, $colours, %highlights) = @_;
+    
     return (  $colours->{$transcript->type()} );
 }
 
@@ -30,9 +31,9 @@ sub href {
     return "#" . $transcript->stable_id();
   }
 
-  $my gid = $gene->stable_id();
+  my $gid = $gene->stable_id();
 
-  return qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?db=estgene&gene=$gid;
+  return qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?db=estgene&gene=$gid);
 }
 
 sub zmenu {

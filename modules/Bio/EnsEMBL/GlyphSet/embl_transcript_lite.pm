@@ -35,7 +35,7 @@ sub colour {
     return ( 
       $colours->{$transcript->type()}, 
        exists $highlights{$transcript->stable_id()} ? $colours->{'superhi'} : 
-      (exists $highlights{$transcript->external_id()} ? $colours->{'superhi'} :
+      (exists $highlights{$transcript->external_name()} ? $colours->{'superhi'} :
       (exists $highlights{$gene->stable_id()} ? $colours->{'hi'} : undef ))
     );
   }
@@ -58,13 +58,16 @@ sub zmenu {
 
   my $type = ($gene->type() eq 'pseudo') ? 'pseudogene' : 'transcript';
 
+  my $tid = $transcript->stable_id();
+  my $tname = $transcript->external_name();
+
   my $zmenu = {
-      'caption'  => "EMBL: $transcript->stable_id()",
+      'caption'  => "EMBL: $tid",
       '01:EMBL curated $type' => ''
     };
 
   if($transcript->external_db() ne '') {
-    $zmenu->{ "02:$transcript->external_db():$transcript->external_name()" } = 
+    $zmenu->{ "02:$transcript->external_db():$tname" } = 
       $self->href($gene, $transcript); 
   }
 

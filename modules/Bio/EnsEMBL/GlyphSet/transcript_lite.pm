@@ -34,9 +34,6 @@ sub colour {
 
     my $genecol = $colours->{$transcript->is_known() ? 'known' : 'unknown'};
 
-    print STDERR "Got colour $genecol for gene of type: " . $gene->type() . "\n";
- 
-
     if(exists $highlights{$transcript->stable_id()}) {
       return ($genecol, $colours->{'superhi'});
     } elsif(exists $highlights{$transcript->external_name()}) {
@@ -45,13 +42,15 @@ sub colour {
       return ($genecol, $colours->{'hi'});
     }
       
-    print STDERR "NO HIGHLIGHTS";
-
     return ($genecol, undef);
 }
 
 sub href {
     my ($self, $gene, $transcript ) = @_;
+
+    my $gid = $gene->stable_id();
+    my $tid = $transcript->stable_id();
+
     return $self->{'config'}->{'_href_only'} eq '#tid' ?
         "#$transcript->stable_id()" : 
         qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$gene->stable_id());
@@ -60,23 +59,24 @@ sub href {
 
 sub zmenu {
     my ($self, $gene, $transcript) = @_;
-    my $vtid = $transcript->stable_id();
-    my $id   = $transcript->external_name() eq '' ? $vtid : $transcript->external_name();
+    my $tid = $transcript->stable_id();
+    my $gid = $gene->stable_id();
+    my $id   = $transcript->external_name() eq '' ? $tid : $transcript->external_name();
     my $zmenu = {
         'caption'                       => $id,
-        "00:Transcr:$vtid"              => "",
-        "01:(Gene:$gene->stable_id())"       => "",
-        '03:Transcript information'     => "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$gene->stable_id()",
+        "00:Transcr:$tid"              => "",
+        "01:(Gene:$gid)"       => "",
+        '03:Transcript information'     => "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$gid",
         '04:Protein information'        => "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=".$transcript->translation->dbID(),
-        '05:Supporting evidence'        => "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$vtid",
-        '07:Protein sequence (FASTA)'   => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=$vtid",
-        '08:cDNA sequence'              => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=cdna&id=$vtid",
+        '05:Supporting evidence'        => "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$tid",
+        '07:Protein sequence (FASTA)'   => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=$tid",
+        '08:cDNA sequence'              => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=cdna&id=$tid",
     };
     my $DB = EnsWeb::species_defs->databases;
 
     if($DB->{'ENSEMBL_EXPRESSION'}) {
       $zmenu->{'06:Expression information'} = 
-	"/$ENV{'ENSEMBL_SPECIES'}/sageview?alias=$gene->stable_id()";
+	"/$ENV{'ENSEMBL_SPECIES'}/sageview?alias=$gid";
     }
 
     return $zmenu;
