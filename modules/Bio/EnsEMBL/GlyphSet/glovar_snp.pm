@@ -70,6 +70,14 @@ sub features {
             = { 'priority' => 1000, 'legend' => [] };
     }
 
+    ## hack to disable consequences on chr7
+    if ($self->{'container'}->chr_name == 7) {
+        foreach my $snp (@snps) {
+            $snp->{'_type'} = undef;
+            $snp->{'_consequence'} = undef;
+        }
+    }
+
     return \@snps;
 }
 
