@@ -19,7 +19,7 @@ sub init_label {
     my ($self) = @_;
     return if( $self->{'config'}->{'_label'} eq 'none'  );
     my $chr = $self->{'container'}->{'chr'} || $self->{'extras'}->{'chr'};
-    $chr = uc($chr);
+    $chr = uc($chr) unless ($self->{'config'}->{'_uppercase_label'} eq 'no');
     $chr = "Chromosome $chr" if( $self->{'config'}->{'_label'} eq 'above' );
     my $label = new Sanger::Graphics::Glyph::Text({
         'text'      => $chr,
