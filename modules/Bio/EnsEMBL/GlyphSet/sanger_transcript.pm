@@ -16,7 +16,7 @@ sub init_label {
     my ($self) = @_;
     return if( defined $self->{'config'}->{'_no_label'} );
     
-    my $label_text = $self->{'config'}->{'_draw_single_Transcript'} || 'Sanger genes';
+    my $label_text = $self->{'config'}->{'_draw_single_Transcript'} || 'Sanger Trans';
 
     my $label = new Bio::EnsEMBL::Glyph::Text({
         'text'      => $label_text,
@@ -47,6 +47,13 @@ sub _init {
     my $hi_colour     = $Config->get('sanger_transcript','hi');
     my $superhi_colour= $Config->get('sanger_transcript','superhi');
     my $type          = $Config->get('sanger_transcript','src');
+    my $sanger_colours = {
+        'Novel_CDS'        => $Config->get('sanger_transcript','sanger_Novel_CDS'),
+        'Putative'         => $Config->get('sanger_transcript','sanger_Putative'),
+        'Known'            => $Config->get('sanger_transcript','sanger_Known'),
+        'Novel_Transcript' => $Config->get('sanger_transcript','sanger_Novel_Transcript'),
+        'Pseudogene'       => $Config->get('sanger_transcript','sanger_Pseudogene'),
+    };
     my @allgenes      = ();
     my $fontname      = "Tiny";    
     my $pix_per_bp    = $Config->transform->{'scalex'};
@@ -110,62 +117,22 @@ TRANSCRIPT:
             };
       
             my $Composite = new Bio::EnsEMBL::Glyph::Composite({});
-            $colour = @dblinks ? $known_colour : $unknown_colour;
-	           unless( $target ) {     #Skip this next chunk if single transcript mode
-                if ($eg->{'_is_external'}) {
-                    $colour = $type =~/pseudo/i ? $pseudo_colour : $ext_colour;
-                }
+            my $T = $type; $T =~ s/HUMACE-//g;
+            $colour = $sanger_colours->{$T};
+	    unless( $target ) {     #Skip this next chunk if single transcript mode
                 if( $Config->{'_href_only'} eq '#tid' ) {
                     $Composite->{'href'} = qq(#$tid);
                 } elsif ($tid !~ /$PREFIX/o){
-		    my $Z = $type;
-		    $Z =~s/^HUMACE.//; 
-					my %zmenu = (
-                            'caption'           => "Sanger: $tid",
-						    "01:Sanger curated ($Z)" => ''
-					);
-                    @dblinks = $transcript->each_DBLink();
-                    if (@dblinks){
-                    	foreach my $DB_link ( @dblinks ){
-							my $DB = $DB_link->database();
-							my $ID = $DB_link->display_id();
-							if( $DB eq 'EMBL' ) {
-								my $temp_ID = $ID;
-								$temp_ID = $1 if $temp_ID =~ /^([a-z]+\d+\.\d+)/i;
-								$zmenu{ "06:$DB: $temp_ID" } = $URL->get_url($DB, $temp_ID);
-							} elsif( $DB eq 'SPTREMBL' ) {
-								$zmenu{ "07:$DB: $ID" } = $URL->get_url('SWISS-PROT', $ID);
-							} else {
-								my $temp_ID = $ID;
-								$temp_ID = $1 if $temp_ID =~ /^([a-z]+\d+)/i;
-								$zmenu{ "08:Protein: $temp_ID" } = 
-									$URL->get_url( 'PID', $temp_ID );
-							}
-                    	}
-                    }
-					
+		    $Composite->{'href'} = $type=~/seudo/ ? undef : qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?db=sanger&gene=$vgid);
+			my %zmenu = (
+                            'caption'           => "Sanger Gene",
+				    "01:$tid" => '',
+				    "03:Sanger curated ($T)" => ''
+			);
                     # if we have an EMBL external transcript we need different links...
-                    if($tid =~ /dJ/o){
-						$zmenu { "05:$tid" } => $URL->get_url('EMBLGENE', $tid);
-                    }
-                    $zmenu{ "02:Gene: $gene_label"}='' if $gene_label;
-
+		    $gene_label ||= $vgid;
+                    $zmenu{ "02:Gene: $gene_label"}=$Composite->{'href'};
                     $Composite->{'zmenu'} = \%zmenu;
-                } else {
-                    # we have a normal Ensembl transcript...
-                    $Composite->{'zmenu'}  = {
-                            'caption'            => $id,
-                            "00:Transcr:$tid"        => "",
-                            "01:(Gene:$vgid)"        => "",
-                            '03:Transcript information' => "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$vgid",
-                            '04:Protein information'    => "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=$pid",
-                            '05:Supporting evidence'    => "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$tid",
-                            '06:Expression information' => "/$ENV{'ENSEMBL_SPECIES'}/sageview?alias=$vgid",
-                            '07:Protein sequence (FASTA)' => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=$tid",
-                            '08:cDNA sequence'          => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=cdna&id=$tid",
-                    };
-					$Composite->{'zmenu'}->{"02:(Gene:$gene_label)"} if $gene_label;
-                    $Composite->{'href'} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$vgid";
                 }
             } #end of Skip this next chunk if single transcript mode
             my @exons = $transcript->each_Exon_in_context($vcid);

@@ -32,8 +32,14 @@ sub _init {
     my $hi_col         = $Config->get( 'gene_label_lite' , 'hi' );
     my $unknown_col    = $Config->get( 'gene_label_lite' , 'unknown' );
     my $ext_col        = $Config->get( 'gene_label_lite' , 'ext' );
-    my $sanger_pseudo_col     = $Config->get( 'gene_label_lite' , 'sangerpseudo' );
-    my $sanger_col        = $Config->get( 'gene_label_lite' , 'sanger' );
+    my $sanger_colours = {
+        'Novel_CDS'        => $Config->get('gene_label_lite','sanger_Novel_CDS'),
+        'Putative'         => $Config->get('gene_label_lite','sanger_Putative'),
+        'Known'            => $Config->get('gene_label_lite','sanger_Known'),
+        'Novel_Transcript' => $Config->get('gene_label_lite','sanger_Novel_Transcript'),
+        'Pseudogene'       => $Config->get('gene_label_lite','sanger_Pseudogene'),
+    };
+
     my $pseudo_col     = $Config->get( 'gene_label_lite' , 'pseudo' );
     my $max_length     = $Config->get( 'gene_label_lite' , 'threshold' ) || 2000000;
     my $navigation     = $Config->get( 'gene_label_lite' , 'navigation' ) || 'off';
@@ -77,6 +83,32 @@ sub _init {
 ##############################################################################
     &eprof_start("gene-virtualgene_start-get");
     my $res = $vc->get_all_VirtualGenes_startend_lite();
+    if ($type eq 'all'){
+        my $res = $vc->get_all_SangerGenes_startend_lite();
+        foreach my $g (@$res){
+            my( $gene_col, $gene_label, $high);
+            $high       = exists $highlights{ $g->{'stable_id'} } ? 1 : 0;
+            $gene_label = $g->{'stable_id'};
+            $high       = 1 if(exists $highlights{ $gene_label });
+            my $T = $g->{'type'};
+            $T =~ s/HUMACE-//;
+            $gene_col = $sanger_colours->{ $T };
+            push @genes, {
+                'chr_start' => $g->{'chr_start'},
+                'chr_end'   => $g->{'chr_end'},
+                'start'     => $g->{'start'},
+                'strand'    => $g->{'strand'},
+                'end'       => $g->{'end'},
+                'ens_ID'    => '', #$g->{'stable_id'},
+                'label'     => $gene_label,
+                'colour'    => $gene_col,
+                'ext_DB'    => $g->{'db'},
+                'high'      => $high,
+                'type'      => $g->{'type'}
+            };
+        }
+    }
+
     foreach(@$res) {
         my( $gene_col, $gene_label, $high);
         $high = exists $highlights{$_->{'stable_id'}} ? 1 : 0;
@@ -118,31 +150,6 @@ sub _init {
                 $gene_col = $pseudo_col;
             } else {
                 $gene_col = $ext_col;
-            }
-            push @genes, {
-                'chr_start' => $g->{'chr_start'},
-                'chr_end'   => $g->{'chr_end'},
-                'start'     => $g->{'start'},
-                'strand'    => $g->{'strand'},
-                'end'       => $g->{'end'},
-                'ens_ID'    => '', #$g->{'stable_id'},
-                'label'     => $gene_label,
-                'colour'    => $gene_col,
-                'ext_DB'    => $g->{'db'},
-                'high'      => $high,
-                'type'      => $g->{'type'}
-            };
-        }
-        my $res = $vc->get_all_SangerGenes_startend_lite();
-        foreach my $g (@$res){
-            my( $gene_col, $gene_label, $high);
-            $high       = exists $highlights{ $g->{'stable_id'} } ? 1 : 0;
-            $gene_label = $g->{'synonym'} || $g->{'stable_id'};
-            $high       = 1 if(exists $highlights{ $gene_label });
-            if($g->{'type'} eq 'HUMACE-Pseudogene') {
-                $gene_col = $sanger_pseudo_col;
-            } else {
-                $gene_col = $sanger_col;
             }
             push @genes, {
                 'chr_start' => $g->{'chr_start'},

@@ -30,19 +30,32 @@ sub _init {
     my $h             = 4;
     my $im_width      = $Config->image_width();
     my $type          = $Config->get('gene_legend', 'src');
-    my $NO            = 3;
     my $BOX_WIDTH     = 20;
     my $fontname      = "Tiny";
     # call on ensembl lite to give us the details of all
     # genes in the virtual contig
-    my @colours = (
-	'Known genes' , $Config->get('gene_legend','known'),
-        'EMBL curated genes' , $Config->get('gene_legend','ext'),
-        'Sanger curated genes' , $Config->get('gene_legend','sanger'),
-        'Unknown genes', $Config->get('gene_legend','unknown'),
-        'EMBL pseudogenes' , $Config->get('gene_legend','pseudo'),
-        'Sanger pseudogenes' => $Config->get('gene_legend','sangerpseudo')
+    my $NO; my @colours;
+    if($vc->_chr_name =~/20/) {
+    @colours = (
+        'Sanger curated known genes'    => $Config->get('gene_legend','sanger_Known'),
+        'Sanger curated novel Trans'    => $Config->get('gene_legend','sanger_Novel_Transcript'),
+	'EnsEMBL predicted genes (known)'   => $Config->get('gene_legend','known'),
+        'Sanger curated novel CDS'    => $Config->get('gene_legend','sanger_Novel_CDS'),
+        'Sanger curated pseudogenes'      => $Config->get('gene_legend','sanger_Pseudogene'),
+        'EnsEMBL predicted genes (novel)' => $Config->get('gene_legend','unknown'),
+        '' => '', 
+        'Sanger curated putative'    => $Config->get('gene_legend','sanger_Putative'),
     );
+    $NO = 3;
+    } else {
+    $NO = 2;
+    @colours = (
+	'EnsEMBL predicted genes (known)'   => $Config->get('gene_legend','known'),
+        'EMBL curated genes'      => $Config->get('gene_legend','ext'),
+        'EnsEMBL predicted genes (novel)' => $Config->get('gene_legend','unknown'),
+        'EMBL pseudogenes'        => $Config->get('gene_legend','pseudo'),
+    );
+    }
     my ($x,$y) = (0,0);
      my $rect = new Bio::EnsEMBL::Glyph::Rect({
        'x'         => 0,
@@ -55,6 +68,7 @@ sub _init {
      });
      $self->push($rect);
     while( my ($legend, $colour) = splice @colours, 0, 2 ) {
+     if($legend ne '') {
      ## Draw box
      my $rect = new Bio::EnsEMBL::Glyph::Rect({
        'x'         => $im_width * $x/$NO,
@@ -78,6 +92,7 @@ sub _init {
      $self->push($rect);
      $self->push($tglyph);
      ## Write text;
+     }
      $x++;
      if($x==$NO) { $x=0; $y++ }
     }
