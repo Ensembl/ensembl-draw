@@ -1,4 +1,4 @@
-package Bio::EnsEMBL::GlyphSet::vegaclones;
+package Bio::EnsEMBL::GlyphSet::ensemblclones;
 use strict;
 use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet_simple;
@@ -11,7 +11,7 @@ use Data::Dumper;
 
 @ISA = qw(Bio::EnsEMBL::GlyphSet_simple);
 
-sub my_label { return "Vega Clones"; }
+sub my_label { return "Ensembl Clones"; }
 
 sub features {
     my ($self)      = @_;
@@ -27,7 +27,7 @@ sub features {
 
     ###### Get DAS source config for this track ######
     my $species_defs    = &EnsWeb::species_defs();
-    my $source          = "das_VEGACLONES";
+    my $source          = "das_ENSEMBLCLONES";
     my $dbname          = EnsWeb::species_defs->ENSEMBL_TRACK_DAS_SOURCES->{$source};
     my $URL             = $dbname->{'url'};
     my $dsn             = $dbname->{'dsn'};
@@ -42,8 +42,6 @@ sub features {
         $SEGMENTS{$f->segment->ref().".".$f->segment->version()}++;
         #print STDERR "STORE: ", $f->segment->ref().".".$f->segment->version(), "\n";
     };
-
-
     ###### Create a new DAS adaptor #######
     eval {
         $URL = "http://$URL" unless $URL =~ /https?:\/\//i;
@@ -55,10 +53,10 @@ sub features {
                                 );
     };
     if($@) {
-      print("Vega Clones DASAdaptor creation error\n$@\n") 
+      warn("Ensembl Clones DASAdaptor creation error\n$@\n") 
     } 
        
-	my $dbh      = $adaptor->_db_handle();
+	my $dbh 	    = $adaptor->_db_handle();
     my $response    = undef;
     $types          = []; # just for now....
     
@@ -92,6 +90,7 @@ sub features {
     
     my $res = [];
     foreach my $c (keys %SEGMENTS){
+
         my ($name,$ver) = split(/\./,$c);
         foreach my $p (@{$slice->get_tiling_path()}){
             if ($p->{contig}->name() =~ /$name/){
@@ -125,7 +124,10 @@ sub features {
 
 sub href {
     my ($self, $f ) = @_;
-    return "http://vega.sanger.ac.uk/$ENV{'ENSEMBL_SPECIES'}/$ENV{'ENSEMBL_SCRIPT'}?clone=".$f->{'embl_clone'}
+
+my @cloneid = split(/\./ ,  $f->{'embl_clone'});
+
+    return "http://www.ensembl.org/$ENV{'ENSEMBL_SPECIES'}/$ENV{'ENSEMBL_SCRIPT'}?clone=". $cloneid[0];
 }
 
 sub colour {
@@ -147,10 +149,10 @@ sub image_label {
 sub zmenu {
     my ($self, $f ) = @_;
     my $zmenu = { 
-        'caption' => "Vega Clones: ".$f->id,
+        'caption' => "EnsEMBL Clones: ".$f->id,
         '01:bp: '.$f->start."-".$f->end => '',
         '02:length: '.($f->end-$f->start+1). ' bps' => '',
-        '03:Jump to Vega' => $self->href($f),
+        '03:Jump to EnsEMBL' => $self->href($f),
     };
     return $zmenu;
 }
