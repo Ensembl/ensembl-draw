@@ -275,7 +275,7 @@ sub _init {
             #$glyph->{'href'} = $href if $href;
             # DONT DISPLAY IF BUMPING AND BUMP HEIGHT TOO GREAT
             my $H =$self->feature_label( $Composite, $ID, $feature_colour, $START, $END );
-            $Composite->{'zmenu'}->{"SHIFT ($row) ".$tstrand*(1.4*$h+$H) * $row } = '';
+#            $Composite->{'zmenu'}->{"SHIFT ($row) ".$tstrand*(1.4*$h+$H) * $row } = '';
             $Composite->y($Composite->y() - $tstrand*(1.4*$h+$H) * $row) if $row;
             $self->push($Composite);
         }
