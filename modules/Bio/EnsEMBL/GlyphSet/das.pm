@@ -36,15 +36,23 @@ qq[javascript:X=window.open(\'/$ENV{'ENSEMBL_SPECIES'}/externaldas?action=edit&k
 
 
 sub _init {
-    my ($self) = @_;
+   
+####################
+#print "init called ";
+
+ my ($self) = @_;
 
     my $Config          = $self->{'config'};
     ( my $das_name        = (my $das_config_key = $self->das_name() ) ) =~ s/managed_(extdas_)?//g;
     $das_config_key =~ s/^managed_das/das/;
 
+####################
+#print $das_name . "\n " . $das_config_key;
+
     my $strand          = $Config->get($das_config_key, 'str');
 # If strand is 'r' or 'f' then we display everything on one strand (either
 # at the top or at the bottom!
+
 
     return if( $strand eq 'r' && $self->strand() != -1 || $strand eq 'f' && $self->strand() != 1 );
 
@@ -67,11 +75,14 @@ sub _init {
     my $h = $self->{'textheight'};
     
     my @features;
-    #warn ( "DAS-track:". $self->{'extras'}->{'dsn'} );
-    #warn( "KEYS: ".join '', keys(%{$vc->get_all_DASFeatures()||{}}) );
+
+    
     eval{
         @features = grep { $_->das_type_id() !~ /(contig|component|karyotype)/i } @{$vc->get_all_DASFeatures()->{$self->{'extras'}{'dsn'}}||[]};
     };
+
+
+
 #    print STDERR map { "DAS: ". $_->das_dsn. ": ". $_->das_start."-".$_->das_end."|\n"}  @features;
     if($@) {
         print STDERR "----------\n",$@,"---------\n";
@@ -91,12 +102,17 @@ sub _init {
     if($group==1) {
         my %grouped;
         foreach my $f(@features){
+
+	  
             if($f->das_type_id() eq '__ERROR__') {
                 $self->errorTrack( 'Error retrieving '.$self->{'extras'}->{'caption'}.' features ('.$f->id.')' );
                 return;
             }
             next if $strand eq 'b' && ( $f->strand() !=1 && $STRAND==1 || $f->strand() ==1 && $STRAND==-1);
             my $fid = $f->das_id;
+
+#######################
+	  #  print "id " . $fid . "<br>\n";
             next unless $fid;
             $fid  = "G:".$f->das_group_id if $f->das_group_id;
             push @{$grouped{$fid}}, $f;
@@ -123,12 +139,22 @@ sub _init {
             my $start = $features[0]->das_start;    # GET START AND END OF FEATURE....
             my $START = $start < 1 ? 1 : $start;
             my $end   = $features[-1]->das_end;
+
+
+
+
             
             $T += @features;
             $T += @features-1 if $f->das_type_id =~ /(CDS|translation|transcript|exon)/i;
             ### A general list of features we don't want to draw via DAS ###
             # Compute the length of the label...
             my $ID    = $f->das_group_id || $f->das_id;
+
+#############################
+#print "<br> das group id" . $f->das_group_id;
+#print "<br> das id " . $f->das_id ;
+
+
             my $label_length = $labelling * $self->{'textwidth'} * length(" $ID ") * 1.1; # add 10% for scaling text
 
             my $row = $dep > 0 ? $self->bump( $START, $end, $label_length, $dep ) : 0;

@@ -6,7 +6,7 @@ use Bio::EnsEMBL::GlyphSet_transcript_label_vega;
 
 
 sub my_label {
-    return 'Havana trans.';
+    return  'Havana trans.';
 }
 
 sub logic_name {
@@ -15,7 +15,7 @@ return 'havana';
 }
 
 sub zmenu_caption {
-return 'Havana Gene';
+return  'Havana gene';
 }
 
 
