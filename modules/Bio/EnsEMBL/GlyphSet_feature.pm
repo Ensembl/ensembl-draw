@@ -56,23 +56,23 @@ sub href {
 
 sub _init {
     my ($self) = @_;
+
     my $type = $self->check();
     return unless defined $type;
 
-    my $VirtualContig  = $self->{'container'};
+    my $length = $self->{'container'}->length();
     my $Config         = $self->{'config'};
-    my $strand         = $self->strand();
     my $strand_flag    = $Config->get($type, 'str');
-    return if( $strand_flag eq 'r' && $strand != -1 ||
-               $strand_flag eq 'f' && $strand != 1 );
+    return if( $strand_flag eq 'r' && $self->strand() != -1 ||
+               $strand_flag eq 'f' && $self->strand() != 1 );
 
     my $h              = 8;
     my %highlights;
     @highlights{$self->highlights()} = ();
-    my $LEN = $VirtualContig->length;
+
     my @bitmap         = undef;
     my $pix_per_bp     = $Config->transform()->{'scalex'};
-    my $bitmap_length  = int($LEN * $pix_per_bp);
+    my $bitmap_length  = int($length * $pix_per_bp);
     my $feature_colour = $Config->get($type, 'col');
     my $hi_colour      = $Config->get($type, 'hi');
     my %id             = ();
@@ -80,11 +80,13 @@ sub _init {
     my $dep            = $Config->get($type, 'dep');
 
     foreach my $f ( $self->features ){
-        next if( $strand_flag eq 'b' && $strand != $f->strand );
-        next if( $f->start < 1 || $f->end > $LEN );
+        next if( $strand_flag eq 'b' && $self->strand() != $f->strand );
+        next if( $f->start < 1 || $f->end > $length );
+
         $id{$f->id()} = [] unless $id{$f->id()};
         push @{$id{$f->id()}}, $f;
     }
+
 
 ## No features show "empty track line" if option set....
     $self->errorTrack( "No ".$self->my_label." in this region" )
@@ -129,7 +131,7 @@ sub _init {
             );
 
             next if $row > $dep;
-            $Composite->y( $Composite->y() - 1.5 * $row * $h * $strand );
+            $Composite->y( $Composite->y() - 1.5 * $row * $h * $self->strand );
         
             # if we are bumped && on a large contig then draw frames around features....
             $Composite->bordercolour($feature_colour) unless ($small_contig);

@@ -132,9 +132,6 @@ sub _init {
         my $coding_start = $transcript->coding_start() || $transcript->start();
         my $coding_end   = $transcript->coding_end()   || $transcript->end();
 
-	print STDERR "Coding Start = $coding_start, Coding End = $coding_end\n";
-	print STDERR "ContainerEnd = ".$container->length()."\n";
-
         for(my $i = 0; $i < @exons; $i++) {
 	  my $exon = @exons[$i];
 	  my $next_exon = ($i+1 < scalar(@exons)) ? @exons[$i+1] : undef;
@@ -173,9 +170,6 @@ sub _init {
                         'absolutey' => 1,
 		       });
 	      $Composite->push($rect);
-
-
-	      print STDERR "Drawing non-filled exon: boxstart=$box_start; boxend=$box_end\n";
 	    }
 
 
@@ -194,8 +188,6 @@ sub _init {
 
 	    # only draw the coding region if there is such a region
 	    if( $filled_start <= $filled_end ) {
-	      print STDERR "Drawing filled: filled_start=$filled_start; filled_end=$filled_end;\n";
-
 	      #Draw a filled rectangle in the coding region of the exon
 	      my $rect = new Bio::EnsEMBL::Glyph::Rect({
                         'x'         => $filled_start,
