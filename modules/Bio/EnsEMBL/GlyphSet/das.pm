@@ -303,7 +303,7 @@ sub feature_label {
 	    return 0;
         } elsif( uc($self->{'extras'}->{'labelflag'}) eq 'U') {
             my $bp_textwidth = $self->{'textwidth'} * length($ID) * 1.2; # add 10% for scaling text
-            print STDERR "XXX> $ID $self->{'textheight'} XX\n";
+            # print STDERR "XXX> $ID $self->{'textheight'} XX\n";
             my $tglyph = new Bio::EnsEMBL::Glyph::Text({
                'x'          => $start,
                'y'          => $self->{'textheight'} + 2,
