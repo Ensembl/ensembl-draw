@@ -138,11 +138,39 @@ sub new {
     'label_local'  => 'white',
     'label_'       => 'white',
   );
+
+
+  # Allowed values are: 'INTRONIC','UPSTREAM','DOWNSTREAM',
+  #             'SYNONYMOUS_CODING','NON_SYNONYMOUS_CODING','FRAMESHIFT_CODING',
+  #             '5PRIME_UTR','3PRIME_UTR','INTERGENIC'
+  $self->colourSet( 'variation',
+		    'INTRONIC'                  => 'contigblue2',
+		    'UPSTREAM'                  => 'purple1',
+		    'DOWNSTREAM'                => 'purple3',
+		    '5PRIME_UTR'                => 'orange',
+		    '3PRIME_UTR'                => 'dodgerblue4',
+		    'NON_SYNONYMOUS_CODING'     => 'red',
+		    'FRAMESHIFT_CODING'         => 'black',
+		    'SYNONYMOUS_CODING'         => 'chartreuse3',
+		    'INTERGENIC'                => 'contigblue1',
+		    '_'                         => 'gray50',
+		    'labelINTRONIC'             => 'white',
+		    'labelUPSTREAM'             => 'white',
+		    'labelDOWNSTREAM'           => 'white',
+		    'label5PRIME_UTR'           => 'black',
+		    'label3PRIME_UTR'           => 'black',
+		    'labelNON_SYNONYMOUS_CODING'=> 'white',
+		    'labelSYNONYMOUS_CODING'    => 'black',
+		    'labelFRAMESHIFT_CODING'    => 'white',
+		    'labelINTERGENIC'           => 'white',
+		    'label_'                    => 'white',
+		  );
+
   $self->colourSet( 'marker',
-    ''               => 'magenta',
-    'est'            => 'magenta',
-    'microsatellite' => 'plum4',
-  );
+		    ''               => 'magenta',
+		    'est'            => 'magenta',
+		    'microsatellite' => 'plum4',
+		  );
   return $self;
 }
 
