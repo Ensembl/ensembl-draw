@@ -132,6 +132,9 @@ sub _init {
         my $coding_start = $transcript->coding_start() || $transcript->start();
         my $coding_end   = $transcript->coding_end()   || $transcript->end();
 
+	print STDERR "Coding Start = $coding_start, Coding End = $coding_end\n";
+	print STDERR "ContainerEnd = ".$container->length()."\n";
+
         for(my $i = 0; $i < @exons; $i++) {
 	  my $exon = @exons[$i];
 	  my $next_exon = ($i+1 < scalar(@exons)) ? @exons[$i+1] : undef;
@@ -171,40 +174,40 @@ sub _init {
 		       });
 	      $Composite->push($rect);
 
-	      #Calculate the start and end of the "filled" coding region
-	      my $filled_start = $box_start;
-	      if($filled_start < $coding_start) {
-		$filled_start = $coding_start;
-	      }
-	      my $filled_end = $box_end;
-	      if($filled_end > $coding_end) {
-		$filled_end = $coding_end;
-	      }
+
+	      print STDERR "Drawing non-filled exon: boxstart=$box_start; boxend=$box_end\n";
+	    }
+
+
+
+	    #
+	    # Calculate and draw the coding region of the exon
+	    #
+	    my $filled_start = $box_start;
+	    if($filled_start < $coding_start) {
+	      $filled_start = $coding_start;
+	    }
+	    my $filled_end = $box_end;
+	    if($filled_end > $coding_end) {
+	      $filled_end = $coding_end;
+	    }
+
+	    # only draw the coding region if there is such a region
+	    if( $filled_start <= $filled_end ) {
+	      print STDERR "Drawing filled: filled_start=$filled_start; filled_end=$filled_end;\n";
 
 	      #Draw a filled rectangle in the coding region of the exon
-	      $rect = new Bio::EnsEMBL::Glyph::Rect({
+	      my $rect = new Bio::EnsEMBL::Glyph::Rect({
                         'x'         => $filled_start,
                         'y'         => $y,
-                        'width'     => $filled_end - $filled_start,
+                        'width'     => $filled_end - $filled_start + 1,
                         'height'    => $h,
                         'colour'    => $colour,
-                        'absolutey' => 1,
-                    });
-	      $Composite->push($rect);
-	  } else {
-	      #This entire exon is coding, draw it as a filled rectangle
-	      my $rect = new Bio::EnsEMBL::Glyph::Rect({
-                        'x'         => $box_start,
-                        'y'         => $y,
-                        'width'     => $box_end-$box_start,
-                        'height'    => $h,
-                        'colour'    => $colour,
-                        'absolutey' => 1,
-                    });
+                        'absolutey' => 1 });
 	      $Composite->push($rect);
 	    }
-	  }
-	  	  	  
+	  } 
+	    
 	  #we are finished if there is no other exon defined
 	  last unless defined $next_exon;
 
@@ -347,5 +350,4 @@ sub _init {
       }
     }
   }
-
 1;
