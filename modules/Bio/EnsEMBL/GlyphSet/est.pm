@@ -10,6 +10,7 @@ sub features {
     my ($self) = @_;
     return grep { $_->source_tag() eq 'est' }
         $self->{'container'}->get_all_ExternalFeatures($self->glob_bp);
+    
 }
 
 sub href {
