@@ -124,7 +124,7 @@ TRANSCRIPT:
                 if( $Config->{'_href_only'} eq '#tid' ) {
                     $Composite->{'href'} = qq(#$tid);
                 } elsif ($tid !~ /$PREFIX/o){
-		    $Composite->{'href'} = $type=~/seudo/ ? undef : qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?db=sanger&gene=$vgid);
+		    $Composite->{'href'} = qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?db=sanger&gene=$vgid);
 		    $gene_label ||= $vgid;
 			my %zmenu = (
                             'caption'           => "Sanger Gene",

@@ -91,7 +91,8 @@ sub _init {
                 'colour'    => $gene_col,
                 'ext_DB'    => $g->{'db'},
                 'high'      => $high,
-                'type'      => $g->{'type'}
+                'type'      => $g->{'type'},
+		'sanger'    => 'true'
             };
 	}
     }
@@ -174,12 +175,18 @@ sub _init {
 		if($show_navigation) {
 			$rect->{'zmenu'} = {
 				'caption' 											=> $g->{'label'},
-				"bp: $g->{'chr_start'}-$g->{'chr_end'}" 			=> '',
-				"length: ".($g->{'chr_end'}-$g->{'chr_start'}+1) 	=> ''
+				"04:bp: $g->{'chr_start'}-$g->{'chr_end'}" 			=> '',
+				"05:length: ".($g->{'chr_end'}-$g->{'chr_start'}+1) 	=> ''
 			}; 
             if( $g->{'ens_ID'} ne '' ) {
-    			$rect->{'zmenu'}->{"Gene: $g->{'ens_ID'}"} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$g->{'ens_ID'}"; 
+    			$rect->{'zmenu'}->{"02:Gene: $g->{'ens_ID'}"} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$g->{'ens_ID'}"; 
                 $rect->{'href'} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$g->{'ens_ID'}" ;
+ 	    }
+            if( $g->{'sanger'} eq 'true' ) {
+   $rect->{'zmenu'}->{"02:Sanger Gene: $g->{'label'}"} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?db=sanger&gene=$g->{'label'}"; 
+            my $T = $g->{'type'}; $T =~ s/HUMACE-//g;
+			$rect->{'zmenu'}->{"03:Type: $T"} = "";
+                $rect->{'href'} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?db=sanger&gene=$g->{'label'}" ;
             }
 		}
     

@@ -104,6 +104,7 @@ sub _init {
                 'colour'    => $gene_col,
                 'ext_DB'    => $g->{'db'},
                 'high'      => $high,
+		'sanger'    => 'true',
                 'type'      => $g->{'type'}
             };
         }
@@ -203,6 +204,13 @@ sub _init {
     			$tglyph->{'zmenu'}->{"Gene: $g->{'ens_ID'}"} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$g->{'ens_ID'}"; 
                 $tglyph->{'href'} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$g->{'ens_ID'}" ;
             }
+if( $g->{'sanger'} eq 'true' ) {
+    $tglyph->{'zmenu'}->{"02:Sanger Gene: $g->{'label'}"} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?db=sanger&gene=$g->{'label'}";       
+    my $T = $g->{'type'}; $T =~ s/HUMACE-//g;
+    $tglyph->{'zmenu'}->{"03:Type: $T"} = "";
+    $tglyph->{'href'} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?db=sanger&gene=$g->{'label'}" ;
+}
+
 		}
 		
         my $depth = $Config->get('gene_label_lite', 'dep');
