@@ -40,7 +40,7 @@ sub features {
         my $f = shift;
      #  return if (exists $SEGMENTS{$f->segment->ref().".".$f->segment->version()} );
         $SEGMENTS{$f->segment->ref().".".$f->segment->version()}++;
-        warn "\nSTORE: ", $f->segment->ref().".".$f->segment->version(), "\n";
+       # warn "\nSTORE: ", $f->segment->ref().".".$f->segment->version(), "\n";
     };
 
 
