@@ -46,6 +46,12 @@ sub href {
 
 }
 
+sub genes {
+  my ($self) = @_;
+
+  return $self->{'container'}->get_Genes_by_type('genewise');
+}
+
 sub zmenu {
     my ($self, $gene, $transcript) = @_;
     my $vtid = $transcript->stable_id();

@@ -47,9 +47,7 @@ sub text_label {
   return undef;
 }
 
-#
-# Returns the type of transcript this is as a string
-#
+
 sub features {  
   my $self = shift;
 
@@ -57,15 +55,25 @@ sub features {
   return []; 
 }
 
+
+sub genes {
+  my $self = shift;
+
+  $self->throw("genes not implemented by subclass of Glyphset_transcript\n");
+}
+
+
 sub transcript_type {
   my $self = shift;
 
  # Implemented by subclass 
- $self->throw("transcript_type not implemented by subclass of Glyphset_transcript\n");
+
 }
   
 sub _init {
     my ($self) = @_;
+
+    print STDERR "IN GlypSet_transcript->_init\n";
 
     my $type = $self->check();
     return unless defined $type;
@@ -88,19 +96,20 @@ sub _init {
     my $pix_per_bp    = $Config->transform->{'scalex'};
     my $bitmap_length = int($Config->container_width() * $pix_per_bp);
  
-    # Get all the genes on this slice
-    my @genes = 
-      $container->get_Genes_by_type($self->transcript_type()); 
-    my $strand  = $self->strand();
+    ($type) = reverse(split('::', ref( $self )));
+    print STDERR "DRAWING TRANSCRIPTS FOR: $type\n";
 
+
+    my $strand  = $self->strand();
     my $transcript_drawn = 0;
     
-    foreach my $gene (@genes) {
+    foreach my $gene ($self->genes()) {
+      print STDERR "DRAWING TRANSCRIPTS FOR GENE: ".$gene->stable_id()."\n";
       # For alternate splicing diagram only draw transcripts in gene
       next if $target_gene && ($gene->stable_id() ne $target_gene);
 
       foreach my $transcript ($gene->get_all_Transcripts()) {
-	print STDERR "DRAWING TRANSCRIPT: $transcript->stable_id()\n";
+	print STDERR "DRAWING TRANSCRIPT:".$transcript->stable_id()."\n";
 
 	my @exons = $transcript->get_all_Exons();
 	# Skip if no exons for this transcript

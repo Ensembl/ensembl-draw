@@ -389,6 +389,8 @@ sub check {
     my( $self ) = @_;
     my ($feature_name) = reverse split '::', ref($self) ;
 
+    #print STDERR "Checking feature name : $feature_name\n";
+
     return $self->{'config'}->is_available_artefact( $feature_name ) ? 
       $feature_name :
       undef()       ;

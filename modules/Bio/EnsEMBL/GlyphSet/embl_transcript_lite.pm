@@ -22,10 +22,10 @@ sub colours {
     };
 }
 
-sub transcript_type {
+sub genes {
   my ($self) = @_;
 
-  return 'embl';
+  return $self->{'container'}->get_Genes_by_type('embl');
 }
 
 

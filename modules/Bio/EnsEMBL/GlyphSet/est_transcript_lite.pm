@@ -18,12 +18,6 @@ sub colours {
     };
 }
 
-sub transcript_type {
-  my $self = shift;
-
-  return 'est';
-}
-
 sub colour {
     my ($self, $gene, $transcript, $colours, %highlights) = @_;
     return (  $colours->{$transcript->type()} );
@@ -58,6 +52,12 @@ sub zmenu {
   }
 
 sub text_label { return ''; }
+
+sub genes {
+  my ($self) = @_;
+
+  return $self->{'container'}->get_Genes_by_type('est');
+}
 
 sub legend {
     my ($self, $colours) = @_;

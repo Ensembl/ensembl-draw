@@ -72,6 +72,13 @@ sub text_label {
     return $transcript->stable_id();
 }
 
+sub genes {
+  my ($self) = @_;
+
+  return $self->{'container'}->get_Genes_by_type('sanger');
+}
+
+
 sub legend {
     my ($self, $colours) = @_;
     return ('sanger_genes', 1000,

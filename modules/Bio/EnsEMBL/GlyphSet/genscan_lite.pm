@@ -2,6 +2,8 @@ package Bio::EnsEMBL::GlyphSet::genscan_lite;
 use strict;
 use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet_transcript;
+use Bio::EnsEMBL::Gene;
+
 @ISA = qw(Bio::EnsEMBL::GlyphSet_transcript);
 
 sub my_label {
@@ -17,10 +19,25 @@ sub colours {
         'col'              => $Config->get('genscan_lite','col')
     };
 }
-sub trascript_type {
+
+sub genes {
   my $self = shift;
 
-  return 'genscan';
+  my @transcripts = ();
+  my @genes = ();
+
+  #obtain genscan transcripts
+
+  #wrap each transcript in a gene object
+  foreach my $transcript (@transcripts) {
+    my $gene = new Bio::Ensembl::Gene();
+
+    $gene->add_Transcript($transcript);
+    
+    push @genes, $gene;
+  }
+
+  return @genes;
 }
 
 sub colour {

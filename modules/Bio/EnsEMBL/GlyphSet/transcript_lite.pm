@@ -22,11 +22,12 @@ sub colours {
     };
 }
 
-sub transcript_type {
-  my $self = shift;
-  
-  return 'ensembl';
+sub genes {
+  my ($self) = @_;
+
+  return $self->{'container'}->get_Genes_by_type('ensembl');
 }
+
 
 sub colour {
     my ($self, $gene, $transcript, $colours, %highlights) = @_;
