@@ -132,7 +132,6 @@ sub _init {
                 my $f = $_->[1];
                 $start = $f->hstart() if $f->hstart < $start;
                 $end   = $f->hend()   if $f->hend   > $end;
-                warn "@{[int($_->[0] * $pix_per_bp)]} == @{[int( $X * $pix_per_bp )]}";
 
                 next if int($f->end * $pix_per_bp) <= int( $X * $pix_per_bp );
                 $C++;
