@@ -101,7 +101,6 @@ sub _init {
         my $BLOCK = 0;
         foreach my $i (keys %id){
             my @F = sort { $a->[0] <=> $b->[0] } @{$id{$i}};
-          warn "$i - @{[$F[0][1]->hstrand]} @{[$F[0][1]->strand]}";
             $T+=@F; ## Diagnostic report....
             my( $seqregion,$group) = split /:/, $i;
             my $START = $F[0][0] < 1 ? 1 : $F[0][0];
