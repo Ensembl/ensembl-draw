@@ -64,7 +64,8 @@ sub new {
             my $GlyphSet;
             eval { $GlyphSet = new $classname($Container, $Config, $highlights); };
             if($@) {
-               print STDERR "GLYPHSET $classname failed\n";
+               print STDERR "GLYPHSET $classname failed:\n";
+	       print STDERR $@ . "\n";
             } else {
                ########## load everything from the database
                ########## don't waste any more time on this row if there's nothing in it

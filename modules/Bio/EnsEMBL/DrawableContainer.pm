@@ -65,7 +65,8 @@ sub new {
                     $GlyphSet = new $classname($Container, $Config, $highlights, $strand);
                 };
                 if($@) {
-                    print STDERR "GLYPHSET $classname failed\n";
+                    print STDERR "GLYPHSET $classname failed:\n";
+		    print STDERR "$@\n";
                 } else {
                     $tmp_glyphset_store->{$Config->get($row, 'pos')} = $GlyphSet;
                 }

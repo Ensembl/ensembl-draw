@@ -81,7 +81,7 @@ sub _init {
 	my $show_navigation =  $navigation eq 'on' && ( $vc->length() < $max_length_nav * 1001 );
     
 #First of all let us deal with all the EnsEMBL genes....
-	my $vc_start = $vc->_global_start();
+    my $vc_start = $vc->chr_start();
     my @genes = ();
 
         my $res = $vc->get_all_SangerGenes_startend_lite(); 
