@@ -292,8 +292,10 @@ sub _init {
         $Composite->colour($hilight) if(defined $hilight && !defined $target);
         $self->push($Composite);
         
-        if($target) {        
-	  if($transcript->strand() == 1) {
+        if($target) {     
+	  # check the strand of one of the transcript's exons
+	  my ($trans_exon) = $transcript->get_all_Exons();
+	  if($trans_exon->strand() == 1) {
 	    my $clip1 = new Bio::EnsEMBL::Glyph::Line({
                    'x'         => 1,
                    'y'         => -4,
