@@ -33,7 +33,7 @@ sub _init {
     return unless $Config->container_width()>0; # The container has zero width !!EXIT!!
     
     my $col    = undef;
-    my $cmap   = $self->colourmap();
+    my $cmap   = $Config->colourmap();
     my $white  = $cmap->id_by_name('white');
     my $black  = $cmap->id_by_name('black');
     my $bg     = $Config->get('_settings','bgcolor');
