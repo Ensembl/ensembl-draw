@@ -111,6 +111,7 @@ sub _getHref {
     my $X = $glyph->$_;
     $actions{$_} = $X if defined $X;
   }   
+  $actions{'title'} = $glyph->alt if defined $glyph->alt;
   if($self->{'show_zmenus'}==1) {
     my $zmenu = $glyph->zmenu();
     if(defined $zmenu && (ref($zmenu) eq '' || ref($zmenu) eq 'HASH' && keys(%$zmenu)>0) ) {
