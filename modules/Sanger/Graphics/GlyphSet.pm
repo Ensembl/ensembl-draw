@@ -58,7 +58,7 @@ sub glob_bp {
 
 sub join_tag {
     my( $self, $glyph, $tag, $x_pos, $y_pos, $col ) = @_;
-    push @{$self->{'tags'}{$tag}}, { 'glyph' => $glyph, 'x' => $x_pos, 'y' => $y_pos, 'col'
+    CORE::push @{$self->{'tags'}{$tag}}, { 'glyph' => $glyph, 'x' => $x_pos, 'y' => $y_pos, 'col'
 => $col };
 }
 
@@ -223,7 +223,7 @@ sub errorTrack {
     my $red      = $self->{'config'}->colourmap()->id_by_name('red');
     my ($w2,$h2) = $self->{'config'}->texthelper()->real_px2bp('Small');
     $self->push( new Sanger::Graphics::Glyph::Text({
-    	'x'         => int( ($length - $w * length($message))/2 ),
+    	'x'         => int( ($length - $w * CORE::length($message))/2 ),
         'y'         => int( ($h2-$h)/2 ),
     	'height'    => $h2,
         'font'      => 'Tiny',
