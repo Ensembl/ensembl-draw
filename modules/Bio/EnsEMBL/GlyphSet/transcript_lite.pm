@@ -91,8 +91,9 @@ sub text_label {
     if( $self->{'config'}->{'_both_names_'} eq 'yes') {
         return $tid.(($transcript->external_name() eq '') ? '' : " ($id)" );
     }
+
     return $self->{'config'}->{'_transcript_names_'} eq 'yes' ?
-        ($gene->type() eq 'unknown' ? 'NOVEL' : $id) : $tid;    
+        ($transcript->is_known() ? $id : 'NOVEL') : $tid;    
   }
 
 sub legend {

@@ -182,11 +182,11 @@ sub _init {
 	$gene_col = $ext_col;
       }
 
-      print STDERR "Creating Sanger Gene of type $type, color=$gene_col\n";
+      print STDERR "Creating EMBL Gene of type $type, color=$gene_col\n";
 
       push @genes, {
-		'chr_start' => $g->start + vc->chr_start() - 1,
-                'chr_end'   => $g->end + vc->chr_start() - 1,
+		'chr_start' => $g->start + $vc->chr_start() - 1,
+                'chr_end'   => $g->end + $vc->chr_start() - 1,
                 'start'     => $g->start(),
                 'strand'    => $g->strand(),
                 'end'       => $g->end(),
