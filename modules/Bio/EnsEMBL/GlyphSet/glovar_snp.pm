@@ -39,7 +39,7 @@ use Bio::EnsEMBL::GlyphSet::snp_lite;
 
 =cut
 
-sub my_label { return "Glovar SNPs"; }
+sub my_label { return "SNPs"; }
 
 =head2 features
 
