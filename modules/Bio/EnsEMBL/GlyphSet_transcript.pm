@@ -189,7 +189,7 @@ sub _init {
 	    # only draw the coding region if there is such a region
 	    if( $filled_start <= $filled_end ) {
 	      #Draw a filled rectangle in the coding region of the exon
-	      my $rect = new Bio::EnsEMBL::Glyph::Rect({
+ 	      my $rect = new Bio::EnsEMBL::Glyph::Rect({
                         'x'         => $filled_start,
                         'y'         => $y,
                         'width'     => $filled_end - $filled_start + 1,
