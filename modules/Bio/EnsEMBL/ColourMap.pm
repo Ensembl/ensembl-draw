@@ -162,7 +162,7 @@ sub new {
 		    'labelNON_SYNONYMOUS_CODING'=> 'white',
 		    'labelFRAMESHIFT_CODING'    => 'white',
 		    'labelSYNONYMOUS_CODING'    => 'white',
-		    'labelINTERGENIC'           => 'black',
+		    'labelINTERGENIC'           => 'white',
 		    'label_'                    => 'white',
 		  );
 
