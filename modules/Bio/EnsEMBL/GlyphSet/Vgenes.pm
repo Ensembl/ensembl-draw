@@ -46,7 +46,6 @@ sub _init {
 	my $Hscale_factor = $known_genes->{'_biggest_value'} / $genes->{'_biggest_value'};
    	$known_genes->scale_to_fit( $Config->get( 'Vgenes', 'width' ) * $Hscale_factor );	
 	$known_genes->stretch(0);
-        warn( "XX: $known_genes->{'_biggest_value'} - $genes->{'_biggest_value'} - $xref_genes->{'_biggest_value'} :XX");
 	$Hscale_factor = $xref_genes->{'_biggest_value'} / $genes->{'_biggest_value'};
    	$xref_genes->scale_to_fit( $Config->get( 'Vgenes', 'width' ) * $Hscale_factor );	
 	$xref_genes->stretch(0);
