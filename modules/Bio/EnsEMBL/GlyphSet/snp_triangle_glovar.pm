@@ -68,7 +68,7 @@ sub zmenu {
         $pos = "$chr_start&nbsp;-&nbsp;$chr_end";
     }
     my %zmenu = ( 
-        'caption'           => "SNP: ".$f->id(),
+        'caption'           => "SNP: " . ($f->snpid || $f->id),
         '01:SNP properties' => $self->href( $f ),
         "02:bp: $pos" => '',
         "03:class: ".$f->snpclass => '',
