@@ -12,19 +12,14 @@ sub features {
 $self->{'container'}->get_all_SimilarityFeatures_by_strand("human_ensembl_120",1,$self->glob_bp,$self->strand());
 }
 
+sub href {
+    my ( $self, $id ) = @_;
+    return $self->{'config'}->{'ext_url'}->get_url( 'HUMAN_CONTIGVIEW', $id );
+}
+
 sub zmenu {
     my ($self, $id ) = @_;
-    #$id =~ s/(.*)\.\d+/$1/o;
-    #marie - uses local bioperl db to serve up protein homology
-    my $biodb = 'ensembl_nov_pep'; #specify db name here - corresponds to bioperl_db, biodatabases table
-    
-    my $contig_id = $id;
-    $id =~ s/(\w+)\.\S+/$1/g;
-    
-    return {
-        'caption' => "$contig_id",
-            "Human homologous sequence" =>"http://www.ensembl.org/Homo_sapiens/seqentryview?seqentry=$id&contigid=$contig_id",
-
-    };
+    return { 'caption' => "$id", "Human homologous sequence" => $self->href( $id ) };
 }
-;
+
+1;
