@@ -30,8 +30,11 @@ sub init_label {
 #  my $URL = $self->das_name =~ /^managed_extdas_(.*)$/ ? qq(javascript:X=window.open(\'/@{[$self->{container}{_config_file_name_}]}/externaldas?action=edit&key=$1\',\'dassources\',\'height=500,width=500,left=50,screenX=50,top=50,screenY=50,resizable,scrollbars=yes\');X.focus();void(0)) :  qq(javascript:X=window.open(\'$helplink\',\'helpview\',\'height=400,width=500,left=100,screenX=100,top=100,screenY=100,resizable,scrollbars=yes\');X.focus();void(0)) ;
 
   my $URL = $self->das_name =~ /^managed_extdas_(.*)$/ ? qq(javascript:X=window.open(\'/@{[$self->{container}{_config_file_name_}]}/dasconfview?_das_edit=$1&conf_script=$script&conf_script_params=$params\',\'dassources\',\'height=500,width=500,left=50,screenX=50,top=50,screenY=50,resizable,scrollbars=yes\');X.focus();void(0)) :  qq(javascript:X=window.open(\'$helplink\',\'helpview\',\'height=400,width=500,left=100,screenX=100,top=100,screenY=100,resizable,scrollbars=yes\');X.focus();void(0)) ;
-																																	  
-  my $track_label = $self->{'extras'}->{'caption'} || $self->{'extras'}->{'label'} || $self->{'extras'}->{'name'};
+						
+
+												   
+
+  my $track_label = $self->{'extras'}->{'label'} || $self->{'extras'}->{'caption'} || $self->{'extras'}->{'name'};
   $track_label =~ s/^(managed_|managed_extdas)//;
 
   $self->label( new Sanger::Graphics::Glyph::Text({
