@@ -12,6 +12,10 @@ use vars qw(@ISA $AUTOLOAD);
 #
 sub new {
     my $class = shift;
+    if(!$class) {
+    warn( "EnsEMBL::GlyphSet called with undefined class" );
+    return undef;
+    }
     my $self = $class->SUPER::new( @_ );
        $self->{'bumpbutton'} = undef;
     return $self;
@@ -71,6 +75,11 @@ sub draw_cigar_feature {
   my( $self, $Composite, $f, $h, $feature_colour, $delete_colour, $pix_per_bp ) = @_;
 ## Find the 5' end of the feature.. (start if on forward strand of forward feature....)
   #return unless $f;
+  my $Q = ref($f); $Q="$Q";
+    if($Q eq '') { warn("DRAWINGCODE_CIGAR < $f > ",$self->label->text," not a feature!"); }
+    if($Q eq 'SCALAR') { warn("DRAWINGCODE_CIGAR << ",$$f," >> ",$self->label->text," not a feature!"); }
+    if($Q eq 'HASH') { warn("DRAWINGCODE_CIGAR { ",join( "; ", keys %$f)," }  ",$self->label->text," not a feature!"); }
+    if($Q eq 'ARRAY') { warn("DRAWINGCODE_CIGAR [ ", join( "; ", @$f ), " ] ",$self->label->text," not a feature!"); }
   my $S = (my $O = $self->strand ) == 1 ? $f->start : $f->end;
   my $length = $self->{'container'}->length;
 
