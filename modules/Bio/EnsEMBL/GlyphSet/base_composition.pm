@@ -30,9 +30,11 @@ sub zmenu {
     my $i = 10;
     foreach (@c) {
 	$zmenu{"$i:".$_->[0].": ".$_->[1]." (".int(100*$_->[1]/$total)."%)"} = '' if $_->[1];
+        $i++;
     }
-    foreach (qw(unknown Caucasian Asian African-American)) {
-        $zmenu{"20:$_: ".$f->ethnicity->{$_}} = '';
+    foreach (qw(Caucasian Asian African-American unknown)) {
+        $zmenu{"$i:$_: ".$f->ethnicity->{$_}} = '' if $f->ethnicity->{$_};
+        $i++;
     }
     return \%zmenu;
 }
