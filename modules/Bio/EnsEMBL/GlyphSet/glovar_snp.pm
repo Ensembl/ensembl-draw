@@ -1,10 +1,56 @@
+=head1 NAME
+
+Bio::EnsEMBL::GlyphSet::glovar_snp -
+Glyphset to diplay SNPs from Glovar
+
+=head1 DESCRIPTION
+
+Displays SNPs that are stored in a Glovar database
+
+=head1 LICENCE
+
+This code is distributed under an Apache style licence:
+Please see http://www.ensembl.org/code_licence.html for details
+
+=head1 AUTHOR
+
+Patrick Meidl <pm2@sanger.ac.uk>
+
+=head1 CONTACT
+
+Post questions to the EnsEMBL development list ensembl-dev@ebi.ac.uk
+
+=cut
+
 package Bio::EnsEMBL::GlyphSet::glovar_snp;
 use strict;
 use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet::snp_lite;
 @ISA = qw(Bio::EnsEMBL::GlyphSet::snp_lite);
 
+=head2 my_label
+
+  Arg[1]      : none
+  Example     : my $label = $self->my_label;
+  Description : returns the label for the track (displayed track name)
+  Return type : String - track label
+  Exceptions  : none
+  Caller      : $self->init_label()
+
+=cut
+
 sub my_label { return "Glovar SNPs"; }
+
+=head2 features
+
+  Arg[1]      : none 
+  Example     : my $f = $self->features;
+  Description : this function does the data fetching from the Glovar database
+  Return type : listref of Bio::EnsEMBL::SNP objects
+  Exceptions  : none
+  Caller      : $self->_init()
+
+=cut
 
 sub features {
     my $self = shift;
@@ -23,6 +69,18 @@ sub features {
     return \@snps;
 }
 
+=head2 colour
+
+  Arg[1]      : a Bio::EnsEMBL::SNP object
+  Example     : my $colour = $self->colour($f);
+  Description : sets the colour for displaying SNPs. They are coloured
+                according to their position on genes
+  Return type : list of colour settings
+  Exceptions  : none
+  Caller      : $self->_init()
+
+=cut
+
 sub colour {
     my ($self, $f) = @_;
     my $T = $f->type->[0];
@@ -39,6 +97,18 @@ sub colour {
     }
     return( $self->{'colours'}{"_$T"}, $self->{'colours'}{"label_$T"}, $f->{'_range_type'} eq 'between' ? 'invisible' : '' );
 }
+
+=head2 zmenu
+
+  Arg[1]      : a Bio::EnsEMBL::SNP object
+  Example     : my $zmenu = $self->zmenu($f);
+  Description : creates the zmenu (context menu) for the glyphset. Returns a
+                hashref describing the zmenu entries and properties
+  Return type : hashref
+  Exceptions  : none
+  Caller      : $self->_init()
+
+=cut
 
 sub zmenu {
     my ($self, $f ) = @_;

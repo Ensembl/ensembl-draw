@@ -1,17 +1,78 @@
+=head1 NAME
+
+Bio::EnsEMBL::GlyphSet::base_composition -
+Glyphset to display base composition and ethnicities of variations
+
+=head1 DESCRIPTION
+
+This glyphset draws 2 sets of histograms giving you detailed information about
+genomic variations. The upper histograms show alleles found, the lower one the
+ethnicities of the reads involved. The zmenu holds additional information on
+frequencies. All data are retrieved from the Glovar database.
+
+=head1 LICENCE
+
+This code is distributed under an Apache style licence:
+Please see http://www.ensembl.org/code_licence.html for details
+
+=head1 AUTHOR
+
+Patrick Meidl <pm2@sanger.ac.uk>
+
+=head1 CONTACT
+
+Post questions to the EnsEMBL development list ensembl-dev@ebi.ac.uk
+
+=cut
+
 package Bio::EnsEMBL::GlyphSet::base_composition;
 use strict;
 use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet_simple;
 @ISA = qw(Bio::EnsEMBL::GlyphSet_simple);
 
+=head2 my_label
+
+  Arg[1]      : none
+  Example     : my $label = $self->my_label;
+  Description : returns the label for the track (displayed track name)
+  Return type : String - track label
+  Exceptions  : none
+  Caller      : $self->init_label()
+
+=cut
+
 sub my_label { return "Base Composition"};
+
+=head2 features
+
+  Arg[1]      : none 
+  Example     : my $f = $self->features;
+  Description : this function does the data fetching from the Glovar database
+  Return type : listref of Bio::EnsEMBL::ExternalData::Glovar::BaseComposition
+                objects
+  Exceptions  : none
+  Caller      : $self->_init()
+
+=cut
 
 sub features {
     my $self = shift;
     my @bases = @{$self->{'container'}->get_all_ExternalLiteFeatures('GlovarBaseComp')};
-    # warn map { "(@{[$_->start]},@{[$_->end]})" } @bases;
     return \@bases;
 }
+
+=head2 zmenu
+
+  Arg[1]      : a Bio::EnsEMBL::ExternalData::Glovar::BaseComposition object
+  Example     : my $zmenu = $self->zmenu($feature);
+  Description : creates the zmenu (context menu) for the glyphset. Returns a
+                hashref describing the zmenu entries and properties
+  Return type : hashref
+  Exceptions  : none
+  Caller      : $self->_init()
+
+=cut
 
 sub zmenu {
     my ($self, $f ) = @_;
@@ -38,6 +99,18 @@ sub zmenu {
     }
     return \%zmenu;
 }
+
+=head2 _init
+
+  Arg[1]      : none
+  Example     : 
+  Description : main function of the glyphset. Gets the data, reads the config
+                and puts everything together for render() to draw it
+  Return type : none
+  Exceptions  : none
+  Caller      : Sanger::Graphics::DrawableContainer::new()
+
+=cut
 
 sub _init {
     my ($self) = @_;
