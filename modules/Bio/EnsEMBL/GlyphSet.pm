@@ -70,6 +70,7 @@ sub zoom_zmenu {
 sub draw_cigar_feature {
   my( $self, $Composite, $f, $h, $feature_colour, $delete_colour, $pix_per_bp ) = @_;
 ## Find the 5' end of the feature.. (start if on forward strand of forward feature....)
+  #return unless $f;
   my $S = (my $O = $self->strand ) == 1 ? $f->start : $f->end;
   my $length = $self->{'container'}->length;
 
