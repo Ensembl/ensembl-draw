@@ -149,8 +149,8 @@ sub _init {
 			# we have a normal Ensembl transcript...
         	$Composite->{'zmenu'}  = {
             	'caption'					   => $id,
-            	"00:Transcript:$tid"   			=> "",
-            	"01:(Gene: $vgid)"     			=> "",
+            	"00:Transcr:$tid"   		   => "",
+            	"01:(Gene:$vgid)"     		   => "",
              	'02:Transcript information'    => "/perl/geneview?gene=$vgid",
            		'03:Protein information'       => "/perl/protview?peptide=$pid",
             	'04:Supporting evidence'       => "/perl/transview?transcript=$tid",
