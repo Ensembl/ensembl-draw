@@ -114,10 +114,10 @@ sub _init {
                     'Sanger curated novel Trans'    => $sanger_colours->{'Novel_Transcript'},
                     'Sanger curated pseudogenes'    => $sanger_colours->{'Pseudogene'}
                 ]
-            }  if(@$res>0);
+            }  if(@res>0);
         } 
 
-    my @res = $vc->get_Genes_by_source( "core" ));
+    my @res = $vc->get_Genes_by_source( "core" );
     print STDERR ("Called get Genes in gene_lite.pm\n" );
 
     for my $gene (@res) {
