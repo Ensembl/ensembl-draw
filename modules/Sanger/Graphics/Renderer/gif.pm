@@ -7,32 +7,29 @@ use vars qw(@ISA);
 
 sub init_canvas {
     my ($self, $config, $im_width, $im_height) = @_;
-    my $canvas = new GD::Image($im_width, $im_height);
-    $canvas->colorAllocate($config->colourmap()->rgb_by_id($config->bgcolor()));
+    $self->{'im_width'} = $im_width;
+    $self->{'im_height'} = $im_height;
+    my $canvas = GD::Image->new($im_width, $im_height);
+    $canvas->colorAllocate($config->colourmap->rgb_by_name($config->bgcolor()));
     $self->canvas($canvas);
 }
 
 sub add_canvas_frame {
     my ($self, $config, $im_width, $im_height) = @_;
 	
-	return if (defined $config->{'no_image_frame'});
+    return if (defined $config->{'no_image_frame'});
 	
-	# default image frame colour
-	my $imageframecol = $config->colourmap()->id_by_name('black');
+    # custom || default image frame colour
+    my $imageframecol = $config->{'image_frame_colour'} || 'black';
 	
-	# custom image frame colour
-	if (defined $config->{'image_frame_colour'}){
-		$imageframecol = $config->colourmap()->id_by_name($config->{'image_frame_colour'});
-	}
     my $framecolour = $self->colour($imageframecol);
 
-	# for contigview bottom box we need an extra thick border...
-	if ($config->script() eq "contigviewbottom"){		
+    # for contigview bottom box we need an extra thick border...
+    if ($config->script() eq "contigviewbottom"){		
     	$self->{'canvas'}->rectangle(1, 1, $im_width-2, $im_height-2, $framecolour);		
-	}
+    }
 	
     $self->{'canvas'}->rectangle(0, 0, $im_width-1, $im_height-1, $framecolour);
-	
 }
 
 sub canvas {
@@ -50,12 +47,11 @@ sub canvas {
 # 
 sub colour {
     my ($self, $id) = @_;
-    $id ||= $self->{'colourmap'}->id_by_name("black");
-    my $colour = $self->{'_GDColourCache'}->{$id} || $self->{'canvas'}->colorAllocate($self->{'colourmap'}->rgb_by_id($id));
+    $id ||= "black";
+    my $colour = $self->{'_GDColourCache'}->{$id} || $self->{'canvas'}->colorAllocate($self->{'colourmap'}->rgb_by_name($id));
     $self->{'_GDColourCache'}->{$id} = $colour;
     return $colour;
 }
-
 
 sub render_Rect {
     my ($self, $glyph) = @_;
@@ -64,16 +60,15 @@ sub render_Rect {
 
     my $gcolour       = $glyph->colour();
     my $gbordercolour = $glyph->bordercolour();
-	# (avc)
-	# this is a no-op to let us define transparent glyphs
-	# and which can still have an imagemap area BUT make
-	# sure it is smaller than the carrent largest glyph in
-	# this glyphset because its height is not recorded!
-	if ($gcolour eq 'transparent'){
-		return;
-	}
-
-#    print STDERR "RECT: (",$glyph->pixelx(),",",$glyph->pixely(),",",$glyph->pixelwidth(),",",$glyph->pixelheight(),")\n      (",$glyph->x(),",",$glyph->y(),",",$glyph->width(),",",$glyph->height(),")\n";
+    # (avc)
+    # this is a no-op to let us define transparent glyphs
+    # and which can still have an imagemap area BUT make
+    # sure it is smaller than the carrent largest glyph in
+    # this glyphset because its height is not recorded!
+    if (defined $gcolour && $gcolour eq 'transparent'){
+      return;
+    }
+    
     my $bordercolour  = $self->colour($gbordercolour);
     my $colour        = $self->colour($gcolour);
 
@@ -85,8 +80,6 @@ sub render_Rect {
     $canvas->filledRectangle($x1, $y1, $x2, $y2, $colour) if(defined $gcolour);
     $canvas->rectangle($x1, $y1, $x2, $y2, $bordercolour) if(defined $gbordercolour);
 	
-	#print STDERR qq(gif $glyph: $x1, $y1, $x2, $y2\n) if(ref($glyph) eq "Sanger::Graphics::Glyph::Composite");
-
 }
 
 sub render_Text {
@@ -98,7 +91,6 @@ sub render_Text {
     # BAH! HORRIBLE STINKY STUFF!
     # I'd take GD voodoo calls any day
     #
-#    print STDERR "TEXT: (",$glyph->pixelx(),",",$glyph->pixely(),") (",$glyph->x(),",",$glyph->y(),") ",$glyph->text(),"\n";
     if($glyph->font() eq "Tiny") {
         $self->{'canvas'}->string(gdTinyFont, $glyph->pixelx(), $glyph->pixely(), $glyph->text(), $colour);
 
@@ -117,7 +109,58 @@ sub render_Text {
 
 }
 
+#      $image->arc($cx,$cy,$width,$height,$start,$end,$color)
+#      This draws arcs and ellipses.  (cx,cy) are the center of the arc, and
+#      (width,height) specify the width and height, respectively.  The portion
+#      of the ellipse covered by the arc are controlled by start and end, both
+#      of which are given in degrees from 0 to 360.  Zero is at the top of the
+#      ellipse, and angles increase clockwise.  To specify a complete ellipse,
+#      use 0 and 360 as the starting and ending angles.  To draw a circle, use
+#      the same value for width and height.
+#
+#      You can specify a normal color or one of the special colors gdBrushed,
+#      gdStyled, or gdStyledBrushed.
+#
+#      Example:
+#
+#              # draw a semicircle centered at 100,100
+#              $myImage->arc(100,100,50,50,0,180,$blue);
+#              # Draw a blue oval
+#              # $im->arc(50,50,95,75,0,360,$blue);
+#
+#      $image->fill($x,$y,$color)
+#      This method flood-fills regions with the specified color.  The color
+#      will spread through the image, starting at point (x,y), until it is
+#      stopped by a pixel of a different color from the starting pixel (this
+#      is similar to the "paintbucket" in many popular drawing toys).  You can
+#      specify a normal color, or the special color gdTiled, to flood-fill
+#      with patterns.
+#
+#      Example:
+#
+#              # Draw a rectangle, and then make its interior blue
+#              $myImage->rectangle(10,10,100,100,$black);
+#              $myImage->fill(50,50,$blue);
+
 sub render_Circle {
+  my ($self, $glyph) = @_;
+
+  my $canvas         = $self->{'canvas'};
+  my $gcolour        = $glyph->colour();
+  my $colour         = $self->colour($gcolour);
+  my $filled         = $glyph->filled();
+  my ($cx, $cy)      = $glyph->pixelcentre();
+
+  $canvas->arc(
+	       $cx,
+	       $cy,
+	       $glyph->pixelwidth(),
+	       $glyph->pixelheight(),
+	       0,
+	       360,
+	       $colour
+	      );
+  $canvas->fillToBorder($cx, $cy, $colour, $colour) if ($filled && $cx <= $self->{'im_width'});
 }
 
 sub render_Ellipse {
