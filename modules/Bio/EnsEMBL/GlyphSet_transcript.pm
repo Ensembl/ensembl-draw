@@ -97,9 +97,9 @@ sub _init {
                 if($box_start < $coding_start || $box_end > $coding_end ) {
                     my $rect = new Bio::EnsEMBL::Glyph::Rect({
                         'x'         => $box_start,
-                        'y'         => $y+1,
+                        'y'         => $y,
                         'width'     => $box_end-$box_start,
-                        'height'    => $h-2,
+                        'height'    => $h,
                         'bordercolour' => $colour,
                         'absolutey' => 1,
                     });
