@@ -15,6 +15,10 @@ use Sanger::Graphics::Glyph::Line;
 use Sanger::Graphics::Glyph::Space;
 use Sanger::Graphics::Bump;
 
+use SpeciesDefs;
+my $species_defs = SpeciesDefs->new();
+
+
 sub init_label {
     my $self = shift;
     return if( $self->{'config'}->{'_label'} eq 'none'  );
@@ -266,7 +270,7 @@ sub _init {
         my $direction = $end ? -1 : 1;
         
         my %partials = map { uc($_) => 1 }
-                @{ EnsWeb::species_defs->PARTIAL_CHROMOSOMES || [] };
+                @{ $species_defs->PARTIAL_CHROMOSOMES || [] };
         if ($partials{uc($chr)}) {
         # draw jagged ends for partial chromosomes
             # resolution dependent scaling
