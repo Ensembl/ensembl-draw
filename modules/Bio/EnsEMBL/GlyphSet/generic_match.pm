@@ -25,7 +25,8 @@ sub href {
   my ($self, $chr_pos ) = @_;
   my $species = $self->my_config('species');
   my $domain  = $self->my_config('linkto');
-  return "$domain/$species/$ENV{'ENSEMBL_SCRIPT'}?$chr_pos";
+  ( my $script  = $ENV{'ENSEMBL_SCRIPT'} ) =~ s/^multi//g;
+  return "$domain/$species/$script?$chr_pos";
 }
 
 sub zmenu {
