@@ -23,11 +23,7 @@ sub features {
     my ($self) = @_;
     my $author = $self->my_config('author');
 
-    if ($self->{'config'}->script eq 'vc_dumper') {
-        # hack for vc_dumper, which otherwise doesn't draw the track
-        my $db = EnsEMBL::DB::Core::get_databases('vega');
-        return $db->{'vega'}->get_GeneAdaptor->fetch_all_by_Slice_and_author($self->{'container'}, $author, 'otter');
-    } elsif ($author) {
+    if ($author) {
         # if author is defined in UserConfig, fetch only transcripts by this
         # author
         # check data availability first
