@@ -17,11 +17,16 @@ sub features {
 sub zmenu {
   my( $self, $f ) = @_;
 
+  my $start = $f->start() + $self->{'container'}->chr_start() - 1;
+  my $end = $f->end() + $self->{'container'}->chr_end() - 1;
+  my $len = $f->length();
+  
+
   ### Possibly should not use $f->repeat_consensus->name.... was f->{'hid'}
   return {
 	  'caption' => $f->repeat_consensus()->name(),
-	  "bp: " . ($f->start() . "-" . $f->end())           => '',
-	  "length: ".($f->end()-$f->start()+1)  => ''
+	  "bp: $start-$end" => '',
+	  "length: $len"    => ''
     }
 }
 
