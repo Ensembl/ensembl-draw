@@ -291,7 +291,7 @@ sub RENDER_grouped {
     my @features = (shift @t_features);
     foreach( @t_features ) { # Nasty hacky bit that ensures we don't have duplicate das features....
       if($_->das_start <= $features[-1]->das_end ) {
-        $features[-1]->das_end( $_->das_end );
+        $features[-1]->das_end( $_->das_end ) if $_->das_end > $features[-1]->das_end;
       } else {
         push @features, $_;
       } 
