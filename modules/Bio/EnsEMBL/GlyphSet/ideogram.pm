@@ -236,21 +236,18 @@ sub _init {
     ##############################################
     # Draw the ends of the ideogram
     ##############################################
-    foreach my $end (qw(0, 1)) {
-        my $direction = $end ? -1 : 1;
+    foreach my $end (qw(0 1)) {
+        my $direction = $end ? 1 : -1;
         my %partials = map { uc($_) => 1 }
                 @{ EnsWeb::species_defs->PARTIAL_CHROMOSOMES || [] };
         if ($partials{uc($chr)}) {
         # draw jagged ends for partial chromosomes
-            # resolution dependent scaling
-            my $wid = 10;
-            my $mod = ($wid < 16) ? 0.5 : 1;
-            my $bpperpx = 1;
-            foreach my $i (1..8*$mod) {
-                my $x = $chr_length * $end - 4 * (($i % 2) - 1) * $direction * $bpperpx * $mod;
-                my $y = 2 + $wid/(8*$mod) * ($i - 1);
-                my $width = 4 * (-1 + 2 * ($i % 2)) * $direction * $bpperpx * $mod;
-                my $height = $wid/(8*$mod);
+            my $bpperpx = $chr_length/$im_width;
+            foreach my $i (1..4) {
+                my $x = $chr_length * $end + 4 * (($i % 2) - 1) * $direction * $bpperpx;
+                my $y = 2 + 10/4 * ($i - 1);
+                my $width = 4 * (1 - 2 * ($i % 2)) * $direction * $bpperpx;
+                my $height = 10/4;
                 # overwrite karyotype bands with appropriate triangles to
                 # produce jags
                 my $triangle = new Sanger::Graphics::Glyph::Poly({
@@ -277,7 +274,7 @@ sub _init {
                 $self->push($glyph);
             }
             # black delimiting lines at each side
-            foreach (0, $wid) {
+            foreach (0, 10) {
                 $self->push(new Sanger::Graphics::Glyph::Line({
                     'x'                => 0,
                     'y'                => 2 + $_,
