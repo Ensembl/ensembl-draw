@@ -165,7 +165,7 @@ sub RENDER_simple {
     # annotations can be viewed
     # THIS SHOULD BE TURNED INTO A GLYPH SYMBOL MODULE
     if( ( "@{[$f->das_type_id()]}" ) =~ /(summary)/i ) { ## INFO Box
-      my $f     = shift @{$configuration->{'features'}};
+ #     my $f     = shift @{$configuration->{'features'}};
       my $START = $f->das_start() < 1        ? 1       : $f->das_start();
       my $END   = $f->das_end()   > $configuration->{'length'}  ? $configuration->{'length'} : $f->das_end();
 
@@ -793,6 +793,7 @@ sub _init {
       my $name = $das_name || $url;
       foreach my $gene (@$genes) {
 #                      warn("GENE:$gene:".$gene->stable_id);       
+         next if ($gene->strand != $self->strand);
          my $dasf = $gene->get_all_DASFeatures;
          my %dhash = %{$dasf};
 
@@ -802,9 +803,11 @@ sub _init {
          my @aa = @{$dhash{$name}};
          foreach my $f (grep { $_->das_type_id() !~ /^(contig|component|karyotype)$/i &&  $_->das_type_id() !~ /^(contig|component|karyotype):/i } @{ $aa[1] || [] }) {
              if ($f->das_end) {
-                if ($f->das_start <= $configuration->{'length'}) {
-                    push(@das_features, $f);
-                    
+                if (($f->das_end + $gene->start) > 0 && ($f->das_start <= $configuration->{'length'})) {
+                   $f->das_orientation or $f->das_orientation($gene->strand);
+                   $f->das_start($f->das_start + $gene->start);
+                   $f->das_end($f->das_end + $gene->start);
+                   push(@das_features, $f);
                 }
              } else {
                 if (exists $fhash{$f->das_segment->ref}) {
