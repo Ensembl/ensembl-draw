@@ -12,12 +12,12 @@ sub features {
   my ($self) = @_;
   
   my @vari_features;# = 
-            # map { $_->[1] } 
-            # sort { $a->[0] <=> $b->[0] }
-            # map { [ substr($_->type,0,2) * 1e9 + $_->start, $_ ] }
-            # grep { $_->score < 4 } @{$self->{'container'}->get_all_SNPs()};
+             map { $_->[1] } 
+             sort { $a->[0] <=> $b->[0] }
+             map { [ substr($_->type,0,2) * 1e9 + $_->start, $_ ] }
+             grep { $_->score < 4 } @{$self->{'container'}->get_all_VariationFeatures()};
 
- # warn "here are var @vari_features", @{$self->{'container'}->get_all_vari_features()};
+  warn "here are var @vari_features", @{$self->{'container'}->get_all_VariationFeatures};
   if(@vari_features) {
     $self->{'config'}->{'snp_legend_features'}->{'snps'} 
         = { 'priority' => 1000, 'legend' => [] };
@@ -28,12 +28,11 @@ sub features {
 
 sub href {
     my ($self, $f ) = @_;
-
     my( $chr_start, $chr_end ) = $self->slice2sr( $f->start, $f->end );
     my $snp_id = $f->snpid || $f->id;
 
     my $source = $f->source_tag;
-    my $chr_name = $self->{'container'}->seq_region_name();
+    my $chr_name = $self->{'container'}->seq_region_name();  # call seq region on slice
 
     return "/@{[$self->{container}{_config_file_name_}]}/variationview?snp=$snp_id&source=$source&chr=$chr_name&vc_start=$chr_start";
 }
