@@ -33,7 +33,7 @@ sub _init {
     return unless $Config->container_width()>0; # The container has zero width !!EXIT!!
     
     my $col    = undef;
-    my $cmap   = $Config->colourmap();
+    my $cmap   = $self->colourmap();
     my $white  = $cmap->id_by_name('white');
     my $black  = $cmap->id_by_name('black');
     my $bg     = $Config->get('_settings','bgcolor');
@@ -47,7 +47,7 @@ sub _init {
     $COL{'gpos25'}  = $cmap->id_by_name('grey85'); #add_rgb([240,240,240]);
     $COL{'gpos'}    = $black; #add_rgb([240,240,240]);
     $COL{'gvar'}    = $cmap->add_rgb([222,220,220]);
-    $COL{'gneg'}    = $white;
+    $COL{'gneg'}    =  $white;
     $COL{'acen'}    = $cmap->id_by_name('slategrey');
     $COL{'stalk'}   = $cmap->id_by_name('slategrey');
 
