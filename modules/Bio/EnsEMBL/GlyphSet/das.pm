@@ -753,10 +753,12 @@ sub _init {
   $Extra->{labelflag} = 'u';
   $configuration->{colour} = $Config->get($das_config_key, 'col') || $Extra->{color} || 'contigblue1';
   $configuration->{depth} =  $Config->get($das_config_key, 'dep') || $Extra->{depth}  || 4;
-  $configuration->{use_style} = $Extra->{stylesheet} ? $Extra->{stylesheet} eq 'Y' : $Config->get($das_config_key, 'stylesheet') eq 'Y';
+  $configuration->{use_style} = $Extra->{stylesheet} ? uc($Extra->{stylesheet}) eq 'Y' : uc($Config->get($das_config_key, 'stylesheet')) eq 'Y';
   $configuration->{labelling} = $Extra->{labelflag} =~ /^[ou]$/i ? 1 : 0;
   $configuration->{length} = $container_length;
 
+#  warn("$das_config_key:".$Config->get($das_config_key, 'stylesheet'));
+#  warn(Dumper($Extra));
   $self->{'pix_per_bp'}    = $Config->transform->{'scalex'};
   $self->{'bitmap_length'} = int(($configuration->{'length'}+1) * $self->{'pix_per_bp'});
   ($self->{'textwidth'},$self->{'textheight'}) = $Config->texthelper()->real_px2bp('Tiny');
@@ -853,9 +855,8 @@ sub _init {
   my $renderer = $Config->get($das_config_key, 'renderer');
 #  my $group = ($Config->get($das_config_key, 'group') ? 'RENDER_grouped' : 'RENDER_simple';
 	       
-  my $group = $Config->get($das_config_key, 'group') || 'n';
-  $group = lc($group);
-  $renderer = $renderer ? "RENDER_$renderer" : ($group eq 'n' ? 'RENDER_simple' : 'RENDER_grouped');  
+  my $group = uc($Config->get($das_config_key, 'group') || 'N');
+  $renderer = $renderer ? "RENDER_$renderer" : ($group eq 'N' ? 'RENDER_simple' : 'RENDER_grouped');  
 
 #  $renderer = $renderer ? "RENDER_$renderer" : ($Config->get($das_config_key, 'group') ? 'RENDER_grouped' : 'RENDER_simple');
 
