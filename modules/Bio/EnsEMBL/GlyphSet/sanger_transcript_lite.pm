@@ -56,7 +56,7 @@ sub zmenu {
 		"04:Sanger curated ($T)"   => ''
     };
     $zmenu->{"03:Protien"} =
-        qq(/$ENV{'ENSEMBL_SPECIES'}/protview?db=sanger&peptide=$vt->{'translation'}) if defined $vt->{'translation'};
+        qq(/$ENV{'ENSEMBL_SPECIES'}/protview?db=sanger&peptide=$vt->{'translation'}) if $vt->{'translation'} ne '';
 
 	return $zmenu;
 }
