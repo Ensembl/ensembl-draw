@@ -13,7 +13,7 @@ sub init_label {
     my ($self) = @_;
     return if( defined $self->{'config'}->{'_no_label'} );
     my $label = new Bio::EnsEMBL::Glyph::Text({
-	    'text'      => 'Contigs',
+	    'text'      => 'Assembly Ctgs',
     	'font'      => 'Small',
 	    'absolutey' => 1,
     });

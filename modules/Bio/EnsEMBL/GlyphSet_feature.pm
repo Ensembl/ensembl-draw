@@ -80,7 +80,7 @@ sub _init {
     }
 
 ## No features show "empty track line" if option set....
-    $self->errorTrack( "No $type features in this region" )
+    $self->errorTrack( "No ".$self->my_label." in this region" )
         unless( $Config->get('_settings','opt_empty_tracks')==0 || %id );
 
 ## Now go through each feature in turn, drawing them
