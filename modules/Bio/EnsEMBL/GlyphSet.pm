@@ -300,7 +300,8 @@ sub virtualGene_details {
 sub _label_highlight {
     my ($self,$label,$highlight,$highlights,$dblinks) = @_;
     my $max_pref = 0;
-    my %db_names = ( # preference for naming scheme!
+    my %db_names = ( # preference for naming scheme based on numerical precidence!
+		    'Gene_name' => 110,
         'HUGO'          => 100, 'SP'            =>  90,
         'SWISS-PROT'    =>  80, 'SPTREMBL'      =>  70,
         'SCOP'          =>  60, 'LocusLink'     =>  50,
@@ -315,8 +316,9 @@ sub _label_highlight {
             $highlight = 1 if exists $highlights->{$_->display_id()}; # check for highlighting
             # if this is a more prefered label then we will use it!
             if( $db_names{$db}>$max_pref) {
-                $label = $_->display_id();
-                $max_pref = $db_names{$db};
+	      next if $_->display_id() =~ /^CG/ && $db eq "Gene_name";
+              $label = $_->display_id();
+	      $max_pref = $db_names{$db};
             }
         }
     }
