@@ -66,12 +66,9 @@ sub _init {
 	my $end = $band->end();
 	my $stain = $band->stain();
 
-	#my $vc_band_start = $start - $self->{'container'}->_global_start();
-	my $vc_band_start = $start - $self->{'container'}->chr_start();
+	my $vc_band_start = $start;# - $self->{'container'}->chr_start();
 	$vc_band_start    = 0 if ($vc_band_start < 0);
-	
-	#my $vc_band_end   = $end - $self->{'container'}->_global_start();
-	my $vc_band_end = $end - $self->{'container'}->chr_start();
+	my $vc_band_end = $end;# - $self->{'container'}->chr_start();
 	$vc_band_end      =  $self->{'container'}->length() if ($vc_band_end > $self->{'container'}->length());
 	
         my $min_start = $vc_band_start if(!defined $min_start || $min_start > $vc_band_start); 
