@@ -1,4 +1,4 @@
-package Bio::EnsEMBL::GlyphSet::vega_sanger_gene_contig;
+package Bio::EnsEMBL::GlyphSet::vega_genoscope_gene_contig;
 use strict;
 use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet;
@@ -11,13 +11,19 @@ use EnsWeb;
 use Bio::EnsEMBL::Utils::Eprof qw(eprof_start eprof_end);
 
 
+
 sub my_label {
-return 'Sanger Genes';
+return 'Genoscope Genes';
 }
 
+
 sub logic_name {
-return 'sanger';
+return 'genoscope';
 }
+
+
+
+
 
 1;
         
