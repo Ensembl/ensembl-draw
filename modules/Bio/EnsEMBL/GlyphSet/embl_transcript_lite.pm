@@ -38,8 +38,10 @@ sub colour {
 
 sub href {
     my ($self, $vt) = @_;
-    return $vt->{'db'} ne '' ?
-           $self->{'config'}->{'ext_url'}->get_url( $vt->{'db'}, $vt->{'synonym'} ) :
+    my $ID = $vt->{'synonym'};
+    $ID = ~s/\.\d+$//;
+    return $vt->{'external_db'} ne '' ?
+           $self->{'config'}->{'ext_url'}->get_url( $vt->{'external_db'}, $ID ) :
             undef;
 }
 
@@ -49,7 +51,7 @@ sub zmenu {
         'caption'  => "EMBL: $vt->{'stable_id'}",
         '01:EMBL curated '.($vt->{'type'} eq 'pseudo' ? 'pseudogene' : 'transcript') => ''
     };
-    $zmenu->{ "02:$vt->{'db'}:$vt->{'synonym'}" } = $self->href($vt) if $vt->{'db'} ne '';
+    $zmenu->{ "02:$vt->{'external_db'}:$vt->{'synonym'}" } = $self->href($vt) if $vt->{'external_db'} ne '';
     return $zmenu;
 }
 
