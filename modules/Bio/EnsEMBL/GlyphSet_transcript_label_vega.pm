@@ -33,13 +33,16 @@ sub _init {
 # Stage 1a: Firstly the configuration hash!                                  #
 ##############################################################################
     my $Config         = $self->{'config'};
-    my $known_col      = $Config->get( '_colours' , 'known' );
-    my $hi_col         = $Config->get( '_colours' , 'hi' );
-    my $unknown_col    = $Config->get( '_colours' , 'unknown' );
-    my $xref_col       = $Config->get( '_colours' , 'xref' );
-    my $pred_col       = $Config->get( '_colours' , 'pred' );
-    my $ext_col        = $Config->get( '_colours' , 'ext' );
-    my $pseudo_col     = $Config->get( '_colours' , 'pseudo' );
+    my $known_col     = $Config->get('_colours','_KNOWN');
+    my $xref_col      = $Config->get('_colours','_XREF');
+    my $pred_col      = $Config->get('_colours','PRED');
+    my $hi_col        = $Config->get('_colours','hi');
+    my $unknown_col   = $Config->get('_colours','_');
+    my $ext_col       = $Config->get('_colours','_');
+    my $pseudo_col    = $Config->get('_colours','_');
+
+
+
     my $max_length     = $Config->get( 'vega_gene_label_lite' , 'threshold' ) || 2000000;
     my $navigation     = $Config->get( 'vega_gene_label_lite' , 'navigation' ) || 'off';
     my $max_length_nav = $Config->get( 'vega_gene_label_lite' , 'navigation_threshold' ) || 200000;
@@ -54,22 +57,20 @@ sub _init {
    # }; 
     my $sanger_colours = { 
         
- 	    'unknown'   => $Config->get('_colours','unknown'),
- 	    'xref'      => $Config->get('_colours','xref'),
- 	    'pred'      => $Config->get('_colours','pred'),
- 	   'known'     => $Config->get('_colours','known'),
- 	    'hi'        => $Config->get('_colours','hi'),
- 	    'superhi'   => $Config->get('_colours','superhi'),
- 	    'Novel_CDS'        => $Config->get('_colours','Novel_CDS'), 
- 	    'Putative'         => $Config->get('_colours','Putative'), 
- 	    'Known'            => $Config->get('_colours','Known'),  
- 	    'Novel_Transcript' => $Config->get('_colours','Novel_Transcript'), 
- 	    'Pseudogene'       => $Config->get('_colours','Pseudogene'),
- 	    'Ig_Segment'       => $Config->get('_colours','Ig_Segment'), 	  
- 	    'Ig_Pseudogene_Segment'   =>$Config->get('_colours','Ig_Pseudogene') , 
-  	    'Predicted_Gene'  => $Config->get('_colours','Predicted_Gene'), 
-
-	      
+ #	    'unknown'   =>  $Config->get('_colours','_');
+ #	    'xref'      => $Config->get('_colours','_XREF');
+ #	    'pred'      => $Config->get('_colours','PRED');
+ #	   'known'     =>  $Config->get('_colours','_KNOWN');
+ #	    'hi'        => $Config->get('_colours','hi'),
+ #	    'superhi'   => $Config->get('_colours','superhi'),
+	   'Novel_CDS'        => $Config->get('_colours','Novel_CDS'), 
+           'Putative'         => $Config->get('_colours','Putative'), 
+           'Known'            => $Config->get('_colours','Known'), 
+           'Novel_Transcript' => $Config->get('_colours','Novel_Transcript'), 
+           'Pseudogene'       => $Config->get('_colours','Pseudogene'), 
+	   'Ig_Segment'       => $Config->get('_colours','Ig_Segment'), 	  
+	   'Ig_Pseudogene_Segment'   =>$Config->get('_colours','Ig_Pseudogene') , 
+	   'Predicted_Gene'  => $Config->get('_colours','Predicted_Gene')      
 
 			 };
 

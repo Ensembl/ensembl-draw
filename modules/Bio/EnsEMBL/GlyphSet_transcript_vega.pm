@@ -374,8 +374,8 @@ sub href {
 
 sub zmenu {
   my ($self, $gene, $transcript) = @_;
-  my $tid = $transcript->stable_id();
-  my $pid = $transcript->translation->stable_id(),
+  my $tid = $transcript->external_name() || $transcript->stable_id();
+  my $pid = $transcript->translation->stable_id() ,
   my $gid = $gene->stable_id();
   my $id   = $transcript->external_name() eq '' ? $tid : ( $transcript->external_db.": ".$transcript->external_name() );
 
@@ -394,6 +394,10 @@ sub zmenu {
   my $DB = EnsWeb::species_defs->databases;
   $zmenu->{'06:Expression information'} = "/$ENV{'ENSEMBL_SPECIES'}/sageview?alias=$gid" if $DB->{'ENSEMBL_EXPRESSION'};
   
+
+ 
+
+
   return $zmenu;
   
 
@@ -405,6 +409,7 @@ sub zmenu {
 sub text_label {
   my ($self, $gene, $transcript) = @_;
   my $id = $transcript->external_name() || $transcript->stable_id();
+ 
   return $id;
 }
 

@@ -10,12 +10,10 @@ sub my_label {
 
 sub logic_name {
 return 'sanger';
-
 }
 
 sub zmenu_caption {
-return 'Dunham Group Gene';
+return 'Dunham Gene';
 }
-
 
 1;

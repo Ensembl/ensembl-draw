@@ -19,6 +19,6 @@ return 'Havana Gene';
 
 
 
-sub error_track_name { return '$self->zmenu_caption() transcripts'; }
+
 
 1;

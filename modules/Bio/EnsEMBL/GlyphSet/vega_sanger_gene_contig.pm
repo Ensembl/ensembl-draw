@@ -24,7 +24,5 @@ sub my_depth {
  my $Config  = $self->{'config'};
 return $Config->get('vega_sanger_gene_contig', 'dep') ;
 }
-
-
 1;
         

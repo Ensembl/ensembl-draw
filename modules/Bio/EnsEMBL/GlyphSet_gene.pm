@@ -189,7 +189,7 @@ sub _init {
 		}
     
 
-        my $depth = $self->my_depth() ; # $Config->get('gene_lite', 'dep');
+        my $depth = $self->my_depth() ; 
         if ($depth > 0){ # we bump
             my $bump_start = int($rect->x() * $pix_per_bp);
             $bump_start = 0 if ($bump_start < 0);
