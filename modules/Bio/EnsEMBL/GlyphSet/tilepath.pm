@@ -61,10 +61,10 @@ sub _init {
 			
         	my $Composite = new Bio::EnsEMBL::Glyph::Composite({
 					'absolutey' => 1,
-					'zmenu'     => {
-		    			'caption' => "Clone $id",
-		    			"Request clone $id"  =>"http://www.sanger.ac.uk/cgi-bin/humace/CloneRequest?clone=$id&query=Requested%20via%20Ensembl",
-					},
+#					'zmenu'     => {
+#		    			'caption' => "Clone $id",
+#		    			"Request clone $id"  =>"http://www.sanger.ac.uk/cgi-bin/humace/CloneRequest?clone=$id&query=Requested%20via%20Ensembl",
+#					},
 			});
 
 	    	my $glyph = new Bio::EnsEMBL::Glyph::Rect({
