@@ -222,7 +222,7 @@ sub _init {
                 $Composite->push($Composite2);
             }
             my $H =$self->feature_label( $Composite, $ID , $feature_colour, $start < 1 ? 1 : $start , $end > $length ? $length : $end );
-            $Composite->{'zmenu'}->{"SHIFT ($row) ".$tstrand*(1.4*$h+$H) * $row } = '';
+#            $Composite->{'zmenu'}->{"SHIFT ($row) ".$tstrand*(1.4*$h+$H) * $row } = '';
             $Composite->y($Composite->y() - $tstrand*(1.4*$h+$H) * $row) if $row;
             $self->push($Composite);
         }
