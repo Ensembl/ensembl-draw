@@ -44,7 +44,7 @@ sub features {
     }
 
     # determine transcript type
-    $gene_adaptor->set_transcript_type($genes);
+    # $gene_adaptor->set_transcript_type($genes);
 
     return $genes;
 }
