@@ -50,6 +50,7 @@ sub init {
  
 	       $extra_config->{'name'} 	= "managed_extdas_$das_source_name";
 	       $extra_config->{'url'} 		= "http://$extra_config->{'URL'}/das";
+        $extra_config->{'url'} =~s /http:\/\/(http:\/\/)/\1/;
         #warn( "ADDING GLYPHSET $das_species $das_source_name" );
         $self->add_glyphset( $extra_config );		
     }
