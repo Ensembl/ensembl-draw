@@ -87,15 +87,15 @@ sub _init {
     my $dep            = $Config->get($type, 'dep');
 
     my $flag           = 1;
-    foreach my $f ( $self->features ) {
+    foreach my $f ( $self->features() ) {
 ## Check strand for display ##
-        next if( $strand_flag eq 'b' && $strand != $f->{'strand'} );
+        next if( $strand_flag eq 'b' && $strand != $f->strand() );
 ## Check start are not outside VC.... ##
-        my $start = $f->{'start'};
+        my $start = $f->start();
         next if $start>$vc_length; ## Skip if totally outside VC
         $start = 1 if $start < 1;
 ## Check end are not outside VC.... ##
-        my $end   = $f->{'end'};
+        my $end   = $f->end();
         next if $end<1;            ## Skip if totally outside VC
         $end   = $vc_length if $end>$vc_length;
 
@@ -117,7 +117,7 @@ sub _init {
         my $rowheight = $h * 1.5;
         if( $self->can('tag')) {
             foreach my $tag ( $self->tag($f) ) {
-                if($tag->{'style'} eq 'left-end' && $start == $f->start) {
+                if($tag->{'style'} eq 'left-end' && $start == $f->start()) {
                     my $line = new Bio::EnsEMBL::Glyph::Rect({
                         'x'          => $start,
                         'y'          => 0,
@@ -127,7 +127,7 @@ sub _init {
                         'absolutey'  => 1
                     });
                     $composite->push($line);
-                } elsif($tag->{'style'} eq 'right-end' && $end == $f->end) {
+                } elsif($tag->{'style'} eq 'right-end' && $end == $f->end()) {
                     my $line = new Bio::EnsEMBL::Glyph::Rect({
                         'x'          => $end,
                         'y'          => 0,
@@ -256,7 +256,7 @@ sub _init {
         $self->push(@tag_glyphs);
 
 ## Are we going to highlight this item...
-        if(exists $highlights{$f->{'id'}}) {
+        if(exists $highlights{$f->id()}) {
             my $high = new Bio::EnsEMBL::Glyph::Rect({
                 'x'         => $composite->x() - 1/$pix_per_bp,
                 'y'         => $composite->y() - 1,
