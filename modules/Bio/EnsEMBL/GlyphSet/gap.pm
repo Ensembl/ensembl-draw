@@ -41,8 +41,6 @@ sub _init {
         return if $useAssembly;
     };
 
-    print STDERR "GAP CALLED\n";
-
     my $length   = $vc->length() +1;
     my $Config   = $self->{'config'};
 	my $module = ref($self);
