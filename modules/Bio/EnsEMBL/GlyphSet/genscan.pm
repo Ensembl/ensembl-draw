@@ -37,11 +37,10 @@ sub _init {
     my @allfeatures    = ();
     my $dep            = $Config->get('genscan', 'dep');
     my $k              = 1;
-
-    FEAT: foreach my $seq_feat ($VirtualContig->get_all_PredictionFeatures()){
+$VirtualContig->_dump_map;
+FEAT: foreach my $seq_feat ($VirtualContig->get_all_PredictionFeatures()){
 	my @feat = $seq_feat->sub_SeqFeature;
 	my $feat_strand;
-
 	if ($#feat >= 0) {
 	    $feat_strand = $feat[0]->strand;
 	} else {

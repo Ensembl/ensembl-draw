@@ -1,4 +1,4 @@
-package Bio::EnsEMBL::GlyphSet::transcript;
+package Bio::EnsEMBL::GlyphSet::genebuilder;
 use strict;
 use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet;
@@ -16,7 +16,7 @@ sub init_label {
     my ($self) = @_;
     return if( defined $self->{'config'}->{'_no_label'} );
     
-    my $label_text = $self->{'config'}->{'_draw_single_Transcript'} || 'Transcript';
+    my $label_text = $self->{'config'}->{'_draw_single_Transcript'} || 'GeneBuilder';
 
     my $label = new Bio::EnsEMBL::Glyph::Text({
         'text'      => $label_text,
@@ -40,13 +40,14 @@ sub _init {
     @highlights{$self->highlights} = ();    # build hashkeys of highlight list
     my @bitmap        = undef;
     my $im_width      = $Config->image_width();
-    my $unknown_colour= $Config->get('transcript','unknown');
-    my $known_colour  = $Config->get('transcript','known');
-    my $pseudo_colour = $Config->get('transcript','pseudo');
-    my $ext_colour    = $Config->get('transcript','ext');
-    my $hi_colour     = $Config->get('transcript','hi');
-    my $superhi_colour= $Config->get('transcript','superhi');
-    my $type          = $Config->get('transcript','src');
+# marie - get color from genebuilder; not transcript
+    my $unknown_colour= $Config->get('genebuilder','unknown');
+    my $known_colour  = $Config->get('genebuilder','known');
+    my $pseudo_colour = $Config->get('genebuilder','pseudo');
+    my $ext_colour    = $Config->get('genebuilder','ext');
+    my $hi_colour     = $Config->get('genebuilder','hi');
+    my $superhi_colour= $Config->get('genebuilder','superhi');
+    my $type          = $Config->get('genebuilder','src');
     my @allgenes      = ();
     my $fontname      = "Tiny";    
     my $pix_per_bp    = $Config->transform->{'scalex'};
@@ -58,7 +59,8 @@ sub _init {
  
     my $colour;
     #&eprof_start('transcript - get_all_Genes_exononly()');
-    @allgenes = $container->get_all_Genes_exononly();
+#jerm - fetch specfic genetypes
+    @allgenes = $container->get_all_Genes_by_type_exononly('genebuilder');
     #&eprof_end('transcript - get_all_Genes_exononly()');
     #&eprof_start('transcript - get_all_ExternalGenes()');
     unless($target) { # Skip in single transcript mode

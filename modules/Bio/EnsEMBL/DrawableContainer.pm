@@ -193,7 +193,7 @@ sub new {
 	# load everything from the database
 	#
 	my $ref_glyphset = ref($glyphset);
-	&eprof_start($ref_glyphset . "_database_work");
+        &eprof_start($ref_glyphset . "_database_work");
 	$glyphset->_init();
 	&eprof_end($ref_glyphset . "_database_work");
 

@@ -2,7 +2,6 @@ package Bio::EnsEMBL::GlyphSet::est;
 use strict;
 use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet_feature;
-use ExtURL;
 @ISA = qw(Bio::EnsEMBL::GlyphSet_feature);
 
 sub my_label { return "ESTs"; }
@@ -14,10 +13,14 @@ sub features {
 }
 sub zmenu {
     my ($self, $id ) = @_;
-    my $urls = ExtURL->new;
     my $estid = $id;
     $estid =~s/(.*?)\.\d+/$1/;
+    #marie - uses local bioperl db to serve up protein homology
+    my $biodb = 'fugu_ests'; #specify db name here - corresponds to bioperl_db, biodatabases table
+    my $format = 'fasta';
     return { 'caption' => "EST $id",
-	     "$id"     => $urls->get_url('EST',$estid) }
+	       # marie changed to use our local bioperl-db to fetch details
+               # "$id"     => "http://www.sanger.ac.uk/srs6bin/cgi-bin/wgetz?-e+[DBEST-ALLTEXT:$estid]" }
+                "$id"     => "/perl/bioperldbview?id=$estid&biodb=$biodb&format=$format", }
 }
-1;
+;
