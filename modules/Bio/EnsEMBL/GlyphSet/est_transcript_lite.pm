@@ -27,10 +27,12 @@ sub href {
   my ($self, $gene, $transcript) = @_;
 
   if( $self->{'config'}->{'_href_only'} eq '#tid' ) {
-    return "#$transcript->stable_id()";
+    return "#" . $transcript->stable_id();
   }
 
-  return qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?db=estgene&gene=$gene->stable_id());
+  $my gid = $gene->stable_id();
+
+  return qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?db=estgene&gene=$gid;
 }
 
 sub zmenu {
@@ -38,10 +40,10 @@ sub zmenu {
 
     my $zmenu = {
        'caption'                     => "EST Gene",
-       "02:Gene: $gene->stable_id()" => $self->href( $gene, $transcript ),
+       "02:Gene: " . $gene->stable_id()  => $self->href( $gene, $transcript ),
     };
 
-    my $translation_id = $transcript->translation_id();
+    my $translation_id = $transcript->translation()->stable_id();
 
     if(defined $translation_id) {
       $zmenu->{"03:Protien: $translation_id"} =
@@ -56,7 +58,7 @@ sub text_label { return ''; }
 sub genes {
   my ($self) = @_;
 
-  return $self->{'container'}->get_Genes_by_type('est');
+  return $self->{'container'}->get_Genes_by_source('estgene');
 }
 
 sub legend {

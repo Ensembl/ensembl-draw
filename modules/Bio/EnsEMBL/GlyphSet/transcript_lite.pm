@@ -25,7 +25,7 @@ sub colours {
 sub genes {
   my ($self) = @_;
 
-  return $self->{'container'}->get_Genes_by_type('ensembl');
+  return $self->{'container'}->get_Genes_by_source('core');
 }
 
 

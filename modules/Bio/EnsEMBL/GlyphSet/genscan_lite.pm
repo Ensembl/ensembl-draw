@@ -26,7 +26,13 @@ sub genes {
   my @transcripts = ();
   my @genes = ();
 
-  #obtain genscan transcripts
+  #TO BE DONE:  obtain genscan transcripts
+
+#
+#
+#
+#
+
 
   #wrap each transcript in a gene object
   foreach my $transcript (@transcripts) {
