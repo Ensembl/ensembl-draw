@@ -13,8 +13,6 @@ use Bio::EnsEMBL::Utils::Eprof qw(eprof_start eprof_end);
 
 sub _init {
 
-
-
     my $self = shift;
 
 ##############################################################################
@@ -41,8 +39,6 @@ sub _init {
     my $ext_col       = $Config->get('_colours','_');
     my $pseudo_col    = $Config->get('_colours','_');
 
-
-
     my $max_length     = $Config->get( 'vega_gene_label_lite' , 'threshold' ) || 2000000;
     my $navigation     = $Config->get( 'vega_gene_label_lite' , 'navigation' ) || 'off';
     my $max_length_nav = $Config->get( 'vega_gene_label_lite' , 'navigation_threshold' ) || 200000;
@@ -52,16 +48,7 @@ sub _init {
     my $fontname       = "Tiny";
     my ($font_w_bp,$h) = $Config->texthelper->px2bp($fontname);
     my $w              = $Config->texthelper->width($fontname);
-   # my $rat_colours = { 
-   #    'refseq' => $Config->get('gene_lite','refseq'), 
-   # }; 
     my $sanger_colours = { 
- #	    'unknown'   =>  $Config->get('_colours','_');
- #	    'xref'      => $Config->get('_colours','_XREF');
- #	    'pred'      => $Config->get('_colours','PRED');
- #	   'known'     =>  $Config->get('_colours','_KNOWN');
- #	    'hi'        => $Config->get('_colours','hi'),
- #	    'superhi'   => $Config->get('_colours','superhi'),
            'Novel_CDS'        => $Config->get('_colours','Novel_CDS'), 
            'Putative'         => $Config->get('_colours','Putative'), 
            'Known'            => $Config->get('_colours','Known'), 
@@ -77,19 +64,17 @@ sub _init {
 ##############################################################################
 # Stage 1b: Now the virtual contig                                           #
 ##############################################################################
-  
-
-
- my $vc              = $self->{'container'};
+    my $vc              = $self->{'container'};
     my $vc_length       = $vc->length;
     if( $vc_length > ($max_length*1001)) {
         $self->errorTrack("Gene labels only displayed for less than $max_length Kb.");
         return;
     }
-	my $show_navigation = $navigation eq 'on' && ( $vc_length < $max_length_nav * 1001 );
+    my $show_navigation = $navigation eq 'on' && ( $vc_length < $max_length_nav * 1001 );
     my $bitmap_length   = int($vc_length * $pix_per_bp);
-	my $vc_start        = $vc->chr_start();
+    my $vc_start        = $vc->chr_start();
     my $offset = $vc_start-1;
+
 ##############################################################################
 # Stage 1c: Initialize other arrays/numbers                                  #
 ##############################################################################
@@ -109,13 +94,7 @@ sub _init {
 ##############################################################################
     &eprof_start("gene-virtualgene_start-get");
 
-
-
-
-foreach my $g (@{$vc->get_all_Genes($self->logic_name(), )} ) {
-
-
-  #  foreach my $g (@{ $vc->get_all_Genes_by_source('sanger', 1) } ) { ## Hollow genes
+    foreach my $g (@{$vc->get_all_Genes($self->logic_name(), )} ) {
       my $gene_label = $g->external_name() || $g->stable_id();  
       my $high = exists $highlights{ $gene_label }; 
       my $type = $g->type(); 
@@ -142,91 +121,92 @@ foreach my $g (@{$vc->get_all_Genes($self->logic_name(), )} ) {
 ##############################################################################
     my @gene_glyphs = ();
     foreach my $g (@genes) {
-		my $start = $g->{'start'};
+        my $start = $g->{'start'};
         my $end   = $g->{'end'};
-		next if(  $end < 1 || $start > $vc_length );
-		
+        next if(  $end < 1 || $start > $vc_length );
+
         $start = 1 if $start<1;
         $end = $vc_length if $end > $vc_length;
         my $label = $g->{'label'};
 
-	    next if $label eq '';
+        next if $label eq '';
         my $tglyph = new Sanger::Graphics::Glyph::Text({
-            'x'         => $start-1,	
-            'y'         => $y,
-            'height'    => $Config->texthelper->height($fontname),
-            'width'     => $font_w_bp * length(" $label "),
-            'font'      => $fontname,
-            'colour'    => $g->{'colour'},
-            'text'      => " $label",
-            'absolutey' => 1,
-        });
-		if($show_navigation) {
-			$tglyph->{'zmenu'} = {
-				'caption' 											=> $label,
-				"bp: $g->{'chr_start'}-$g->{'chr_end'}" 			=> '',
-				"length: ".($g->{'chr_end'}-$g->{'chr_start'}+1) 	=> ''
-			}; 
+                'x'         => $start-1,	
+                'y'         => $y,
+                'height'    => $Config->texthelper->height($fontname),
+                'width'     => $font_w_bp * length(" $label "),
+                'font'      => $fontname,
+                'colour'    => $g->{'colour'},
+                'text'      => " $label",
+                'absolutey' => 1,
+                });
+        if($show_navigation) {
+            $tglyph->{'zmenu'} = {
+                'caption' => $label,
+                "bp: $g->{'chr_start'}-$g->{'chr_end'}" => '',
+                "length: ".($g->{'chr_end'}-$g->{'chr_start'}+1) => ''
+            }; 
             if( $g->{'ens_ID'} ne '' ) {
-    			$tglyph->{'zmenu'}->{"Gene: $g->{'ens_ID'}"} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$g->{'ens_ID'}"; 
+                $tglyph->{'zmenu'}->{"Gene: $g->{'ens_ID'}"} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$g->{'ens_ID'}"; 
                 $tglyph->{'href'} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$g->{'ens_ID'}" ;
             }
-		}
-		
+        }
+
         my $depth = $Config->get('vega_gene_label_lite', 'dep');
         if ($depth > 0){ # we bump
             my $bump_start = int($tglyph->x() * $pix_per_bp);
             $bump_start = 0 if ($bump_start < 0);
-    
+
             my $bump_end = $bump_start + int($tglyph->width()*$pix_per_bp) +1;
             $bump_end = $bitmap_length if ($bump_end > $bitmap_length);
             my $row = & Sanger::Graphics::Bump::bump_row(
-                $bump_start,
-                        $bump_end,
-                        $bitmap_length,
-                        \@bitmap
-            );
-    
-            #next if $row > $depth;
-                $tglyph->y($tglyph->y() + (1.2 * $row * $h) + 1);
+                    $bump_start,
+                    $bump_end,
+                    $bitmap_length,
+                    \@bitmap
+                    );
+
+            $tglyph->y($tglyph->y() + (1.2 * $row * $h) + 1);
         }
-		
+
         push @gene_glyphs, $tglyph;
+        
         ##################################################
         # Draw little taggy bit to indicate start of gene
         ##################################################
         my $taggy = new Sanger::Graphics::Glyph::Rect({
-            'x'            => $start-1,
-            'y'            => $tglyph->y - 1,
-            'width'        => 0,
-            'height'       => 4,
-            'bordercolour' => $g->{'colour'},
-            'absolutey'    => 1,
-        });
-    
+                'x'            => $start-1,
+                'y'            => $tglyph->y - 1,
+                'width'        => 0,
+                'height'       => 4,
+                'bordercolour' => $g->{'colour'},
+                'absolutey'    => 1,
+                });
+
         push @gene_glyphs, $taggy;
         $taggy = new Sanger::Graphics::Glyph::Rect({
-            'x'            => $start-1,
-            'y'            => $tglyph->y - 1 + 4,
-            'width'        => $font_w_bp * 0.5,
-            'height'       => 0,
-            'bordercolour' => $g->{'colour'},
-            'absolutey'    => 1,
-        });
-    
+                'x'            => $start-1,
+                'y'            => $tglyph->y - 1 + 4,
+                'width'        => $font_w_bp * 0.5,
+                'height'       => 0,
+                'bordercolour' => $g->{'colour'},
+                'absolutey'    => 1,
+                });
+
         push @gene_glyphs, $taggy;
+        
         ##################################################
         # Highlight label if required.....
         ##################################################
         if($g->{'high'}) {
             my $rect2 = new Sanger::Graphics::Glyph::Rect({
-                'x'         => $tglyph->x() + $font_w_bp,
-                'y'         => $tglyph->y(),
-                'width'     => $font_w_bp * length($label),
-                'height'    => $tglyph->height(),
-                'colour'    => $hi_col,
-                'absolutey' => 1,
-            });
+                    'x'         => $tglyph->x() + $font_w_bp,
+                    'y'         => $tglyph->y(),
+                    'width'     => $font_w_bp * length($label),
+                    'height'    => $tglyph->height(),
+                    'colour'    => $hi_col,
+                    'absolutey' => 1,
+                    });
             $self->push($rect2);
         }
     }
