@@ -30,12 +30,19 @@ sub transcript_type {
 
 sub colour {
     my ($self, $gene, $transcript, $colours, %highlights) = @_;
-    return ( 
-      $colours->{$transcript->type()},
-      exists $highlights{$transcript->stable_id()} ? $colours->{'superhi'} : 
-     (exists $highlights{$transcript->external_name()} ? $colours->{'superhi'} :
-     (exists $highlights{$gene->stable_id()} ? $colours->{'hi'} : undef ))
-    );
+    
+    my $colour = $colours->{'unknown'};
+    my $highlight;
+
+    if( exists $highlights{$transcript->stable_id()} or
+	exists $highlights{$transcript->external_name()} ){
+      $highlight = $colours->{'superhi'};
+    }
+    elsif( exists $highlights{$gene->stable_id()} ){
+      $highlight = $colours->{'hi'};
+    }
+
+    return ( $colour, $highlight );
 }
 
 sub href {
