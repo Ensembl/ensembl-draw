@@ -178,7 +178,7 @@ sub _init {
             $X = $START;
             $C++;
             if($DRAW_CIGAR) {
-               $self->draw_cigar_feature($self, $_, $h, $feature_colour, 'black', $pix_per_bp );
+               $self->draw_cigar_feature($self, $f, $h, $feature_colour, 'black', $pix_per_bp );
             } else {
 	      $self->push(new Sanger::Graphics::Glyph::Rect({
                 'x'          => $X-1,
