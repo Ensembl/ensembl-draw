@@ -59,6 +59,9 @@ sub _init {
     my $unknown_col   = $Config->get('gene_lite','unknown');
     my $ext_col       = $Config->get('gene_lite','ext');
     my $pseudo_col    = $Config->get('gene_lite','pseudo');
+    my $rat_colours = { 
+       'refseq' => $Config->get('gene_lite','refseq'), 
+    }; 
     my $sanger_colours = { 
            'Novel_CDS'        => $Config->get('gene_lite','sanger_Novel_CDS'), 
            'Putative'         => $Config->get('gene_lite','sanger_Putative'), 
@@ -209,6 +212,44 @@ sub _init {
 
     &eprof_end("gene-externalgene_start-get");
 
+
+    #
+    # Draw all EMBL Genes
+    #
+    $F=0;
+    foreach my $g (@{$vc->get_all_Genes_by_source( "refseq",1 )} ) {
+      $F++;
+      my $gene_label = $g->external_name() || $g->stable_id();
+
+      my $high = exists $highlights{ $g->external_name() } ||
+        exists $highlights{ $g->stable_id() };
+
+      my $gene_col = $rat_colours->{'refseq'};
+
+      push @genes, {
+                'chr_start' => $g->start + $offset,
+                'chr_end'   => $g->end + $offset,
+                'start'     => $g->start(),
+                'strand'    => $g->strand(),
+                'end'       => $g->end(),
+                'ens_ID'    => '', #$g->{'stable_id'},
+                'label'     => $gene_label,
+                'colour'    => $gene_col,
+                'ext_DB'    => $g->external_db(),
+                'high'      => $high,
+                'type'      => $g->type()
+            };
+        }
+
+    if($F>0) {
+      $Config->{'legend_features'}->{'embl_genes'} = {
+            'priority' => 801,
+            'legend'  => [
+                'RefSeq proteins' => $rat_colours->{'refseq'},
+            ] };
+    }
+
+  
     #&eprof_start("gene-render-code");
 
     my @gene_glyphs = ();
