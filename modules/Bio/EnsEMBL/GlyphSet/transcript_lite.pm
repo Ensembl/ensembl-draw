@@ -23,7 +23,7 @@ sub features {
 
   return [
     @{$self->{'container'}->get_all_Genes(
-      lc(EnsWeb::species_defs->other_species( $self->{'_config_file_name_'}, 'AUTHORITY') )
+      lc(EnsWeb::species_defs->other_species( $self->{'container'}->{'_config_file_name_'}, 'AUTHORITY') )
     )}, @{$self->{'container'}->get_all_Genes('pseudogene')}
   ];
 }
