@@ -56,7 +56,7 @@ sub zmenu {
 	my $pid = $translation->stable_id() if $translation;
     my $gid = $gene->stable_id();
     my $id   = $transcript->external_name() eq '' ? $tid : $transcript->external_name();
-    my $type = $transcript->type();
+    my $type = $transcript->type() || $gene->type();
     $type =~ s/HUMACE-//g;
     
     my $zmenu = {
