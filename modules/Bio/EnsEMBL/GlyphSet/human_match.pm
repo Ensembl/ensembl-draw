@@ -19,7 +19,7 @@ sub features {
 
 sub href {
     my ($self, $id, $chr_pos ) = @_;
-    return $self->{'config'}->{'ext_url'}->get_url('HUMAN_CONTIGVIEW',$chr_pos);
+    return "/Homo_sapiens/$ENV{'ENSEMBL_SCRIPT'}?$chr_pos";
 }
 
 sub zmenu {

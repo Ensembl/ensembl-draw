@@ -86,6 +86,7 @@ sub _init {
 ## Now go through each feature in turn, drawing them
     my @glyphs;
     foreach my $i (keys %id){
+        print STDERR "XXX: $i\n\n";
         my $has_origin = undef;
     
 

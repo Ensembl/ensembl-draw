@@ -11,6 +11,7 @@ sub my_label { return "Mouse matches"; }
 
 sub features {
     my ($self) = @_;
+    
     return grep { 
         ( $_->isa("Bio::EnsEMBL::Ext::FeaturePair") || $_->isa("Bio::EnsEMBL::FeaturePair") ) 
 	        && $_->source_tag() eq "trace"
@@ -19,7 +20,7 @@ sub features {
 
 sub href {
     my ($self, $id, $chr_pos ) = @_;
-    return $self->{'config'}->{'ext_url'}->get_url('MOUSE_CONTIGVIEW',$chr_pos);
+    return "/Mus_musculus/$ENV{'ENSEMBL_SCRIPT'}?$chr_pos";
 }
 
 sub zmenu {
