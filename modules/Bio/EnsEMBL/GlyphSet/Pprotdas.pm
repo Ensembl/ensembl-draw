@@ -64,15 +64,18 @@ sub _init {
 	my $desc = $row[0]->das_feature_label();
 		
 	# Zmenu
+	my $zmenu = { 'caption' => $row[0]->das_type(),
+		      "01:".$key      => $row[0]->das_link() || undef };
+	if( my $m = $row[0]->das_method ){ $zmenu->{"02:Method: $m"} = undef }
+	if( my $n = $row[0]->das_note   ){ $zmenu->{"03:Note: $n"  } = undef }
+		      
+
 	my $Composite = new Sanger::Graphics::Glyph::Composite
 	  ({
 	    'x'     => $row[0]->start(),
 	    'y'     => $y,
 	    'href'  => $row[0]->das_link(),
-	    'zmenu' => {
-			'caption' => $row[0]->das_type(),
-			$key      => $row[0]->das_link() || undef,
-		       },
+	    'zmenu' => $zmenu,
 	   });
 
 	# Boxes
