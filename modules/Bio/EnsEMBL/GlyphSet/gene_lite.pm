@@ -45,6 +45,8 @@ sub _init {
     my $unknown_col   = $Config->get('gene_lite','unknown');
     my $ext_col       = $Config->get('gene_lite','ext');
     my $pseudo_col    = $Config->get('gene_lite','pseudo');
+    my $sanger_col       = $Config->get('gene_lite','sanger');
+    my $sanger_pseudo_col    = $Config->get('gene_lite','sangerpseudo');
     my $pix_per_bp    = $Config->transform->{'scalex'};
     my $vc_length     = $vc->length;
     my $bitmap_length = int( $vc_length * $pix_per_bp );
@@ -96,12 +98,39 @@ sub _init {
         foreach my $g (@$res){
             my( $gene_col, $gene_label, $high);
             $high       = exists $highlights{ $g->{'stable_id'} } ? 1 : 0;
-            $gene_label = $g->{'synonym'};
+            $gene_label = $g->{'synonym'} || $g->{'stable_id'};
             $high       = 1 if(exists $highlights{ $gene_label });
             if($g->{'type'} eq 'pseudo') {
                 $gene_col = $pseudo_col;
             } else {
                 $gene_col = $ext_col;
+            }
+            push @genes, {
+                'chr_start' => $g->{'chr_start'},
+                'chr_end'   => $g->{'chr_end'},
+                'start'     => $g->{'start'},
+                'strand'    => $g->{'strand'},
+                'end'       => $g->{'end'},
+                'ens_ID'    => '', #$g->{'stable_id'},
+                'label'     => $gene_label,
+                'colour'    => $gene_col,
+                'ext_DB'    => $g->{'db'},
+                'high'      => $high,
+                'type'      => $g->{'type'}
+            };
+        }
+    }
+    if ($type eq 'all'){
+        my $res = $vc->get_all_SangerGenes_startend_lite();
+        foreach my $g (@$res){
+            my( $gene_col, $gene_label, $high);
+            $high       = exists $highlights{ $g->{'stable_id'} } ? 1 : 0;
+            $gene_label = $g->{'synonym'} || $g->{'stable_id'};
+            $high       = 1 if(exists $highlights{ $gene_label });
+            if($g->{'type'} eq 'HUMACE-Pseudogene') {
+                $gene_col = $sanger_pseudo_col;
+            } else {
+                $gene_col = $sanger_col;
             }
             push @genes, {
                 'chr_start' => $g->{'chr_start'},
