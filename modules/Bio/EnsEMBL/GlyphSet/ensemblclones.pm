@@ -38,10 +38,12 @@ sub features {
     ###### Called whenever the DAS XML parser finds a feature      #######
     my $feature_callback =  sub {
         my $f = shift;
-        return if (exists $SEGMENTS{$f->segment->ref().".".$f->segment->version()} );
+     #  return if (exists $SEGMENTS{$f->segment->ref().".".$f->segment->version()} );
         $SEGMENTS{$f->segment->ref().".".$f->segment->version()}++;
-        #print STDERR "STORE: ", $f->segment->ref().".".$f->segment->version(), "\n";
+        warn "\nSTORE: ", $f->segment->ref().".".$f->segment->version(), "\n";
     };
+
+
     ###### Create a new DAS adaptor #######
     eval {
         $URL = "http://$URL" unless $URL =~ /https?:\/\//i;
@@ -53,13 +55,17 @@ sub features {
                                 );
     };
     if($@) {
-      warn("Ensembl Clones DASAdaptor creation error\n$@\n") 
+      warn("\nEnsembl Clones DASAdaptor creation error\n$@\n") 
     } 
        
-	my $dbh 	    = $adaptor->_db_handle();
+    my $dbh 	    = $adaptor->_db_handle();
     my $response    = undef;
     $types          = []; # just for now....
     
+#    print "<br>\nclones" , join "\n", @clones;
+#    print "<br>\nfeaturecallback" ,  $feature_callback;
+
+
     ###### DAS fetches happen here ##########
     if(1){     
        $response = $dbh->features(
@@ -69,7 +75,7 @@ sub features {
                    -type        =>  $types,
        );
     }
-    
+  
     ####### DAS URL debug trace ##########
     if(0){
         $response = $dbh->features(
@@ -80,19 +86,25 @@ sub features {
         );
     }
     
-    #print STDERR "SUCCESS\n" if $response->is_success;
-    #print STDERR Dumper($response);
-    #my $results = $response->results();
-    #print STDERR "RESULTS: $results\n";
-    #foreach my $seg (keys %{$results}){
-    #    print STDERR "SEGMENT: $seg\n";
-    #}
+   #print  "<br>SUCCESS<br>\n" if $response->is_success;
+   # print  "<br>" . Dumper($response);
+   # my $results = $response->results();
+   # print  "<Br>RESULTS: $results\n";
+   # foreach my $seg (keys %{$results}){
+   #     print  "<br>SEGMENT: $seg\n";
+   # }
     
     my $res = [];
+
     foreach my $c (keys %SEGMENTS){
 
         my ($name,$ver) = split(/\./,$c);
         foreach my $p (@{$slice->get_tiling_path()}){
+
+#print "<br>ensemblclones.pm contig name" .  $p->{contig}->name() . " name". $name;
+
+
+
             if ($p->{contig}->name() =~ /$name/){
                 my $s = Bio::EnsEMBL::SeqFeature->new();
                 
@@ -125,9 +137,9 @@ sub features {
 sub href {
     my ($self, $f ) = @_;
 
-my @cloneid = split(/\./ ,  $f->{'embl_clone'});
+my ($cloneid) = split /\./ ,  $f->{'embl_clone'};
 
-    return "http://www.ensembl.org/$ENV{'ENSEMBL_SPECIES'}/$ENV{'ENSEMBL_SCRIPT'}?clone=". $cloneid[0];
+    return "http://www.ensembl.org/$ENV{'ENSEMBL_SPECIES'}/$ENV{'ENSEMBL_SCRIPT'}?clone=". $cloneid;
 }
 
 sub colour {
