@@ -46,6 +46,27 @@ sub render_Text {
 }
 
 sub render_Circle {
+  my ($self, $glyph) = @_; 
+  my $href = $self->_getHref($glyph); 
+  return unless(defined $href); 
+
+  my ($cx, $cy) = $glyph->pixelcentre();
+  my $cw = $glyph->pixelwidth()/2;
+  
+  my $x1 = int($cx - $cw);
+  my $x2 = int($cx + $cw);
+  my $y1 = int($cy - $cw);
+  my $y2 = int($cy + $cw);
+  
+  $x1 = 0 if($x1<0);
+  $x2 = 0 if($x2<0);
+  $y1 = 0 if($y1<0);
+  $y2 = 0 if($y2<0);
+  
+  $y2 += 1;
+  $x2 += 1;
+  
+  $self->{'canvas'} = qq(<area coords="$x1 $y1 $x2 $y2"$href>\n).$self->{'canvas'}; 
 }
 
 sub render_Ellipse {
@@ -94,22 +115,25 @@ sub _getHref {
     if($self->{'show_zmenus'} == 1) {
       my $zmenu = $glyph->zmenu();
 
+      my $ua    = $ENV{'HTTP_USER_AGENT'} || "";
+      my $ns4   = undef;
+      if($ua =~ /Mozilla\/4/ && $ua !~ /MSIE/) {
+	$ns4 = 1;
+      }
+
       if(defined $zmenu) {
 	my $behaviour = $self->{'zmenu_behaviour'} || "onmouseover";
 	my $jsmenu    = &Sanger::Graphics::JSTools::js_menu($zmenu);
 	$alt          = "";
-	
-	if($behaviour="onclick" && !defined $href) {
-	  $href        = qq( href="$jsmenu");
-	  $alt         = qq( alt="click for menu");
-	  $title       = qq( title="click for menu");
-	  $onmouseover = "";
-	  $onmouseout  = "";
+       	$href      = qq( href="javascript:void(0)") unless(defined $href);
 
-	} else {
-	  $href        = qq( href="javascript:void(0);") unless( defined $href );
-	  $onmouseover = qq( $behaviour="$jsmenu");
+	my $ret = "return false;";
+	if($ns4) {
+	  $behaviour = "onmouseover";
+	  $ret       = "";
 	}
+
+	$onmouseover = qq( $behaviour="$jsmenu$ret");
       }
     }
     return "$href$onmouseover$onmouseout$alt$title" if(defined $href);
