@@ -22,7 +22,7 @@ sub init_label {
 
 sub checkDB {
     my $db = EnsWeb::species_defs->databases   || {};
-    return $db->{$_[1]} && $db->{$_[1]}->{NAME};
+    return $db->{$_[0]} && $db->{$_[0]}->{NAME};
 }
 
 sub _init {

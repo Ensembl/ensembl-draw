@@ -11,7 +11,7 @@ use Bio::EnsEMBL::Utils::Eprof qw(eprof_start eprof_end);
 
 sub checkDB {
     my $db = EnsWeb::species_defs->databases   || {};
-    return $db->{$_[1]} && $db->{$_[1]}->{NAME};
+    return $db->{$_[0]} && $db->{$_[0]}->{NAME};
 }
 
 sub _init {
