@@ -60,13 +60,19 @@ sub zmenu {
         'caption'                       => $id,
         "01:Gene information"		=> $self->href( $vt ),
         '02:Transcript information'     => "/$ENV{'ENSEMBL_SPECIES'}/transinfo?transcript=$id",
-        '03:Protein information'        => "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=".$vt->{'translation'},
         '04:Supporting evidence'        => "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$id",
         '06:Gene sequence'   => "/$ENV{'ENSEMBL_SPECIES'}/exportview?type=feature&ftype=gene&id=".$vt->{'gene'},
-        '07:Protein sequence (FASTA)'   => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=".$vt->{'translation'},
         '08:cDNA sequence (FASTA)'              => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=cdna&id=$id",
 	"09:Type: $T"   => ''
     };
+    # pseudogene checks
+    if ($vt->{'translation'}){
+	$zmenu->{'03:Protein information'} = "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=".$vt->{'translation'};
+	$zmenu->{'07:Protein sequence(FASTA)'} = "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=".$vt->{'translation'};
+    }
+    else {
+	$zmenu->{'10:Does not translate'} = "";
+    }
 
 	return $zmenu;
 }
