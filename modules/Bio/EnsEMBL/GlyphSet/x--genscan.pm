@@ -72,7 +72,7 @@ sub _init {
 		my $id      = $f->id();
 		$Composite->{'zmenu'} = { 
 		    caption => "Genscan $id",
-		    'View peptide' => "/perl/exportview?type=feature&ftype=genscan&id=$id",		
+		    'View peptide' => "/$ENV{'ENSEMBL_SPECIES'}/exportview?type=feature&ftype=genscan&id=$id",		
 		},
 	    }
 	    
