@@ -59,7 +59,7 @@ sub _init {
     my $min_start;
     my $max_end; 
     foreach my $band (reverse @bands){
-	my $chr = $band->chromosome();
+	my $chr = $band->chr_name();
 	my $bandname = $band->name();
 	
 	my $start = $band->start();
