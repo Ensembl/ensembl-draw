@@ -25,7 +25,7 @@ sub colours {
 
 sub features {
     my $self = shift;
-    return $self->{'container'}->get_all_VirtualTranscripts_startend_lite_coding( 'sanger' );
+    return $self->{'container'}->get_all_VirtualTranscripts_startend_lite( 'sanger' );
 }
 
 sub colour {
