@@ -8,8 +8,10 @@ sub my_label { return "TBlastx Human"; }
 
 sub features {
     my ($self) = @_;
-    return
-$self->{'container'}->get_all_SimilarityFeatures_by_strand("human_ensembl_120",1,$self->glob_bp,$self->strand());
+    my @Q = $self->{'container'}->get_all_SimilarityFeatures_by_strand("human_ensembl_120",1,$self->glob_bp,$self->strand());
+    print STDERR map { ">> ".$_->start.", ".$_->end.", ".$_->id.".$_->strand.", " <<\n" } grep { $_->start > $_->end } @Q;
+    print STDERR map { "== ".$_->start.", ".$_->end.", ".$_->id.".$_->strand.", " ==\n" } grep { $_->start < $_->end } @Q;
+    return @Q;
 }
 
 sub href {
