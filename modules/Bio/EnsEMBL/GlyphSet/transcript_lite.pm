@@ -22,70 +22,66 @@ sub colours {
     };
 }
 
-sub features {
-    my $self = shift;
-
-    my @transcripts;
-
-    my @genes = $self->{container}->get_Genes_by_type('ensembl');
-
-    foreach $gene (@genes) {
-      push @transcripts, $gene->get_all_Transcripts();
-    }
-
-    return @transcripts;
+sub transcript_type {
+  my $self = shift;
+  
+  return 'ensembl';
 }
 
 sub colour {
-    my ($self, $vt, $colours, %highlights) = @_;
+    my ($self, $gene, $transcript, $colours, %highlights) = @_;
     return ( 
-        $colours->{$vt->{'type'}}, 
-        exists $highlights{$vt->{'stable_id'}} ? $colours->{'superhi'} : (
-         exists $highlights{$vt->{'synonym'}}  ? $colours->{'superhi'} : (
-          exists $highlights{$vt->{'gene'}}    ? $colours->{'hi'} : undef ))
+      $colours->{$transcript->type()},
+      exists $highlights{$transcript->stable_id()} ? $colours->{'superhi'} : 
+     (exists $highlights{$transcript->external_name()} ? $colours->{'superhi'} :
+     (exists $highlights{$gene->stable_id()} ? $colours->{'hi'} : undef ))
     );
 }
 
 sub href {
-    my ($self, $vt) = @_;
+    my ($self, $gene, $transcript ) = @_;
     return $self->{'config'}->{'_href_only'} eq '#tid' ?
-        "#$vt->{'stable_id'}" :
-        qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$vt->{'gene'});
+        "#$transcript->stable_id()" : 
+        qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$gene->stable_id());
 
 }
 
 sub zmenu {
-    my ($self, $vt) = @_;
-    my $vtid = $vt->{'stable_id'};
-    my $id   = $vt->{'synonym'} eq '' ? $vtid : $vt->{'synonym'};
+    my ($self, $gene, $transcript) = @_;
+    my $vtid = $transcript->stable_id();
+    my $id   = $transcript->external_name() eq '' ? $vtid : $transcript->external_name();
     my $zmenu = {
         'caption'                       => $id,
         "00:Transcr:$vtid"              => "",
-        "01:(Gene:$vt->{'gene'})"       => "",
-        '03:Transcript information'     => "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$vt->{'gene'}",
-        '04:Protein information'        => "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=".$vt->{'translation'},
+        "01:(Gene:$gene->stable_id())"       => "",
+        '03:Transcript information'     => "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$gene->stable_id()",
+        '04:Protein information'        => "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=".$transcript->translation_id(),
         '05:Supporting evidence'        => "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$vtid",
         '07:Protein sequence (FASTA)'   => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=$vtid",
         '08:cDNA sequence'              => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=cdna&id=$vtid",
     };
     my $DB = EnsWeb::species_defs->databases;
-    $zmenu->{'06:Expression information'}
-      = "/$ENV{'ENSEMBL_SPECIES'}/sageview?alias=$vt->{'gene'}" if $DB->{'ENSEMBL_EXPRESSION'};
+
+    if($DB->{'ENSEMBL_EXPRESSION'}) {
+      $zmenu->{'06:Expression information'} = 
+	"/$ENV{'ENSEMBL_SPECIES'}/sageview?alias=$gene->stable_id()";
+    }
+
     return $zmenu;
 }
 
 sub text_label {
-    my ($self, $vt) = @_;
-    my $vtid = $vt->{'stable_id'};
-    my $id   = $vt->{'synonym'} eq '' ? $vtid : $vt->{'synonym'};
-    if( $self->{'config'}->{'_both_names_'} ) {
-        return $vtid.($vt->{'synonym'} eq '' ? '' : " ($id)" );
+    my ($self, $gene, $transcript) = @_;
+    my $tid = $transcript->stable_id();
+    my $id  = ($transcript->external_name() eq '') ? 
+      $tid : $transcript->external_name();
+
+    if( $self->{'config'}->{'_both_names_'} eq 'yes') {
+        return $tid.(($transcript->external_name() eq '') ? '' : " ($id)" );
     }
     return $self->{'config'}->{'_transcript_names_'} eq 'yes' ?
-        ($vt->{'type'} eq 'unknown' ? 'NOVEL' : $id) : $vtid;    
-    return $self->{'config'}->{'_both_names_'} eq 'yes' ?
-        ($vt->{'type'} eq 'unknown' ? 'NOVEL' : $id) : $vtid;    
-}
+        ($transcript->type() eq 'unknown' ? 'NOVEL' : $id) : $tid;    
+  }
 
 sub legend {
     my ($self, $colours) = @_;

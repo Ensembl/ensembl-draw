@@ -17,19 +17,10 @@ sub colours {
         'col'              => $Config->get('genscan_lite','col')
     };
 }
-
-sub features {
+sub trascript_type {
   my $self = shift;
 
-  my @transcripts;
-  
-  my @genes = $self->{container}->get_Genes_by_type('genscan');
-
-  foreach $gene (@genes) {
-    push @transcripts, $gene->get_all_Transcripts();
-  }
-  
-  return @transcripts;
+  return 'genscan';
 }
 
 sub colour {
@@ -38,18 +29,18 @@ sub colour {
 }
 
 sub href {
-    my ($self, $vt) = @_;
+    my ($self, $gene, $transcript) = @_;
     return undef;
 }
 
 sub zmenu {
-    my ($self, $vt) = @_;
+    my ($self, $gene, $transcript) = @_;
     return undef;
 
 }
 
 sub text_label {
-    my ($self, $vt) = @_;
+    my ($self, $gene, $transcript) = @_;
     return undef;
 }
 

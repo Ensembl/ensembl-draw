@@ -18,50 +18,41 @@ sub colours {
     };
 }
 
-sub features {
-    my @transcripts;
+sub transcript_type {
+  my $self = shift;
 
-    my @genes = $self->{container}->get_Genes_by_type('est');
-
-    foreach $gene (@genes) {
-      push @transcripts, $gene->get_all_Transcripts();
-    }
-
-    return @transcripts;
+  return 'est';
 }
 
 sub colour {
-    my ($self, $vt, $colours, %highlights) = @_;
-    return (  $colours->{$vt->{'type'}} );
+    my ($self, $gene, $transcript, $colours, %highlights) = @_;
+    return (  $colours->{$transcript->type()} );
 }
 
 sub href {
-    my ($self, $vt) = @_;
-    return $self->{'config'}->{'_href_only'} eq '#tid' ?
-        "#$vt->{'stable_id'}" :
-        qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?db=estgene&gene=$vt->{'gene'});
+    my ($self, $gene, $transcript) = @_;
 
-}
+    if( $self->{'config'}->{'_href_only'} eq '#tid' ) {
+      return "#$transcript->stable_id()";
+    }
+
+    return qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?db=estgene&gene=$gene->stable_id());
+  }
 
 sub zmenu {
-    my ($self, $vt) = @_;
-    my $vtid = $vt->{'stable_id'};
-    my $id   = $vt->{'synonym'} eq '' ? $vtid : $vt->{'synonym'};
-    my $zmenu = 
-      {
-       'caption'                => "EST Gene",
-       "02:Gene: $vt->{gene}" => $self->href( $vt ),
-      };
-    $zmenu->{"03:Protien: $vt->{translation}"} =
-      qq(/$ENV{'ENSEMBL_SPECIES'}/protview?db=estgene&peptide=$vt->{translation}) if defined $vt->{translation};
+    my ($self, $gene, $transcript) = @_;
+
+    my $zmenu = {
+       'caption'                     => "EST Gene",
+       "02:Gene: $gene->stable_id()" => $self->href( $gene, $transcript ),
+    };
+
+    my $translation_id = $transcript->translation_id();
+
+    if(defined $translation_id) {
+      $zmenu->{"03:Protien: $translation_id"} =
+	qq(/$ENV{'ENSEMBL_SPECIES'}/protview?db=estgene&peptide=$translation_id);
     
-    
-#    my $zmenu = {
-#        'caption'                       => $id,
-#        "00:Transcr:$vtid"              => "",
-#        "01:(Gene:$vt->{'gene'})"       => "",
-#        "02:Transcript data"            => $self->href($vt),
-#    };
     return $zmenu;
 }
 
