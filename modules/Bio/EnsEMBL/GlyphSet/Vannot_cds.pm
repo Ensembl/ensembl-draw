@@ -30,7 +30,7 @@ sub _init {
     my $known_genes = $self->{'container'}->{'da'}->get_density_per_chromosome_type($chr,'known');
     return unless $known_genes->size && $cds->size(); 
     
-return unless $Hscale_factor =$cds->{'_biggest_value'} && $known_genes->{'_biggest_value'};
+    return unless $cds->{'_biggest_value'} && $known_genes->{'_biggest_value'};
 
     my $Hscale_factor =$cds->{'_biggest_value'} / $known_genes->{'_biggest_value'};
 
