@@ -121,6 +121,7 @@ sub _init {
                 $self->errorTrack( 'Error retrieving '.$self->{'extras'}->{'caption'}.' features ('.$f->id.')' );
                 return;
             }
+            # warn "STRAND: @{[$f->strand(),$f->das_orientation]}";
             next if $strand eq 'b' && ( $f->strand() !=1 && $STRAND==1 || $f->strand() ==1 && $STRAND==-1);
             my $fid = $f->das_id;
             next unless $fid;
