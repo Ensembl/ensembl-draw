@@ -85,9 +85,9 @@ sub _push_unshift {
     $glyph->y($gy - $self->y()) unless(defined $glyph->absolutey());
 
     if($direction eq 'push') {
-        push @{$self->{'composite'}}, $glyph;
+        CORE::push @{$self->{'composite'}}, $glyph;
     } else {
-        unshift @{$self->{'composite'}}, $glyph;
+        CORE::unshift @{$self->{'composite'}}, $glyph;
     }
   }
 }
