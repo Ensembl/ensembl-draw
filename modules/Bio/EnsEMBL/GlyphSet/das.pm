@@ -253,7 +253,7 @@ sub bump{
 
 sub zmenu {
         my( $self, $f ) = @_;
-        my $id = $f->das_id;
+        my $id = $f->das_group_id() || $f->das_id();
         my $zmenu = {
             'caption'         => $self->{'extras'}->{'label'},
 #                "DAS source info" => $self->{'extras'}->{'url'},
@@ -273,6 +273,7 @@ sub zmenu {
         	$href = $zmenu->{ "20:$type sequence" } unless defined($href);
             }
         }
+        $href = $f->das_link() if $f->das_link() && !$href;
         if($id && uc($id) ne 'NULL') {
             $zmenu->{"01:ID: $id"} = '';
             if($self->{'extras'}->{'linkURL'}){
