@@ -27,4 +27,4 @@ sub managed_name {
     return "managed_repeat_$T";
 }
 
-1 ;
+1;

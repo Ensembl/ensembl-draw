@@ -137,12 +137,12 @@ sub new {
         
         my $box_glyph = new Sanger::Graphics::Glyph::Rect({
     	        'x'      	=> 2,
-		    	'y'      	=> 0,
-		    	'width'  	=> 10,
-		    	'height' 	=> 8,
-		    	'bordercolour'	=> $black,
-		    	'absolutey' => 1,
-			'absolutex' => 1,
+		'y'      	=> 0,
+		'width'  	=> 10,
+		'height' 	=> 8,
+		'bordercolour'	=> $black,
+		'absolutey' => 1,
+		'absolutex' => 1,
         });
         my $horiz_glyph = new Sanger::Graphics::Glyph::Text({
             'text'      => $glyphset->bumped() eq 'yes' ? '-' : '+',
@@ -222,6 +222,7 @@ sub new {
             my $background = new Sanger::Graphics::Glyph::Rect({
                 'x'         => 0,
                 'y'         => $gminy,
+                'z'         => -100,
                 'width'     => $Config->image_width(),
                 'height'    => $glyphset->maxy() - $gminy,
                 'colour'    => $bgcolours->[$iteration % 2],
