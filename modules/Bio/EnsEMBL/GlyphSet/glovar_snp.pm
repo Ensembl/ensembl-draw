@@ -54,6 +54,10 @@ sub my_label { return "Glovar SNPs"; }
 
 sub features {
     my $self = shift;
+    
+    ## don't display glovar SNPs on chr6 haplotypes (they broken ...)
+    return if ($self->{'container'}->chr_name =~ /_/);
+    
     my @snps = 
         map { $_->[1] } 
         sort { $a->[0] <=> $b->[0] }
