@@ -23,8 +23,8 @@ sub _init {
     return unless ($self->strand() == -1);
 
     my $BOX_HEIGHT    = 4;
-    my $BOX_WIDTH     = 60;
-    my $NO_OF_COLUMNS = 5;
+    my $BOX_WIDTH     = 10;
+    my $NO_OF_COLUMNS = 4;
     my $FONTNAME      = "Tiny";
 
     my $vc            = $self->{'container'};

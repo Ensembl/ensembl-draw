@@ -60,7 +60,6 @@ sub colour {
   #             '5PRIME_UTR','3PRIME_UTR','INTERGENIC'
 
   my $consequence_type = $f->consequence_type();
- warn Data::Dumper::Dumper($self->{'config'}->{'variation_types'});
   unless($self->{'config'}->{'variation_types'}{$consequence_type}) {
     my %labels = (
          	  '_'                    => 'Other SNPs',
@@ -78,7 +77,6 @@ sub colour {
      $labels{"$consequence_type"} => $self->{'colours'}{"$consequence_type"};
     $self->{'config'}->{'variation_types'}{$consequence_type} = 1;
   }
-  warn Data::Dumper::Dumper($self->{'colours'});
   return $self->{'colours'}{"$consequence_type"},
     $self->{'colours'}{"label$consequence_type"}, 
       $f->{'_range_type'} eq 'between' ? 'invisible' : '';
