@@ -86,6 +86,10 @@ GENE:
         $type = $eg->type();
         next if $type =~/^(genebuild|genewise|HUMACE|merged)/;
       
+TRANSCRIPT:
+        for my $transcript ($eg->each_Transcript()) {
+            next if ($target && ($transcript->stable_id() ne $target) );
+
       my $tstrand = $transcript->strand_in_context($vcid);
       next TRANSCRIPT if($tstrand != $self->strand());
       
