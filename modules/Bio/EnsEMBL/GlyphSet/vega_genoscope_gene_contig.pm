@@ -22,6 +22,11 @@ return 'genoscope';
 }
 
 
+sub my_depth {
+ my ($self) = @_;
+ my $Config  = $self->{'config'};
+return $Config->get('vega_sanger_gene_contig', 'dep') ;
+}
 
 
 

@@ -25,6 +25,11 @@ return 'havana';
 }
 
 
+sub my_depth {
+ my ($self) = @_;
+ my $Config  = $self->{'config'};
+return $Config->get('vega_havana_gene_contig', 'dep') ;
+}
 
 
 

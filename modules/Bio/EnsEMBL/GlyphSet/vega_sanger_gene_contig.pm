@@ -12,12 +12,19 @@ use Bio::EnsEMBL::Utils::Eprof qw(eprof_start eprof_end);
 
 
 sub my_label {
-return 'Sanger Genes';
+return 'Dunham Group Genes';
 }
 
 sub logic_name {
 return 'sanger';
 }
+
+sub my_depth {
+ my ($self) = @_;
+ my $Config  = $self->{'config'};
+return $Config->get('vega_sanger_gene_contig', 'dep') ;
+}
+
 
 1;
         

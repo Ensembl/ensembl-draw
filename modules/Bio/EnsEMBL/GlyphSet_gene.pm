@@ -61,15 +61,19 @@ sub _init {
     # call on ensembl lite to give us the details of all
     # genes in the virtual contig
     &eprof_start("gene-virtualgene_start-get");
-    my $known_col     = $Config->get('_colours','known');
-    my $xref_col      = $Config->get('_colours','xref');
-    my $pred_col      = $Config->get('_colours','pred');
+
+
+    my $known_col     = $Config->get('_colours','_KNOWN');
+    my $xref_col      = $Config->get('_colours','_XREF');
+    my $pred_col      = $Config->get('_colours','PRED');
     my $hi_col        = $Config->get('_colours','hi');
-    my $unknown_col   = $Config->get('_colours','unknown');
-    my $ext_col       = $Config->get('_colours','ext');
-    my $pseudo_col    = $Config->get('_colours','pseudo');
-    my $rat_colours = { 
-       'refseq' => $Config->get('_colours','refseq'), 
+    my $unknown_col   = $Config->get('_colours','_');
+    my $ext_col       = $Config->get('_colours','_');
+    my $pseudo_col    = $Config->get('_colours','_');
+   
+
+ my $rat_colours = { 
+       'refseq' => $Config->get('_colours','_XREF'), 
     }; 
 
     my $sanger_colours = { 
@@ -79,8 +83,8 @@ sub _init {
            'Novel_Transcript' => $Config->get('_colours','Novel_Transcript'), 
            'Pseudogene'       => $Config->get('_colours','Pseudogene'), 
 	   'Ig_Segment'       => $Config->get('_colours','Ig_Segment'), 	  
-	   'Ig_Pseudogene_Segment'   =>$Config->get('_colours','Ig_Pseudogene_Segment') , 
-	   'Predicted_Gene'  => $Config->get('_colours','Predicted_Gene'), 
+	   'Ig_Pseudogene_Segment'   =>$Config->get('_colours','Ig_Pseudogene') , 
+	   'Predicted_Gene'  => $Config->get('_colours','Predicted_Gene')
     }; 
 
     my $pix_per_bp    = $Config->transform->{'scalex'};
@@ -170,10 +174,13 @@ sub _init {
         });
 		if($show_navigation) {
 			$rect->{'zmenu'} = {
-				'caption' 											=> $g->{'label'},
-				"bp: $g->{'chr_start'}-$g->{'chr_end'}" 			=> '',
-				"length: ".($g->{'chr_end'}-$g->{'chr_start'}+1) 	=> ''
+	    
+'caption' 	=> $g->{'label'},
+"bp: $g->{'chr_start'}-$g->{'chr_end'}" 			=> '',
+ "length: ".($g->{'chr_end'}-$g->{'chr_start'}+1) 	=> ''
 			}; 
+
+
             if( $g->{'ens_ID'} ne '' ) {
   		$rect->{'zmenu'}->{"Gene: $g->{'ens_ID'}"} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$g->{'ens_ID'}"; 
 
@@ -181,7 +188,8 @@ sub _init {
             }
 		}
     
-        my $depth = $Config->get('gene_lite', 'dep');
+
+        my $depth = $self->my_depth() ; # $Config->get('gene_lite', 'dep');
         if ($depth > 0){ # we bump
             my $bump_start = int($rect->x() * $pix_per_bp);
             $bump_start = 0 if ($bump_start < 0);
