@@ -59,7 +59,7 @@ sub _init {
     # fetch the chromosome bands that cover this VC.
     my $kba   = $self->{'container'}->adaptor()->db()->get_KaryotypeBandAdaptor();
     my @bands = $kba->fetch_all_by_chromosome($chr);
-    my $chr_length = $self->{'container'}->fetch_chromosome_length();
+    my $chr_length = $self->{'container'}->get_Chromosome()->length();
     
     # get rid of div by zero...
     $chr_length |= 1;
