@@ -51,17 +51,19 @@ sub text_label {
 # Returns the type of transcript this is as a string
 #
 sub features {  
+  my $self = shift;
+
   $self->warn("GlyphSet_transcript->features is deprecated");
   return []; 
 }
 
 sub transcript_type {
+  my $self = shift;
+
  # Implemented by subclass 
  $self->throw("transcript_type not implemented by subclass of Glyphset_transcript\n");
 }
   
-}
-
 sub _init {
     my ($self) = @_;
 
@@ -97,12 +99,14 @@ sub _init {
       # For alternate splicing diagram only draw transcripts in gene
       next if $target_gene && ($gene->stable_id() ne $target_gene);
 
-      foreach $transcript ($gene->get_all_Transcripts()) {
+      foreach my $transcript ($gene->get_all_Transcripts()) {
+	print STDERR "DRAWING TRANSCRIPT: $transcript->stable_id()\n";
+
 	my @exons = $transcript->get_all_Exons();
 	# Skip if no exons for this transcript
-	next if $@exons == 0;
+	next if (@exons == 0);
 	# If stranded diagram skip if on wrong strand
-	next if $@exons[0]->strand() != $strand;
+	next if (@exons[0]->strand() != $strand);
 	# For exon_structure diagram only given transcript
 	next if $target && ($transcript->stable_id() ne $target);
 
@@ -128,22 +132,24 @@ sub _init {
         my $coding_start = $transcript->coding_start() || $transcript_start;
         my $coding_end   = $transcript->coding_end()   || $transcript_end;
 
-        for(my $i = 0; $i < $@exons; $i++) {
-	  my $exon = $@exons[$i];
-	  my $next_exon = ($i+1 < $@exons) ? $@exons[$i+1] : undef;
+        for(my $i = 0; $i < @exons; $i++) {
+	  my $exon = @exons[$i];
+	  my $next_exon = ($i+1 < @exons) ? @exons[$i+1] : undef;
 	    
 	  #First draw the exon
 	  # We are finished if this exon starts outside the slice
 	  last if $exon->start() > $container->length();
 
+	  my($box_start, $box_end);
+
 	  # only draw this exon if is inside the slice
 	  if($exon->end() > 0) {
 	    #calculate exon region within boundaries of slice
-	    my $box_start = $exon->start();
+	    $box_start = $exon->start();
 	    if($box_start < 1) {
 	      $box_start = 1;
 	    }
-	    my $box_end = $exon->end();
+	    $box_end = $exon->end();
 	    if($box_end > $container->length()) {
 	      $box_end = $container->length();
 	    }

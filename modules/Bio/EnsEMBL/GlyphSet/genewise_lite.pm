@@ -50,7 +50,7 @@ sub zmenu {
     my ($self, $gene, $transcript) = @_;
     my $vtid = $transcript->stable_id();
     my $id   = $transcript->external_name() eq '' 
-      ? $vtid : $transcript_external_name();
+      ? $vtid : $transcript->external_name();
     my $zmenu = {
         'caption'                       => $id,
         "00:Transcr:$vtid"              => "",

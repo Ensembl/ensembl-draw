@@ -30,14 +30,14 @@ sub colour {
 }
 
 sub href {
-    my ($self, $gene, $transcript) = @_;
+  my ($self, $gene, $transcript) = @_;
 
-    if( $self->{'config'}->{'_href_only'} eq '#tid' ) {
-      return "#$transcript->stable_id()";
-    }
-
-    return qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?db=estgene&gene=$gene->stable_id());
+  if( $self->{'config'}->{'_href_only'} eq '#tid' ) {
+    return "#$transcript->stable_id()";
   }
+
+  return qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?db=estgene&gene=$gene->stable_id());
+}
 
 sub zmenu {
     my ($self, $gene, $transcript) = @_;
@@ -52,9 +52,10 @@ sub zmenu {
     if(defined $translation_id) {
       $zmenu->{"03:Protien: $translation_id"} =
 	qq(/$ENV{'ENSEMBL_SPECIES'}/protview?db=estgene&peptide=$translation_id);
+    }
     
     return $zmenu;
-}
+  }
 
 sub text_label { return ''; }
 
@@ -62,7 +63,7 @@ sub legend {
     my ($self, $colours) = @_;
     return ('est_genes', 1000, 
         [
-            'EST genes'                       => $colours->{'genomewise'},
+            'EST genes' => $colours->{'genomewise'},
         ]
     );
 }
