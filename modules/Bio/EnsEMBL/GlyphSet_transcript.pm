@@ -134,6 +134,10 @@ sub _init {
 
         for(my $i = 0; $i < @exons; $i++) {
 	  my $exon = @exons[$i];
+	  
+	  #Skip this exon if it is not defined (can happen w/ genscans)
+	  next unless defined $exon; 
+
 	  my $next_exon = ($i+1 < scalar(@exons)) ? @exons[$i+1] : undef;
 	    
 	  #First draw the exon
@@ -153,7 +157,7 @@ sub _init {
 	    if($box_end > $container->length()) {
 	      $box_end = $container->length();
 	    }
-	  
+
 	    if($box_start < $coding_start || $box_end > $coding_end ) {
 	      # The start of the transcript is before the start of the coding
 	      # region OR the end of the transcript is after the end of the
@@ -171,8 +175,6 @@ sub _init {
 		       });
 	      $Composite->push($rect);
 	    }
-
-
 
 	    #
 	    # Calculate and draw the coding region of the exon

@@ -10,8 +10,9 @@ sub my_label { return "Proteins"; }
 sub features {
     my ($self) = @_;
 
-    return  
-      $self->{'container'}->get_ProteinAlignFeatures_above_score('swall',80);
+    my $slice = $self->{'container'};
+
+    return $slice->get_all_ProteinAlignFeatures_above_score('swall',80);
 }
 
 sub href {

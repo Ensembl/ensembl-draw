@@ -26,17 +26,13 @@ sub genes {
   my @transcripts = ();
   my @genes = ();
 
-  #TO BE DONE:  obtain genscan transcripts
-
-#
-#
-#
-#
-
+  #obtain genscan transcripts
+  @transcripts = 
+    $self->{'container'}->get_all_PredictionTranscripts('Genscan');
 
   #wrap each transcript in a gene object
   foreach my $transcript (@transcripts) {
-    my $gene = new Bio::Ensembl::Gene();
+    my $gene = new Bio::EnsEMBL::Gene();
 
     $gene->add_Transcript($transcript);
     
@@ -47,7 +43,7 @@ sub genes {
 }
 
 sub colour {
-    my ($self, $vt, $colours, %highlights) = @_;
+    my ($self, $gene, $transcipt, $colours, %highlights) = @_;
     return ( $colours->{'col'}, undef );
 }
 
