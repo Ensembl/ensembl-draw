@@ -97,6 +97,7 @@ sub new {
         'hi'         => 'highlight1',
         'superhi'    => 'highlight2',
         '_refseq' => 'blue',
+        '_tge' => 'blue',
   );
   return $self;
 }
