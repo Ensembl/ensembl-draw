@@ -28,68 +28,63 @@ sub init_label {
 }
 
 sub _init {
-  my ($self) = @_;
-  my $Config        = $self->{'config'};
-  my $container     = $self->{'container'};
-  my $target        = $Config->{'_draw_single_Transcript'};
-  my $target_gene   = $Config->{'geneid'};
-  my $y             = 0;
-  my $h             = $target ? 30 : 8;   #Single transcript mode - set height to 30 - width to 8!
-  my $vcid          = $container->id();
-  my %highlights;
-  @highlights{$self->highlights} = ();    # build hashkeys of highlight list
-  my @bitmap        = undef;
-  my $im_width      = $Config->image_width();
-  my $unknown_colour= $Config->get('transcript','unknown');
-  my $known_colour  = $Config->get('transcript','known');
-  my $pseudo_colour = $Config->get('transcript','pseudo');
-  my $ext_colour    = $Config->get('transcript','ext');
-  my $hi_colour     = $Config->get('transcript','hi');
-  my $superhi_colour= $Config->get('transcript','superhi');
-  my $type          = $Config->get('transcript','src');
-  my @allgenes      = ();
-  my $fontname      = "Tiny";    
-  my $pix_per_bp    = $Config->transform->{'scalex'};
-  my $bitmap_length = int($Config->container_width() * $pix_per_bp);
-  my $URL = ExtURL->new();
-  
-  my $colour;
-  #&eprof_start('transcript - get_all_Genes_exononly()');
-  @allgenes = $container->get_all_Genes_exononly();
-  #&eprof_end('transcript - get_all_Genes_exononly()');
-  #&eprof_start('transcript - get_all_ExternalGenes()');
-  unless($target) { # Skip in single transcript mode
-    if ($type eq 'all'){
-      foreach my $vg ( $container->get_all_ExternalGenes() ) {
-	$vg->{'_is_external'} = 1;
-	push (@allgenes, $vg);
-      }
-    } 
-  }                 # end of Skip in single transcript mode
-  #&eprof_end('transcript - get_all_ExternalGenes()');
-  $type = undef;
-  my $PREFIX = "^".EnsWeb::species_defs->ENSEMBL_PREFIX."T";
-  
- GENE:
-  my $count = 0;
-  for my $eg (@allgenes) {
-    my $vgid = $eg->stable_id();
-    next if ($target_gene && ($vgid ne $target_gene));
-    my $highlight_gene = exists $highlights{$vgid} ? 1 : 0;
-    my $gene_label;
-    eval {
-      my @dblinks = $eg->each_DBLink();
-      unless( $target ) { #Skip in single transcript mode
-	($gene_label, $highlight_gene) = $self->_label_highlight($vgid, $highlight_gene, \%highlights, \@dblinks)
-      }                   #end of Skip in single transcript mode
-    };
-    $type = $eg->type();
+    my ($self) = @_;
+    my $Config        = $self->{'config'};
+    my $container     = $self->{'container'};
+    my $target        = $Config->{'_draw_single_Transcript'};
+    my $target_gene   = $Config->{'geneid'};
+    my $y             = 0;
+    my $h             = $target ? 30 : 8;   #Single transcript mode - set height to 30 - width to 8!
+    my $vcid          = $container->id();
+    my %highlights;
+    @highlights{$self->highlights} = ();    # build hashkeys of highlight list
+    my @bitmap        = undef;
+    my $im_width      = $Config->image_width();
+    my $unknown_colour= $Config->get('transcript','unknown');
+    my $known_colour  = $Config->get('transcript','known');
+    my $pseudo_colour = $Config->get('transcript','pseudo');
+    my $ext_colour    = $Config->get('transcript','ext');
+    my $hi_colour     = $Config->get('transcript','hi');
+    my $superhi_colour= $Config->get('transcript','superhi');
+    my $type          = $Config->get('transcript','src');
+    my @allgenes      = ();
+    my $fontname      = "Tiny";    
+    my $pix_per_bp    = $Config->transform->{'scalex'};
+    my $bitmap_length = int($Config->container_width() * $pix_per_bp);
+	my $URL = ExtURL->new();
+ 
+    my $colour;
+    #&eprof_start('transcript - get_all_Genes_exononly()');
+    @allgenes = $container->get_all_Genes_exononly();
+    #&eprof_end('transcript - get_all_Genes_exononly()');
+    #&eprof_start('transcript - get_all_ExternalGenes()');
+    unless($target) { # Skip in single transcript mode
+        if ($type eq 'all'){
+            foreach my $vg ( $container->get_all_ExternalGenes() ) {
+                $vg->{'_is_external'} = 1;
+                push (@allgenes, $vg);
+            }
+        } 
+    }                 # end of Skip in single transcript mode
+    #&eprof_end('transcript - get_all_ExternalGenes()');
+    $type = undef;
+    my $PREFIX = "^".EnsWeb::species_defs->ENSEMBL_PREFIX."T";
     
-    #        print STDERR sprintf( "%-10s %-20s %-20s %-20s\n",'GENE:',$vgid,$type, $gene_label );
-  TRANSCRIPT:
-    for my $transcript ($eg->each_Transcript()) {
-      next if ($target && ($transcript->stable_id() ne $target) );
-      ########## test transcript strand
+GENE:
+    my $count = 0;
+    for my $eg (@allgenes) {
+        my $vgid = $eg->stable_id();
+        next if ($target_gene && ($vgid ne $target_gene));
+        my $highlight_gene = exists $highlights{$vgid} ? 1 : 0;
+        my $gene_label;
+        eval {
+            my @dblinks = $eg->each_DBLink();
+            unless( $target ) { #Skip in single transcript mode
+                ($gene_label, $highlight_gene) = $self->_label_highlight($vgid, $highlight_gene, \%highlights, \@dblinks)
+            }                   #end of Skip in single transcript mode
+        };
+        $type = $eg->type();
+        next if $type =~/^(genebuild|genewise|HUMACE|merged)/;
       
       my $tstrand = $transcript->strand_in_context($vcid);
       next TRANSCRIPT if($tstrand != $self->strand());
