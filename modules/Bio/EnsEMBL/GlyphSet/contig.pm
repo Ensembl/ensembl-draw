@@ -197,8 +197,9 @@ sub _init {
                 'absolutey' => 1,
 			});
             my $cid = $rid;
-            $cid=~s/^([^\.]+\.[^\.]+)\..*/$1/;
-            $glyph->{'href'} = "/$ENV{'ENSEMBL_SPECIES'}/contigview?clone=$cid";
+            #$cid=~s/^([^\.]+\.[^\.]+)\..*/$1/;
+            $cid=~s/^([^\.]+)\..*/$1/;
+            $glyph->{'href'} = "/$ENV{'ENSEMBL_SPECIES'}/contigview?contig=$rid";
             $glyph->{'zmenu'} = {
                 'caption' => $rid,
 	            "01:Clone: $clone"    => '',
