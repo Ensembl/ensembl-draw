@@ -25,8 +25,13 @@ sub _init {
 
     ########## only draw contigs once - on one strand
     return unless ($self->strand() == -1);
-
 	my $vc = $self->{'container'};
+    my $useAssembly;
+    eval {
+        $useAssembly = $vc->has_AssemblyContigs;
+    };
+    print STDERR "Using assembly $useAssembly\n";
+    return unless $useAssembly;
     my $length   = $vc->length() +1;
     my $Config   = $self->{'config'};
 	my $module = ref($self);
