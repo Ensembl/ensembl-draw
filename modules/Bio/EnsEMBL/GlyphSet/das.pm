@@ -9,7 +9,6 @@ use Sanger::Graphics::Glyph::Text;
 use Sanger::Graphics::Glyph::Intron;
 use Sanger::Graphics::Bump;
 use ExtURL;
-use SiteDefs;
 
 
 sub init_label {
