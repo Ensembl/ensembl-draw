@@ -18,7 +18,7 @@ sub new {
 		'height' => 12,
 	},
 	'MediumBold' => {
-		'width'  => 10, #7,
+		'width'  => 9, #7,
 		'height' => 13,
 	},
 	'Large' => {
@@ -26,7 +26,7 @@ sub new {
 		'height' => 16,
 	},
 	'Giant' => {
-		'width'  => 13,
+		'width'  => 11,
 		'height' => 15,
 	},
     };

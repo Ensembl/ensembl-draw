@@ -126,8 +126,8 @@ sub new {
 	########## first we get the max width of label in characters
         my $gw = 0;
         $gw = length($glyphset->label->text()) if(defined $glyphset->label());
-        if(defined $glyphset->label2()) {
-            my $gw2 = length($glyphset->label2->text());                
+        if(defined $glyphset->label2 ) {
+            my $gw2 = length($glyphset->label2->text);                
             $gw = $gw2 if $gw2>$gw;
         }
         if($gw>0) {

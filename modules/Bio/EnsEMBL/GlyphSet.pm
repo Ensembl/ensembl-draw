@@ -13,7 +13,6 @@ use vars qw(@ISA $AUTOLOAD);
 sub new {
     my $class = shift;
     my $self = $class->SUPER::new( @_ );
-       $self->{'label2'}     = undef;
        $self->{'bumpbutton'} = undef;
     return $self;
 }
@@ -26,7 +25,9 @@ sub bumpbutton {
 
 sub label2 {
     my ($self, $val) = @_;
-    $self->{'label2'} = $val if(defined $val);
+    if( defined $val ) {
+        $self->{'label2'} = $val;
+    }
     return $self->{'label2'};
 }
 

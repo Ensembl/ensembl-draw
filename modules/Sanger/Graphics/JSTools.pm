@@ -113,8 +113,10 @@ sub js_init{
 <script language="javascript">
 <!-- Hide script
 function init()  {  
-    document.feederform.q.focus();
-    document.feederform.q.select();
+    if(document.feederform) {
+      document.feederform.q.focus();
+      document.feederform.q.select();
+    }
     return (false);
 }
   preloaders = new Array;
