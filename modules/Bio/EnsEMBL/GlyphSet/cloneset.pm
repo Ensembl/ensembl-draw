@@ -11,8 +11,8 @@ sub my_label { return "1mb cloneset"; }
 ## retrieve accessioned clones ("acc_bac_map")
 
 sub features {
-    my ($self) = @_;
-    return $self->{'container'}->get_all_MapFrags( 'cloneset' );
+  my ($self) = @_;
+  return $self->{'container'}->get_all_MapFrags( 'cloneset' );
 }
 
 ## If bac map clones are very long then we draw them as "outlines" as
@@ -55,7 +55,7 @@ sub tag {
     my ($self, $f) = @_; 
     my @result = (); 
     unless( $f->mismatch ) {
-      if( $f->bac_start < $f->seq_start ) {
+      if( $f->bac_start && $f->bac_start < $f->seq_start ) {
         push @result, {
           'style' => 'underline',   'colour' => $self->{'colours'}{"seq_len"},
           'start' => $f->bac_start - $f->seq_start + $f->start, 'end'    => $f->start
