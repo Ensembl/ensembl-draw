@@ -270,7 +270,9 @@ sub _init {
         my $direction = $end ? -1 : 1;
         
         my %partials = map { uc($_) => 1 }
-                @{ $species_defs->PARTIAL_CHROMOSOMES || [] };
+        	@{ $species_defs->PARTIAL_CHROMOSOMES || [] };
+	my %artificials = map { uc($_) => 1 }
+	        @{ $species_defs->ARTIFICIAL_CHROMOSOMES || [] };
         if ($partials{uc($chr)}) {
         # draw jagged ends for partial chromosomes
             # resolution dependent scaling
@@ -317,7 +319,26 @@ sub _init {
                     'absolutewidth'    => 1,
                 }));
             }
-        } else {
+	}
+
+	elsif ($artificials{uc($chr)}) {
+               # draw blunt ends for artificial chromosomes
+	    my $x = $chr_length * $end - 1;
+	    my $y = $h_offset;
+	    my $width = 0;
+            my $glyph = new Sanger::Graphics::Glyph::Line({
+                'x'      => $x,
+                'y'      => $y,
+                'width'  => $width,
+                'height' => 23,
+                'colour' => $red,
+                'absolutey' => 1,
+		'absolutewidth' => 1,
+                });
+            $self->push($glyph);
+
+
+	} else {
         # round ends for full chromosomes
             my @lines = $wid < 16 ?
                 ( [8,6],[4,4],[2,2] ) :
