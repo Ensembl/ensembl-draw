@@ -56,17 +56,17 @@ sub _init {
     my @das_feats = @$das_feat_ref;
 
     foreach my $feat(@das_feats) {
-	push(@{$hash{$feat->das_id}},$feat);
+	push(@{$hash{$feat->das_feature_id}},$feat);
     }
 
     foreach my $key (keys %hash) {
 	my @row  = @{$hash{$key}};
-	my $desc = $row[0]->das_id();
+	my $desc = $row[0]->das_feature_label();
 		
 	# Zmenu
 	my $Composite = new Sanger::Graphics::Glyph::Composite
 	  ({
-	    'x'     => $row[0]->das_start(),
+	    'x'     => $row[0]->start(),
 	    'y'     => $y,
 	    'href'  => $row[0]->das_link(),
 	    'zmenu' => {
@@ -79,11 +79,11 @@ sub _init {
 	my $pfsave;
 	my ($minx, $maxx);
 	foreach my $pf (@row) {
-	    my $x  = $pf->das_start();
+	    my $x  = $pf->start();
 	    $minx  = $x if ($x < $minx || !defined($minx));
-	    my $w  = $pf->das_end() - $x;
-	    $maxx  = $pf->das_end() if ($pf->das_end() > $maxx || !defined($maxx));
-	    my $id = $pf->das_id();
+	    my $w  = $pf->end() - $x;
+	    $maxx  = $pf->end() if ($pf->das_end() > $maxx || !defined($maxx));
+	    my $id = $pf->das_feature_id();
 
 	    my $rect = new Sanger::Graphics::Glyph::Rect({
 		'x'        => $x,
@@ -108,12 +108,12 @@ sub _init {
 
 	# Label - disabled for now
 	if( 0 ){
-	    my $desc = $pfsave->das_id() || $key;
+	    my $desc = $pfsave->das_feature_label() || $key;
 	    my $text = new Sanger::Graphics::Glyph::Text
 	      ({
 		'font'   => $font,
 		'text'   => $desc,
-		'x'      => $row[0]->das_start(),
+		'x'      => $row[0]->start(),
 		'y'      => $h + 1,
 		'height' => $fontheight,
 		'width'  => $fontwidth * length($desc),
