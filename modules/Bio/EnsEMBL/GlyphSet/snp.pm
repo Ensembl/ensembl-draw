@@ -39,7 +39,9 @@ sub _init {
     my $bitmap_length = $VirtualContig->length();
     my $type          = $Config->get('gene','src');
 
-    my @xf            = $VirtualContig->get_all_SNPFeatures( $self->glob_bp() );
+    my @xf;
+    eval{ @xf = $VirtualContig->get_all_SNPFeatures( $self->glob_bp() ) };
+    if( $@ ){ return undef() }
 
     my $ext_url = ExtURL->new;
     ## need to sort external features into SNPs or traces and treat them differently
