@@ -38,7 +38,7 @@ sub render_Rect {
     $y2 += 1;
     $x2 += 1;
 
-    $self->{'canvas'} = qq(<area coords="$x1 $y1 $x2 $y2"$href>\n).$self->{'canvas'} if(defined $href);
+    $self->{'canvas'} = qq(<area coords="$x1 $y1 $x2 $y2"$href>\n).$self->{'canvas'};
 
 }
 
