@@ -196,7 +196,7 @@ sub _init {
          $pos = "$chr_start&nbsp;-&nbsp;$chr_end";
       }
 
-     my $href = "/@{[$self->{container}{_config_file_name_}]}/snpview?snp=$@{[$snp->id]}&source=@{[$snp->source_tag]}&chr=$chr_name&vc_start=$chr_start";
+     my $href = "/@{[$self->{container}{_config_file_name_}]}/snpview?snp=@{[$snp->id]}&source=@{[$snp->source_tag]}&chr=$chr_name&vc_start=$chr_start";
 
       my $bglyph = new Sanger::Graphics::Glyph::Rect({
        'x'         => $S - $font_w_bp / 2,
