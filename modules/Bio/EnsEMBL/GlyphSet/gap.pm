@@ -28,7 +28,6 @@ sub _init {
     #########
     # only draw contigs once - on one strand
     #
-    print STDERR "GAP CALLED\n";
 #    return unless ($self->strand() == 1);
     my $type = $self->check();
     return unless defined $type;
