@@ -47,21 +47,23 @@ sub zmenu {
 
     my $allele = $f->alleles;
     my $pos;
+    my $id = $f->snpid || $f->id;
     if ($chr_start == $chr_end) {
         $pos = "$chr_start";
     } else {
         $pos = "$chr_start&nbsp;-&nbsp;$chr_end";
     }
     my %zmenu = ( 
-        'caption'           => "SNP: " . ($f->snpid || $f->id),
-        '01:SNP properties' => $self->href( $f ),
-        "02:bp: $pos" => '',
-        "03:class: ".$f->snpclass => '',
-        "03:status: ".$f->raw_status => '',
-        "07:ambiguity code: ".$f->{'_ambiguity_code'} => '',
-        "08:alleles: ".(length($allele)<16 ? $allele : substr($allele,0,14).'..') => '',
-        "09:type: ".($f->type->[0]||'other') => '',
-        "10:consequence: ".($f->consequence->[0]||'unknown') => '',
+        'caption'           => "SNP: $id",
+        '01:SNPView' => $self->href($f),
+        '02:Sanger SNP Report' => $self->ID_URL('GLOVAR_SNP', $id),
+        "03:bp: $pos" => '',
+        "04:class: ".$f->snpclass => '',
+        "05:status: ".$f->raw_status => '',
+        "06:ambiguity code: ".$f->{'_ambiguity_code'} => '',
+        "07:alleles: ".(length($allele)<16 ? $allele : substr($allele,0,14).'..') => '',
+        "08:type: ".($f->type->[0]||'other') => '',
+        "09:consequence: ".($f->consequence->[0]||'unknown') => '',
    );
 
     my %links;
