@@ -147,6 +147,7 @@ sub _init {
         $end = $vc_length if $end > $vc_length;
         my $label = $g->{'label'};
 
+	next if $label eq '';
         my $tglyph = new Bio::EnsEMBL::Glyph::Text({
             'x'         => $start,	
             'y'         => $y,
