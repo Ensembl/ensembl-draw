@@ -198,7 +198,7 @@ sub _init {
          $pos = "$chr_start&nbsp;-&nbsp;$chr_end";
       }
 
-     my $href = "/@{[$self->{container}{_config_file_name_}]}/snpview?snp=$@{[$snp->id]}&source=@{[$snp->source_tag]}&chr=$chr_name&vc_start=$chr_start";
+     my $href = "/@{[$self->{container}{_config_file_name_}]}/snpview?snp=@{[$snp->id]}&source=@{[$snp->source_tag]}&chr=$chr_name&vc_start=$chr_start";
 
       my $bglyph = new Sanger::Graphics::Glyph::Rect({
        'x'         => $S - $font_w_bp / 2,
@@ -214,7 +214,7 @@ sub _init {
          '11:SNP properties' => $href,
          "12:bp $pos" => '',
          "13:class: ".$snp->snpclass => '',
-         "14:amiguity code: ".$snp->{'_ambiguity_code'} => '',
+         "14:ambiguity code: ".$snp->{'_ambiguity_code'} => '',
          "15:alleles: ".(length($allele)<16 ? $allele : substr($allele,0,14).'..') => ''
        }
       });
