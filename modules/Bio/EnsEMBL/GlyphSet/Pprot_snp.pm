@@ -28,7 +28,7 @@ sub bump{
 			my $bump_start = int($glyph->x()   * $pix_per_bp);
 			my $bitmap_length = int($container->length() * $pix_per_bp);
             $bump_start = 0 if ($bump_start < 0);
-	    
+	    return if $bump_start > $bitmap_length; 
             my $bump_end = $bump_start + $glyph->width();
             if ($bump_end > $bitmap_length){$bump_end = $bitmap_length};
             my $row = & Sanger::Graphics::Bump::bump_row(
