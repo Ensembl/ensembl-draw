@@ -51,6 +51,7 @@ sub zmenu {
     my $pid = $transcript->translation->stable_id() ,
     my $gid = $gene->stable_id();
     my $id   = $transcript->external_name() eq '' ? $tid : ( $transcript->external_db.": ".$transcript->external_name() );
+#    my $id = "gene";
     my $zmenu = {
         'caption' 	    => $self->zmenu_caption(),
         "00:$id"	    => "",
@@ -75,6 +76,12 @@ sub zmenu {
 sub text_label {
     my ($self, $gene, $transcript) = @_;
     my $id = $transcript->external_name() || $transcript->stable_id();
+    my $config = $self->{config};
+    my $label = $gene->type();
+    my $short_labels = $config->get('_settings','opt_shortlabels');
+    unless( $short_labels ){
+      $id .= "\n$label"; 
+    }
     return $id;
 }
 
