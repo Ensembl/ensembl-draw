@@ -57,7 +57,7 @@ sub features {
     my @snps = 
         map { $_->[1] } 
         sort { $a->[0] <=> $b->[0] }
-        map { [ substr($_->type->[0],0,2) * 1e9 + $_->start, $_ ] }
+        map { [ substr($_->type,0,2) * 1e9 + $_->start, $_ ] }
         grep { $_->score < 4 } 
             @{$self->{'container'}->get_all_ExternalLiteFeatures('GlovarSNP')};
 
@@ -83,7 +83,7 @@ sub features {
 
 sub colour {
     my ($self, $f) = @_;
-    my $T = $f->type->[0];
+    my $T = $f->type;
     unless($self->{'config'}->{'snp_types'}{$T}) {
         my %labels = (
             '_coding' => 'Coding SNPs',
@@ -126,14 +126,14 @@ sub zmenu {
     my %zmenu = ( 
         'caption'           => "SNP: $id",
         '01:SNPView' => $self->href($f),
-        '02:Sanger SNP Report' => $self->ID_URL('GLOVAR_SNP', $id),
+        #'02:Sanger SNP Report' => $self->ID_URL('GLOVAR_SNP', $id),
         "03:bp: $pos" => '',
         "04:class: ".$f->snpclass => '',
         "05:status: ".$f->raw_status => '',
         "06:ambiguity code: ".$f->{'_ambiguity_code'} => '',
         "07:alleles: ".(length($allele)<16 ? $allele : substr($allele,0,14).'..') => '',
-        "08:type: ".($f->type->[0]||'other') => '',
-        "09:consequence: ".($f->consequence->[0]||'unknown') => '',
+        "08:type: ".($f->type||'other') => '',
+        "09:consequence: ".($f->consequence||'unknown') => '',
    );
 
     my %links;

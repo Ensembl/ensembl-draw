@@ -69,7 +69,7 @@ sub tag {
 
 sub colour {
     my ($self, $f) = @_;
-    my $T = $f->type->[0];
+    my $T = $f->type;
     unless($self->{'config'}->{'snp_types'}{$T}) {
         my %labels = (
             '_coding' => 'Coding SNPs',
