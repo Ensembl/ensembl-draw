@@ -27,7 +27,9 @@ sub init_label {
        $label->{'zmenu'}->{'01:'.CGI::escapeHTML($self->{'extras'}{'description'})} = ''; 
     }
     $self->label($label);
-    $self->bumped( $self->{'config'}->get($HELP_LINK, 'dep')==0 ? 'no' : 'yes' );
+    unless ($self->{'config'}->get($HELP_LINK, 'bump') eq 'always') {
+        $self->bumped( $self->{'config'}->get($HELP_LINK, 'dep')==0 ? 'no' : 'yes' );
+    }
 }
 
 
@@ -136,7 +138,7 @@ sub _init {
             });
 
             my $X = -1000000;
-            my ($feature_colour, $label_colour, $part_to_colour) = $self->colour( $F[0][2]->id );
+            my ($feature_colour, $label_colour, $part_to_colour) = $self->colour( $F[0][2]->id, $F[0][2] );
             foreach my $f ( @F ){
                 next if int($f->[1] * $pix_per_bp) <= int( $X * $pix_per_bp );
                 $C++;
