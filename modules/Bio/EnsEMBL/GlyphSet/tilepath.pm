@@ -38,6 +38,7 @@ sub _init {
     my ($col, $lab) 	        = ();
     my $i 			= 1;
     my $dep                     = $Config->get('tilepath', 'dep');
+    
     my $col1                    = $Config->get('tilepath', 'col1');
     my $col2                    = $Config->get('tilepath', 'col2');
     my $lab1                    = $Config->get('tilepath', 'lab1');
@@ -81,7 +82,7 @@ sub _init {
         	    	'y'         => $ystart+2,
             		'width'     => $box_end-$box_start+1,
             		'height'    => 7,
-            		'colour'    => $col,
+            		'colour'    => $col, 
             		'absolutey' => 1,
         	    });
         	    $Composite->push($glyph);
@@ -106,10 +107,11 @@ sub _init {
             if($box_end=>1 && $box_start<=$length) { ## We can draw this
                 $box_start = 1       if $box_start < 1;
                 $box_end   = $length if $box_end   >  $length;
-                foreach (2,9) {
+                foreach my $off (2,9) {
+                    print STDERR "LINE:- $off \n";
             	    my $glyph = new Bio::EnsEMBL::Glyph::Rect({
                 		'x'         => $box_start,
-            	    	'y'         => $ystart+$_,
+            	    	'y'         => $ystart + $off,
                 		'width'     => $box_end-$box_start+1,
                 		'height'    => 0,
                 		'colour'    => $col,
@@ -195,7 +197,7 @@ sub _init {
 				\@bitmap
             );
     		next if ($row > $dep);
-            $Composite->y_t($Composite->y() + (1.4 * $row * $h));
+            $Composite->y($Composite->y() + (1.4 * $row * $h));
             if($fish_clone) {
                 $fish_clone->transform(
                     {'translatey' => (1.4 * $row * $h)}
