@@ -5,7 +5,6 @@ use SpeciesDefs;
 use Bio::EnsEMBL::GlyphSet;
 use Sanger::Graphics::Glyph::Rect;
 use Sanger::Graphics::Glyph::Text;
-use EnsEMBL::Web::GeneTrans::support;
 
 @ISA = qw(Bio::EnsEMBL::GlyphSet);
 
