@@ -384,17 +384,22 @@ sub zmenu {
 		 'caption' 			=> $self->zmenu_caption(),
 		 "00:Locus information:"		=> "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$gid",
 		 "01:Transcript information: "	=> "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$tid",
-		 '03:Protein information'	=> "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=$pid",	
+		
 		 '04:Exon information'	        => "/$ENV{'ENSEMBL_SPECIES'}/exonview?transcript=$tid&db=core",
 		 '05:Supporting evidence'	=> "/$ENV{'ENSEMBL_SPECIES'}/exonview?transcript=$tid&db=core#evidence",
-		 '07:Protein sequence (FASTA)'	=> "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=$pid",
+		 
 		 '08:cDNA sequence (FASTA)'	=> "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=cdna&id=$tid",
 		 '09:Type: ' . $gene->type()	=> "",
 		};
   my $DB = EnsWeb::species_defs->databases;
-  $zmenu->{'06:Expression information'} = "/$ENV{'ENSEMBL_SPECIES'}/sageview?alias=$gid" if $DB->{'ENSEMBL_EXPRESSION'};
-  
-
+  $zmenu->{'06:Expression information'} = "/$ENV{'ENSEMBL_SPECIES'}/sageview?alias=$gid" if $DB->{'ENSEMBL_EXPRESSION'}; 
+ 
+  if ($pid) {
+ $zmenu->{'03:Protein information'} =  "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=$pid";
+ $zmenu->{'07:Protein sequence (FASTA)'}	= "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=$pid";
+} else {
+ $zmenu->{'03:Protein: no translation'} = "";
+}
  
 
 
