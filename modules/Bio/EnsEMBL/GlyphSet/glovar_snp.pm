@@ -71,12 +71,12 @@ sub features {
     }
 
     ## hack to disable consequences on chr7
-    if ($self->{'container'}->seq_region_name == 7) {
-        foreach my $snp (@snps) {
-            $snp->type(undef);
-            $snp->consequence(undef);
-        }
-    }
+#    if ($self->{'container'}->seq_region_name == 7) {
+#        foreach my $snp (@snps) {
+#            $snp->type(undef);
+#            $snp->consequence(undef);
+#        }
+#    }
 
     return \@snps;
 }
