@@ -87,7 +87,7 @@ sub _init {
 ##############################################################################
     &eprof_start("gene-virtualgene_start-get");
 
-    my @res = $vc->get_Genes_by_source('sanger'); 
+    my @res = $vc->get_Genes_by_source('sanger', 1); 
     foreach my $g (@res){ 
       my $gene_label = $g->stable_id();  
       my $high = exists $highlights{ $gene_label }; 
@@ -112,7 +112,7 @@ sub _init {
 ##############################################################################
 # Stage 2b: Retrieve all core (ensembl) genes                                #
 ##############################################################################
-    my @res = $vc->get_Genes_by_source('core');
+    my @res = $vc->get_Genes_by_source('core', 1);
     foreach my $gene (@res) {
         my( $gene_col, $gene_label, $high);
         $high = exists $highlights{$gene->stable_id()} ? 1 : 0;
@@ -143,7 +143,7 @@ sub _init {
 # Stage 2c: Retrieve all EMBL (external) genes                               #
 ##############################################################################
     &eprof_start("gene-externalgene_start-get");
-    my @res = $vc->get_Genes_by_source('embl');
+    my @res = $vc->get_Genes_by_source('embl', 1);
     foreach my $g (@res){
        	my $gene_label = $g->external_name() || $g->stable_id();          
 	my $high = (exists $highlights{ $g->stable_id() }) || 
