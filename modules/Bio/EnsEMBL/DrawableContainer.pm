@@ -7,6 +7,7 @@ use Sanger::Graphics::Glyph::Text;
 use Sanger::Graphics::Glyph::Composite;
 
 use Bio::EnsEMBL::GlyphSet::sub_repeat;
+use Bio::EnsEMBL::GlyphSet::das;
 use Bio::EnsEMBL::Utils::Eprof qw(eprof_start eprof_end);
 
 use ExtURL;
