@@ -68,6 +68,7 @@ sub zmenu {
     $T = $T->{ $self->object_type($id) } || $T->{'default'};
   }
   $id =~ s/'/\'/g;
-  return {( 'caption', map { s/###(\w+)###/my $M="SUB_$1";$self->$M($id)/eg; $_ } @$T )} if $T && @$T;
+  my @T = $T ? @$T : ();
+  return {( 'caption', map { s/###(\w+)###/my $M="SUB_$1";$self->$M($id)/eg; $_ } @T )} if $T && @T;
 }
 1;
