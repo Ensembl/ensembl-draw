@@ -156,7 +156,6 @@ sub RENDER_simple {
     my $style;
     my $colour;
 
-
     if($configuration->{'use_style'}) {
       $style = $configuration->{'styles'}{$f->das_type_category}{$f->das_type_id} || $configuration->{'styles'}{$f->das_type_category}{'default'} || $configuration->{'styles'}{'default'}{'default'};
       $colour = $style->{'attrs'}{'fgcolor'}||$configuration->{'colour'};
@@ -842,16 +841,21 @@ sub _init {
   } else {
     $configuration->{'use_style'} = 0;
   }
+
   $self->{'link_text'}    = $Extra->{'linktext'} || 'Additional info';
   $self->{'ext_url'}      = ExtURL->new( $Extra->{'name'} =~ /^managed_extdas/ ? ($Extra->{'linkURL'} => $Extra->{'linkURL'}) : () );
 
 
   $self->{helplink} = $Config->get($das_config_key, 'helplink');
   my $renderer = $Config->get($das_config_key, 'renderer');
-  my $group = $Config->get($das_config_key, 'group') || 'y';
+#  my $group = ($Config->get($das_config_key, 'group') ? 'RENDER_grouped' : 'RENDER_simple';
+	       
+  my $group = $Config->get($das_config_key, 'group') || 'n';
+  $group = lc($group);
+  $renderer = $renderer ? "RENDER_$renderer" : ($group eq 'n' ? 'RENDER_simple' : 'RENDER_grouped');  
 
 #  $renderer = $renderer ? "RENDER_$renderer" : ($Config->get($das_config_key, 'group') ? 'RENDER_grouped' : 'RENDER_simple');
-  $renderer = $renderer ? "RENDER_$renderer" : ($group eq 'n' ? 'RENDER_simple' : 'RENDER_grouped');
+
   $renderer =~ s/RENDER_RENDER/RENDER/;
 
 #  warn("RENDER:[$das_config_key: $group] $renderer");
