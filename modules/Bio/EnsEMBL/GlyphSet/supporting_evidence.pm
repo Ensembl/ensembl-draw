@@ -122,9 +122,9 @@ for my $hit (sort { $Container->{'hits'}{$b}{'top_score'} <=> $Container->{'hits
             	    'height'     => $TEXT_HEIGHT,
                     'font'       => 'Small',
                     'colour'     => 'blue',
-           	    'text'       => $hit,
-		    'href'       => $Container->{'hits'}{$hit}{'link'},
-          	    'absolutey'  => 1,
+             	    'text'       => $hit,
+		            'href'       => $Container->{'hits'}{$hit}{'link'},
+          	        'absolutey'  => 1,
             	});
    $self->push($db_acc);
    
@@ -137,9 +137,9 @@ for my $hit (sort { $Container->{'hits'}{$b}{'top_score'} <=> $Container->{'hits
             	    'height'     => $TEXT_HEIGHT,
                     'font'       => 'Tiny',
                     'colour'     => 'Black',
-           	    'text'       => ($w * length($desc_text)) > ($CONT_LENGTH - ($TEXT_WIDTH + 20)) ? substr($desc_text, 0, ($CONT_LENGTH / $w) - 40  )."..." : $desc_text,
-          	    'absolutey'  => 1,
-		    'absolutex'  => 1,
+          	        'text'       => ($w * length($desc_text)) > ($CONT_LENGTH - ($TEXT_WIDTH + 30)) ? substr($desc_text, 0, (($CONT_LENGTH - 100) / $w))."..." : $desc_text,
+			     	'absolutey'  => 1,
+		            'absolutex'  => 1,
             	});
 $self->push($desc);
 
