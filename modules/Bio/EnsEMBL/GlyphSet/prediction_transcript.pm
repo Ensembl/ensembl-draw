@@ -43,12 +43,12 @@ sub features {
 }
 
 sub colour {
-    my ($self, $gene, $transcript, $colours, %highlights) = @_;
+  my ($self, $gene, $transcript, $colours, %highlights) = @_;
 
-    if(exists $highlights{$transcript->stable_id()}) {
-      return ($colours->{'col'}, $colours->{'hi'});
-    }
-    return ( $colours->{'col'}, undef );
+  if($transcript && exists $highlights{$transcript->stable_id()}) {
+    return ($colours->{'col'}, $colours->{'hi'});
+  }
+  return ( $colours->{'col'}, undef );
 }
 
 sub href {

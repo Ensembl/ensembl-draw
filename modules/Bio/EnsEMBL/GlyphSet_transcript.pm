@@ -123,7 +123,8 @@ sub compact_init {
     # Calculate and draw the coding region of the exon
     # only draw the coding region if there is such a region
     if($self->can('join')) {
-      my @tags = $self->join( $gene->stable_id );
+      my @tags;
+         @tags = $self->join( $gene->stable_id ) if $gene->can( 'stable_id' );
       foreach (@tags) {
         $self->join_tag( $Composite2, $_, 0, $self->strand==-1 ? 0 : 1, 'grey60' );
         $self->join_tag( $Composite2, $_, 1, $self->strand==-1 ? 0 : 1, 'grey60' );
@@ -205,7 +206,7 @@ sub expanded_init {
   foreach my $gene ( @{$self->features()} ) { # For alternate splicing diagram only draw transcripts in gene
     my $gene_strand = $gene->strand;
     next if $gene_strand != $strand and $strand_flag eq 'b'; # skip features on wrong strand....
-    next if $target_gene && ($gene->stable_id() ne $target_gene);
+    next if $target_gene && $gene->can('stable_id') && ($gene->stable_id() ne $target_gene);
  
     foreach my $transcript (@{$gene->get_all_Transcripts()}) {
       next if $transcript->start > $length || $transcript->end < 1;
@@ -305,7 +306,8 @@ sub expanded_init {
         } # enf of intron-drawing IF
       }
       if($self->can('join')) {
-        my @tags = $self->join( $gene->stable_id );
+        my @tags;
+           @tags = $self->join( $gene->stable_id ) if $gene->can('stable_id');
         foreach (@tags) {
           $self->join_tag( $Composite2, $_, 0, $self->strand==-1 ? 0 : 1, 'grey60' );
           $self->join_tag( $Composite2, $_, 1, $self->strand==-1 ? 0 : 1, 'grey60' );
