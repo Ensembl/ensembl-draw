@@ -294,19 +294,25 @@ next if (@exons == 0);
 sub colours {
     my $self = shift;
     my $Config = $self->{'config'};
-    return {
-	    'unknown'   => $Config->get('_colours','unknown'),
-	    'xref'      => $Config->get('_colours','xref'),
-	    'pred'      => $Config->get('_colours','pred'),
-	   # 'known'     => $Config->get('_colours','known'),
-	    'hi'        => $Config->get('_colours','hi'),
-	    'superhi'   => $Config->get('_colours','superhi'),
-	    'Novel_CDS'        => $Config->get('_colours','Novel_CDS'), 
-	    'Putative'         => $Config->get('_colours','Putative'), 
-	    'Known'            => $Config->get('_colours','Known'),  
-	    'Novel_Transcript' => $Config->get('_colours','Novel_Transcript'), 
-	    'Pseudogene'       => $Config->get('_colours','Pseudogene')
-    };
+     return {
+ 	    'unknown'   => $Config->get('_colours','unknown'),
+ 	    'xref'      => $Config->get('_colours','xref'),
+ 	    'pred'      => $Config->get('_colours','pred'),
+ 	   'known'     => $Config->get('_colours','known'),
+ 	    'hi'        => $Config->get('_colours','hi'),
+ 	    'superhi'   => $Config->get('_colours','superhi'),
+ 	    'Novel_CDS'        => $Config->get('_colours','Novel_CDS'), 
+ 	    'Putative'         => $Config->get('_colours','Putative'), 
+ 	    'Known'            => $Config->get('_colours','Known'),  
+ 	    'Novel_Transcript' => $Config->get('_colours','Novel_Transcript'), 
+ 	    'Pseudogene'       => $Config->get('_colours','Pseudogene'),
+ 	    'Ig_Segment'       => $Config->get('_colours','Ig_Segment'), 	  
+ 	    'Ig_Pseudogene_Segment'   =>$Config->get('_colours','Ig_Pseudogene') , 
+  	    'Predicted_Gene'  => $Config->get('_colours','Predicted_Gene'), 
+
+	      }; 
+
+
 }
 
 # $Config->get('_colours','Known'),
@@ -348,7 +354,6 @@ my $genecol = $colours->{$gene->type()};
 elsif(exists $highlights{$gene->stable_id()}) {
       return ($genecol, $colours->{'hi'});
     }
-
 
    return ($genecol, undef);
 
@@ -413,11 +418,14 @@ sub legend {
 
     return ('genes', 1000,
             [
-                'Curated known genes'    => $colours->{'Known'},
-                'Curated novel CDS'      => $colours->{'Novel_CDS'},
-                'Curated putative'       => $colours->{'Putative'},
-                'Curated novel Trans'    => $colours->{'Novel_Transcript'},
-                'Curated pseudogenes'    => $colours->{'Pseudogene'}
+	     'Curated known genes'    => $colours->{'Known'},
+	     'Curated novel CDS'      => $colours->{'Novel_CDS'},
+	     'Curated putative'       => $colours->{'Putative'},
+	     'Curated novel Trans'    => $colours->{'Novel_Transcript'},
+	     'Curated pseudogenes'    => $colours->{'Pseudogene'},
+	     'Curated Ig Segment'   => $colours->{'Ig_Segment'},
+	     'Curated Ig Pseudogene'=> $colours->{'Ig_Pseudogene_Segment'},
+	     'Curated predicted' => $colours->{'Predicted_Gene'}, 
             ]
     );
 

@@ -53,12 +53,25 @@ sub _init {
    #    'refseq' => $Config->get('gene_lite','refseq'), 
    # }; 
     my $sanger_colours = { 
-           'Novel_CDS'        => $Config->get('_colours','Novel_CDS'), 
-           'Putative'         => $Config->get('_colours','Putative'), 
-           'Known'            => $Config->get('_colours','Known'), 
-           'Novel_Transcript' => $Config->get('_colours','Novel_Transcript'), 
-           'Pseudogene'       => $Config->get('_colours','Pseudogene'), 
-    }; 
+        
+ 	    'unknown'   => $Config->get('_colours','unknown'),
+ 	    'xref'      => $Config->get('_colours','xref'),
+ 	    'pred'      => $Config->get('_colours','pred'),
+ 	   'known'     => $Config->get('_colours','known'),
+ 	    'hi'        => $Config->get('_colours','hi'),
+ 	    'superhi'   => $Config->get('_colours','superhi'),
+ 	    'Novel_CDS'        => $Config->get('_colours','Novel_CDS'), 
+ 	    'Putative'         => $Config->get('_colours','Putative'), 
+ 	    'Known'            => $Config->get('_colours','Known'),  
+ 	    'Novel_Transcript' => $Config->get('_colours','Novel_Transcript'), 
+ 	    'Pseudogene'       => $Config->get('_colours','Pseudogene'),
+ 	    'Ig_Segment'       => $Config->get('_colours','Ig_Segment'), 	  
+ 	    'Ig_Pseudogene_Segment'   =>$Config->get('_colours','Ig_Pseudogene') , 
+  	    'Predicted_Gene'  => $Config->get('_colours','Predicted_Gene'), 
+
+	      
+
+			 };
 
 ##############################################################################
 # Stage 1b: Now the virtual contig                                           #
@@ -102,7 +115,7 @@ foreach my $g (@{$vc->get_all_Genes($self->logic_name(), )} ) {
 
 
   #  foreach my $g (@{ $vc->get_all_Genes_by_source('sanger', 1) } ) { ## Hollow genes
-      my $gene_label = $g->stable_id();  
+      my $gene_label = $g->external_name() || $g->stable_id();  
       my $high = exists $highlights{ $gene_label }; 
       my $type = $g->type(); 
       $type =~ s/HUMACE-//; 
@@ -113,8 +126,8 @@ foreach my $g (@{$vc->get_all_Genes($self->logic_name(), )} ) {
             'start'     => $g->start(), 
             'strand'    => $g->strand(), 
             'end'       => $g->end(), 
-            'ens_ID'    => '', #$g->{'stable_id'}, 
-            'label'     => $gene_label, 
+            'ens_ID'    => $g->{'stable_id'}, 
+            'label'     =>  $gene_label, 
             'colour'    => $gene_col, 
             'ext_DB'    => $g->external_db(), 
             'high'      => $high, 

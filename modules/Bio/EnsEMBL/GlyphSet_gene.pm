@@ -78,6 +78,9 @@ sub _init {
            'Known'            => $Config->get('_colours','Known'), 
            'Novel_Transcript' => $Config->get('_colours','Novel_Transcript'), 
            'Pseudogene'       => $Config->get('_colours','Pseudogene'), 
+	   'Ig_Segment'       => $Config->get('_colours','Ig_Segment'), 	  
+	   'Ig_Pseudogene_Segment'   =>$Config->get('_colours','Ig_Pseudogene_Segment') , 
+	   'Predicted_Gene'  => $Config->get('_colours','Predicted_Gene'), 
     }; 
 
     my $pix_per_bp    = $Config->transform->{'scalex'};
@@ -103,11 +106,14 @@ sub _init {
     # Draw all of the Vega Genes
     #
     my $F = 0;
-    foreach my $g (@{$vc->get_all_Genes($logic_name)} ) {
+    warn( $self->logic_name );
+    foreach my $g (@{$vc->get_all_Genes($self->logic_name())} ) {
       $F++;
       my $genelabel = $g->stable_id(); 
       my $high = exists $highlights{$genelabel};
       my $type = $g->type();
+
+
       $type =~ s/HUMACE-//;
 
       my $gene_col = $sanger_colours->{ $type };
@@ -134,7 +140,11 @@ sub _init {
          'Curated novel CDS'  => $sanger_colours->{'Novel_CDS'},
          'Curated putative'   => $sanger_colours->{'Putative'},
          'Curated novel Trans'=> $sanger_colours->{'Novel_Transcript'},
-         'Curated pseudogenes'=> $sanger_colours->{'Pseudogene'} ] };
+         'Curated pseudogenes'=> $sanger_colours->{'Pseudogene'}, 
+	 'Curated Ig Segment'   => $sanger_colours->{'Ig_Segment'},
+         'Curated Ig Pseudogene Segment'=> $sanger_colours->{'Ig_Pseudogene_Segment'},
+         'Predicted Gene'=> $sanger_colours->{'Predicted_Gene'}, 
+] };
     } 
 
 
