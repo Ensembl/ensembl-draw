@@ -19,8 +19,15 @@ sub colours {
 }
 
 sub features {
-    my $self = shift;
-    return $self->{'container'}->get_all_VirtualTranscripts_startend_lite_coding( 'estgene' );
+    my @transcripts;
+
+    my @genes = $self->{container}->get_Genes_by_type('est');
+
+    foreach $gene (@genes) {
+      push @transcripts, $gene->get_all_Transcripts();
+    }
+
+    return @transcripts;
 }
 
 sub colour {

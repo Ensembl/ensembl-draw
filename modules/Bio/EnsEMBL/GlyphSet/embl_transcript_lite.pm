@@ -23,9 +23,17 @@ sub colours {
 }
 
 sub features {
-    my $self = shift;
-    return $self->{'container'}->get_all_VirtualTranscripts_startend_lite_coding( 'embl' );
+  my $self = shift;
+
+  my @transcripts;
+  
+  my @genes = $self->{container}->get_Genes_by_type('embl');
+  
+  foreach $gene (@genes) {
+    push @transcripts, $gene->get_all_Transcripts();
+  }
 }
+
 
 sub colour {
     my ($self, $vt, $colours, %highlights) = @_;

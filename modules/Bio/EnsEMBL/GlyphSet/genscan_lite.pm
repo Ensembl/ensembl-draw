@@ -19,8 +19,17 @@ sub colours {
 }
 
 sub features {
-    my $self = shift;
-    return $self->{'container'}->get_all_VirtualGenscans_startend_lite();
+  my $self = shift;
+
+  my @transcripts;
+  
+  my @genes = $self->{container}->get_Genes_by_type('genscan');
+
+  foreach $gene (@genes) {
+    push @transcripts, $gene->get_all_Transcripts();
+  }
+  
+  return @transcripts;
 }
 
 sub colour {
