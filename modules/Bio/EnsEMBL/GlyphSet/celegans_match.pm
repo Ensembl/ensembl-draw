@@ -30,7 +30,7 @@ sub zmenu {
     my ($self, $id, $chr_pos ) = @_;
     return { 
 	'caption'    => $id, 
-	'Jump to Homo sapiens' => $self->href( $chr_pos )
+	'Jump to Caenorhabditis elegans' => $self->href( $chr_pos )
     };
 }
 
@@ -42,7 +42,7 @@ sub unbumped_zmenu {
     return { 
     	'caption'    => 'Dot-plot', 
     	'Dotter' => $self->unbumped_href( $ref, $target ),
-        'Jump to Homo sapiens' => $self->href( $chr_pos )
+        'Jump to Caenorhabditis elegans' => $self->href( $chr_pos )
     };
 }
 
