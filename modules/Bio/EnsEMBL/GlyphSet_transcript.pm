@@ -48,6 +48,13 @@ sub text_label {
 }
 
 
+sub zmenu {
+  # Implemented by subclass
+  return undef;
+}
+
+
+
 sub features {  
   my $self = shift;
 
@@ -118,10 +125,12 @@ sub _init {
         
             $Composite->{'href'} = $self->href( $gene, $transcript );
 	
-	    $Composite->{'zmenu'} = $self->zmenu( $gene, $transcript ) unless $Config->{'_href_only'};
+	    $Composite->{'zmenu'} = $self->zmenu($gene, $transcript ) ;
+
+
+# unless $Config->{'_href_only'};
 	
 	    my($colour, $hilight) = $self->colour( $gene, $transcript, $colours, %highlights );
-
             my $coding_start = $transcript->coding_start() || $transcript->start();
             my $coding_end   = $transcript->coding_end()   || $transcript->end();
             my $Composite2 = new Sanger::Graphics::Glyph::Composite({'y'=>$y,'height'=>$h});
@@ -167,7 +176,7 @@ sub _init {
                         'y'         => $y,
                         'width'     => $filled_end - $filled_start + 1,
                         'height'    => $h,
-                        'colour'    => $colour,
+                        'colour'    =>  $colour,
                         'absolutey' => 1 });
 	                $Composite2->push($rect);
 	             }

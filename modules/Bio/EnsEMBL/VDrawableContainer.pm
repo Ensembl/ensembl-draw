@@ -2,6 +2,7 @@ package Bio::EnsEMBL::VDrawableContainer;
 
 use strict;
 use Bio::EnsEMBL::GlyphSet::Videogram;
+
 use EnsWeb;
 
 sub new {

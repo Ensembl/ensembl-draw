@@ -1,19 +1,13 @@
 package Bio::EnsEMBL::GlyphSet::annot_gene_lite;
-###############################################################################
-#   annot_gene_lite
-#   GlyphSet for the Sanger Annotators website, based on Ensembl
-#
-#   This GlyphSet is a modified copy of gene_lite.pm, and is  used in the
-#   Annotation site ContigView.
-###############################################################################
 use strict;
 use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet;
 @ISA = qw(Bio::EnsEMBL::GlyphSet);
 use Sanger::Graphics::Glyph::Rect;
 use Sanger::Graphics::Glyph::Text;
-use Bump;
+use  Sanger::Graphics::Bump;
 use EnsWeb;
+use Bio::EnsEMBL::Utils::Eprof qw(eprof_start eprof_end);
 
 sub init_label {
     my ($self) = @_;
@@ -53,161 +47,227 @@ sub _init {
     my @bitmap        = undef;
     my $im_width      = $Config->image_width();
     my $vc_length     = $Config->image_width();
-    my $type          = $Config->get('annot_gene_lite', 'src');
+    my $type          = $Config->get('gene_lite', 'src');
     my @allgenes      = ();
 
 
     # call on ensembl lite to give us the details of all
     # genes in the virtual contig
-    my $known_col     = $Config->get('annot_gene_lite','known');
-    my $hi_col        = $Config->get('annot_gene_lite','hi');
-    my $unknown_col   = $Config->get('annot_gene_lite','unknown');
-    my $ext_col       = $Config->get('annot_gene_lite','ext');
-    my $pseudo_col    = $Config->get('annot_gene_lite','pseudo');
+    &eprof_start("gene-virtualgene_start-get");
+    my $known_col     = $Config->get('gene_lite','known');
+    my $xref_col      = $Config->get('gene_lite','xref');
+    my $pred_col      = $Config->get('gene_lite','pred');
+    my $hi_col        = $Config->get('gene_lite','hi');
+    my $unknown_col   = $Config->get('gene_lite','unknown');
+    my $ext_col       = $Config->get('gene_lite','ext');
+    my $pseudo_col    = $Config->get('gene_lite','pseudo');
+    my $rat_colours = { 
+       'refseq' => $Config->get('gene_lite','refseq'), 
+    }; 
+
     my $sanger_colours = { 
-           'Novel_CDS'        => $Config->get('annot_gene_lite','sanger_Novel_CDS'), 
-           'Putative'         => $Config->get('annot_gene_lite','sanger_Putative'), 
-           'Known'            => $Config->get('annot_gene_lite','sanger_Known'), 
-           'Novel_Transcript' => $Config->get('annot_gene_lite','sanger_Novel_Transcript'), 
-           'Pseudogene'       => $Config->get('annot_gene_lite','sanger_Pseudogene'), 
+           'Novel_CDS'        => $Config->get('gene_lite','sanger_Novel_CDS'), 
+           'Putative'         => $Config->get('gene_lite','sanger_Putative'), 
+           'Known'            => $Config->get('gene_lite','sanger_Known'), 
+           'Novel_Transcript' => $Config->get('gene_lite','sanger_Novel_Transcript'), 
+           'Pseudogene'       => $Config->get('gene_lite','sanger_Pseudogene'), 
     }; 
 
     my $pix_per_bp    = $Config->transform->{'scalex'};
     my $vc_length     = $vc->length;
     my $bitmap_length = int( $vc_length * $pix_per_bp );
-    my $max_length     = $Config->get( 'annot_gene_lite', 'threshold' ) || 2000000;
-    my $navigation     = $Config->get( 'annot_gene_lite', 'navigation' ) || 'off';
-    my $max_length_nav = $Config->get( 'annot_gene_lite', 'navigation_threshold' ) || 200000;
+    my $max_length     = $Config->get( 'gene_lite', 'threshold' ) || 2000000;
+    my $navigation     = $Config->get( 'gene_lite', 'navigation' ) || 'off';
+    my $max_length_nav = $Config->get( 'gene_lite', 'navigation_threshold' ) || 200000;
 
     if( $vc_length > ($max_length*1001)) {
         $self->errorTrack("Genes only displayed for less than $max_length Kb.");
         return;
     }
-	my $show_navigation =  $navigation eq 'on' && ( $vc->length() < $max_length_nav * 1001 );
-   
-    ###############
-    # Sanger genes
-    ###############
-	my $vc_start = $vc->_global_start();
+    my $show_navigation 
+      =  $navigation eq 'on' && ( $vc->length() < $max_length_nav * 1001 );
+    
+    #First of all let us deal with all the EnsEMBL genes....
+    my $vc_start = $vc->chr_start();
+    my $offset = $vc_start - 1;
     my @genes = ();
 
-	my $res = $vc->get_all_VirtualGenes_startend_lite();
-        #my $res = $vc->get_all_SangerGenes_startend_lite(); 
-        foreach my $g (@$res){ 
-            my( $gene_col, $gene_label, $high); 
-            $high       = exists $highlights{ $g->{'stable_id'} } ? 1 : 0; 
-            $gene_label = $g->{'stable_id'}; 
-            $high       = 1 if(exists $highlights{ $gene_label }); 
-            (my $T = $g->{'type'}) =~ s/HUMACE-//; 
-            $gene_col = $sanger_colours->{ $T }; 
-            push @genes, { 
-                   'chr_start' => $g->{'chr_start'}, 
-                   'chr_end'   => $g->{'chr_end'}, 
-                   'start'     => $g->{'start'}, 
-                   'strand'    => $g->{'strand'}, 
-                   'end'       => $g->{'end'}, 
-                   'ens_ID'    => '', #$g->{'stable_id'}, 
-                   'label'     => $gene_label, 
+    #
+    # Draw all of the Vega Genes
+    #
+    my $F = 0;
+    foreach my $g (@{$vc->get_all_Genes_by_source( "vega",1 )} ) {
+      $F++;
+      my $genelabel = $g->stable_id(); 
+      my $high = exists $highlights{$genelabel};
+      my $type = $g->type();
+      $type =~ s/HUMACE-//;
+
+      my $gene_col = $sanger_colours->{ $type };
+
+      push @genes, { 
+		   'chr_start' => $g->start() + $offset,
+                   'chr_end'   => $g->end() + $offset,
+                   'start'     => $g->start(), 
+                   'strand'    => $g->strand(), 
+                   'end'       => $g->end(), 
+                   'ens_ID'    => $g->stable_id(), 
+                   'label'     => $genelabel, 
                    'colour'    => $gene_col, 
-                   'ext_DB'    => $g->{'external_db'}, 
+                   'ext_DB'    => $g->external_db(), 
                    'high'      => $high, 
-                   'type'      => $g->{'type'} 
-            }; 
-            $Config->{'legend_features'}->{'sanger_genes'} = {
-                'priority' => 1000,
-                'legend'  => [
-                    'Sanger curated known genes'    => $sanger_colours->{'Known'},
-                    'Sanger curated novel CDS'      => $sanger_colours->{'Novel_CDS'},
-                    'Sanger curated putative'       => $sanger_colours->{'Putative'},
-                    'Sanger curated novel Trans'    => $sanger_colours->{'Novel_Transcript'},
-                    'Sanger curated pseudogenes'    => $sanger_colours->{'Pseudogene'}
-                ]
-            }  if(@$res>0);
-        } 
+                   'type'      => $g->type()
+            };
+    } 
+    if($F>0) {
+      $Config->{'legend_features'}->{'sanger_genes'} = {
+       'priority' => 1000,
+       'legend'  => [
+	 'Sanger curated known genes'=> $sanger_colours->{'Known'},
+         'Sanger curated novel CDS'  => $sanger_colours->{'Novel_CDS'},
+         'Sanger curated putative'   => $sanger_colours->{'Putative'},
+         'Sanger curated novel Trans'=> $sanger_colours->{'Novel_Transcript'},
+         'Sanger curated pseudogenes'=> $sanger_colours->{'Pseudogene'} ] };
+    } 
 
-#    my $res = $vc->get_all_VirtualGenes_startend_lite();
-#
-#    foreach(@$res) {
-#        my( $gene_col, $gene_label, $high);
-#        $high = exists $highlights{$_->{'stable_id'}} ? 1 : 0;
-#        if(defined $_->{'synonym'} && $_->{'synonym'} ne '') {
-#            $gene_col = $known_col;
-#            $gene_label = $_->{'synonym'};
-#            $high = 1 if(exists $highlights{$gene_label});
-#        } else {
-#            $gene_col = $unknown_col;
-#            $gene_label = 'NOVEL'; 
-#        }
-#        push @genes, {
-#            'chr_start' => $_->{'chr_start'},
-#            'chr_end'   => $_->{'chr_end'},
-#            'start'     => $_->{'start'},
-#            'strand'    => $_->{'strand'},
-#            'end'       => $_->{'end'},
-#            'ens_ID'    => $_->{'stable_id'},
-#            'label'     => $gene_label,
-#            'colour'    => $gene_col,
-#            'ext_DB'    => $_->{'external_db'},
-#            'high'      => $high,
-#            'type'      => 'ensembl'
-#        };
-#    }
-#    $Config->{'legend_features'}->{'genes'} = {
-#        'priority' => 900,
-#        'legend'  => [
-#            'EnsEMBL predicted genes (known)' => $known_col,
-#            'EnsEMBL predicted genes (novel)' => $unknown_col
-#        ]
-#    }  if(@$res>0);
 
-        my $res = $vc->get_all_EMBLGenes_startend_lite();
-        foreach my $g (@$res){
-            my( $gene_col, $gene_label, $high);
-            $high       = exists $highlights{ $g->{'stable_id'} } ? 1 : 0;
-            $gene_label = $g->{'synonym'} || $g->{'stable_id'};
-            $high       = 1 if(exists $highlights{ $gene_label });
-            if($g->{'type'} eq 'pseudo') {
-                $gene_col = $pseudo_col;
-            } else {
-                $gene_col = $ext_col;
-            }
-            push @genes, {
-                'chr_start' => $g->{'chr_start'},
-                'chr_end'   => $g->{'chr_end'},
-                'start'     => $g->{'start'},
-                'strand'    => $g->{'strand'},
-                'end'       => $g->{'end'},
+    #
+    # Draw all of the Core (ensembl) genes
+    #
+    $F=0;
+    foreach my $g (@{$vc->get_all_Genes_by_source( "core",1 )} ) {
+      $F++;
+      my $high = (exists $highlights{ $g->stable_id() }) 
+              || (exists $highlights{ $g->external_name() });
+      my ($gene_col, $gene_label);
+      $gene_label = $g->external_name;
+      if(defined $gene_label && $gene_label ne '') {
+	$gene_col = $g->external_status eq 'KNOWN' ? $known_col : ($g->external_status eq 'XREF' ? $xref_col : $pred_col) ;
+      } else {
+	$gene_col = $unknown_col;
+	$gene_label = 'NOVEL'; 
+      }
+      push @genes, {
+            'chr_start' => $g->start + $offset,
+            'chr_end'   => $g->end + $offset,
+            'start'     => $g->start(),
+            'strand'    => $g->strand(),
+            'end'       => $g->end(),
+            'ens_ID'    => '', #$g->stable_id(),
+            'label'     => $gene_label,
+            'colour'    => $gene_col,
+            'ext_DB'    => $g->external_db(),
+            'high'      => $high,
+            'type'      => 'ensembl' };
+    }
+    if($F>0) {
+      $Config->{'legend_features'}->{'genes'} = {
+	'priority' => 900,
+        'legend'  => [
+            'EnsEMBL predicted genes (known)' => $known_col,
+          #  'EnsEMBL predicted genes (xref)'  => $xref_col,
+          #  'EnsEMBL predicted genes (pred)'  => $pred_col,
+            'EnsEMBL predicted genes (novel)' => $unknown_col ] };
+    }
+
+    &eprof_end("gene-virtualgene_start-get");
+
+    &eprof_start("gene-externalgene_start-get");
+
+    #
+    # Draw all EMBL Genes
+    #
+    $F=0;
+    foreach my $g (@{$vc->get_all_Genes_by_source( "embl",1 )} ) {
+      $F++;
+      my $gene_label = $g->external_name() || $g->stable_id();
+      
+      my $high = exists $highlights{ $g->external_name() } ||
+	exists $highlights{ $g->stable_id() };
+
+      my $gene_col;
+      if($g->type() eq 'pseudo') {
+	$gene_col = $pseudo_col;
+      } else {
+	$gene_col = $ext_col;
+      }
+
+      push @genes, {
+		'chr_start' => $g->start + $offset,
+                'chr_end'   => $g->end + $offset,
+                'start'     => $g->start(),
+                'strand'    => $g->strand(),
+                'end'       => $g->end(),
                 'ens_ID'    => '', #$g->{'stable_id'},
                 'label'     => $gene_label,
                 'colour'    => $gene_col,
-                'ext_DB'    => $g->{'external_db'},
+                'ext_DB'    => $g->external_db(),
                 'high'      => $high,
-                'type'      => $g->{'type'}
+                'type'      => $g->type()
             };
         }
-        $Config->{'legend_features'}->{'embl_genes'} = {
+
+    if($F>0) {
+      $Config->{'legend_features'}->{'embl_genes'} = {
             'priority' => 800,
             'legend'  => [
-                'EMBL curated genes'      => $ext_col,
-                'EMBL pseudogenes'        => $pseudo_col,
-            ]
-        }  if(@$res>0);
+                'EMBL curated genes' => $ext_col,
+                'EMBL pseudogenes'   => $pseudo_col ] };
+    }
 
+    #
+    # Draw all RefSeq Genes
+    #
+    $F=0;
+    foreach my $g (@{$vc->get_all_Genes_by_source( "refseq",1 )} ) {
+      $F++;
+      my $gene_label = $g->external_name() || $g->stable_id();
 
+      my $high = exists $highlights{ $g->external_name() } ||
+        exists $highlights{ $g->stable_id() };
+
+      my $gene_col = $rat_colours->{'refseq'};
+
+      push @genes, {
+                'chr_start' => $g->start + $offset,
+                'chr_end'   => $g->end + $offset,
+                'start'     => $g->start(),
+                'strand'    => $g->strand(),
+                'end'       => $g->end(),
+                'ens_ID'    => '', #$g->{'stable_id'},
+                'label'     => $gene_label,
+                'colour'    => $gene_col,
+                'ext_DB'    => $g->external_db(),
+                'high'      => $high,
+                'type'      => $g->type()
+            };
+        }
+
+    if($F>0) {
+      $Config->{'legend_features'}->{'refseq_genes'} = {
+            'priority' => 801,
+            'legend'  => [
+                'RefSeq proteins' => $rat_colours->{'refseq'},
+            ] };
+    }
+
+    &eprof_end("gene-externalgene_start-get");
+
+    #&eprof_start("gene-render-code");
 
     my @gene_glyphs = ();
     foreach my $g (@genes) {
         my $start = $g->{'start'};
         my $end   = $g->{'end'};
 		
-		next if($end < 1 || $start > $vc_length);
+	next if($end < 1 || $start > $vc_length);
         $start = 1 if $start<1;
         $end = $vc_length if $end > $vc_length;
 
         my $rect = new Sanger::Graphics::Glyph::Rect({
                 'x'         => $start,
                 'y'         => 0,
-                'width'     => $end - $start,
+                'width'     => $end - $start+1,
                 'height'    => $h,
                 'colour'    => $g->{'colour'},
                 'absolutey' => 1,
@@ -219,19 +279,20 @@ sub _init {
 				"length: ".($g->{'chr_end'}-$g->{'chr_start'}+1) 	=> ''
 			}; 
             if( $g->{'ens_ID'} ne '' ) {
-    			$rect->{'zmenu'}->{"Gene: $g->{'ens_ID'}"} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$g->{'ens_ID'}"; 
+  		$rect->{'zmenu'}->{"Gene: $g->{'ens_ID'}"} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$g->{'ens_ID'}"; 
+
                 $rect->{'href'} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$g->{'ens_ID'}" ;
             }
 		}
     
-        my $depth = $Config->get('annot_gene_lite', 'dep');
+        my $depth = $Config->get('gene_lite', 'dep');
         if ($depth > 0){ # we bump
             my $bump_start = int($rect->x() * $pix_per_bp);
             $bump_start = 0 if ($bump_start < 0);
     
             my $bump_end = $bump_start + int($rect->width()*$pix_per_bp) +1;
             $bump_end = $bitmap_length if ($bump_end > $bitmap_length);
-            my $row = &Bump::bump_row(
+            my $row = & Sanger::Graphics::Bump::bump_row(
                 $bump_start,
                         $bump_end,
                         $bitmap_length,
@@ -247,7 +308,7 @@ sub _init {
             my $rect2 = new Sanger::Graphics::Glyph::Rect({
                 'x'         => $start - 1/$pix_per_bp,
                 'y'         => $rect->y()-1,
-                'width'     => $end - $start  + 2/$pix_per_bp,
+                'width'     => $end - $start  +1 + 2/$pix_per_bp,
                 'height'    => $rect->height()+2,
                 'colour'    => $hi_col,
                 'absolutey' => 1,
@@ -259,6 +320,7 @@ sub _init {
     foreach( @gene_glyphs) {
         $self->push($_);
     }
+    #&eprof_end("gene-render-code");
 }
 
 1;
