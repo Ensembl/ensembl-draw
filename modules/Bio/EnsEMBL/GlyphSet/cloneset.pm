@@ -110,8 +110,8 @@ sub _init {
 
         if( $include_fish eq 'FISH' ) {
             my $fish = $clone->FISHmap();
-            $Composite->{'zmenu'}->{"05:FISH: $fish"} => '' if( ($include_fish eq 'FISH') and $show_navigation);
             if($fish ne '') {
+      		    $Composite->{'zmenu'}->{"05:FISH: $fish"} = '' if( ($include_fish eq 'FISH') and $show_navigation);
                 my $triangle_end =  $start + 3/$pix_per_bp;
                 $triangle_end = $end if( $triangle_end > $end);
     	        $fish_clone = new Bio::EnsEMBL::Glyph::Poly({
