@@ -751,7 +751,7 @@ sub _init {
   $Extra->{labelflag} = 'u';
   $configuration->{colour} = $Config->get($das_config_key, 'col') || $Extra->{color} || 'contigblue1';
   $configuration->{depth} =  $Config->get($das_config_key, 'dep') || $Extra->{depth}  || 4;
-  $configuration->{use_style} = $Extra->{stylesheet} ? $Extra->{stylesheet} eq 'y' : $Config->get($das_config_key, 'stylesheet') eq 'Y';
+  $configuration->{use_style} = $Extra->{stylesheet} ? $Extra->{stylesheet} eq 'Y' : $Config->get($das_config_key, 'stylesheet') eq 'Y';
   $configuration->{labelling} = $Extra->{labelflag} =~ /^[ou]$/i ? 1 : 0;
   $configuration->{length} = $container_length;
 
