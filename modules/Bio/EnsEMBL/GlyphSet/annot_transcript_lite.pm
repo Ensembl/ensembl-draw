@@ -58,10 +58,10 @@ sub zmenu {
     my $id = $vt->{'stable_id'};
     my $zmenu = {
         'caption'                       => $id,
-        "01:Gene information"		=> $self->href( $vt ),
+        "01:Locus information"		=> $self->href( $vt ),
         '02:Transcript information'     => "/$ENV{'ENSEMBL_SPECIES'}/transinfo?transcript=$id",
         '04:Supporting evidence'        => "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$id",
-        '06:Gene sequence'   => "/$ENV{'ENSEMBL_SPECIES'}/exportview?type=feature&ftype=gene&id=".$vt->{'gene'},
+        '06:Locus sequence'   => "/$ENV{'ENSEMBL_SPECIES'}/exportview?type=feature&ftype=gene&id=".$vt->{'gene'},
         '08:cDNA sequence (FASTA)'              => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=cdna&id=$id",
 	"09:Type: $T"   => ''
     };
