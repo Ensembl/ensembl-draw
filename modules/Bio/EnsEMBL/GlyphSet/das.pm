@@ -210,7 +210,7 @@ sub _init {
                     $C ++; 
                     $old_end = $END;
                     $Composite2->push( new Sanger::Graphics::Glyph::Rect({
-                        'x'          => $START,
+                        'x'          => $START-1,
                         'y'          => 0,
                         'width'      => $END-$START+1,
                         'height'     => 8,
