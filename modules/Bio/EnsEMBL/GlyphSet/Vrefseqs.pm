@@ -35,7 +35,7 @@ sub _init {
     my @refseqs = $refseqs->get_binvalues();
 
     foreach (@refseqs){
-	my $g_x = new Sanger::Graphics::Glyph::Rect({
+	$self->push(new Sanger::Graphics::Glyph::Rect({
 		'x'      => $_->{'chromosomestart'},
 		'y'      => 0,
 		'width'  => $_->{'chromosomeend'}-$_->{'chromosomestart'},
@@ -43,8 +43,7 @@ sub _init {
 		'bordercolour' => $refseqs_col,
 		'absolutey' => 1,
 		'href'   => "/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$chr&vc_start=$_->{'chromosomestart'}&vc_end=$_->{'chromosomeend'}"
-	});
-        $self->push($g_x);
+	}));
     }
 }
 

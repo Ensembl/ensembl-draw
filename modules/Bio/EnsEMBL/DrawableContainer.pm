@@ -70,7 +70,8 @@ sub new {
                 $GlyphSet = new $classname($Container, $Config, $highlights, $strand);
             };
             if($@ || !$GlyphSet) {
-                print STDERR "GLYPHSET $classname failed\n";
+                my $reason = $@ || "No reason given just returns undef";
+                print STDERR "GLYPHSET: glyphset $classname failed ($ENV{'ENSEMBL_SPECIES'}/$ENV{'ENSEMBL_SCRIPT'} at ".gmtime()."\nGLYPHSET:  $reason\n";
             } else {
                 $tmp_glyphset_store->{$Config->get($row, 'pos')} = $GlyphSet;
             }

@@ -13,8 +13,9 @@ use vars qw(@ISA $AUTOLOAD);
 sub new {
     my $class = shift;
     if(!$class) {
-    warn( "EnsEMBL::GlyphSet called with undefined class" );
-    return undef;
+      warn( "EnsEMBL::GlyphSet::failed at: ".gmtime()." in $ENV{'ENSEMBL_SPECIES'}/$ENV{'ENSEMBL_SCRIPT'}" );
+      warn( "EnsEMBL::GlyphSet::failed with a call of new on an undefined value" );
+      return undef;
     }
     my $self = $class->SUPER::new( @_ );
        $self->{'bumpbutton'} = undef;
