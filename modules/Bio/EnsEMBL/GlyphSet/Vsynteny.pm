@@ -4,17 +4,18 @@ use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet;
 @ISA = qw(Bio::EnsEMBL::GlyphSet);
 
-use Sanger::Graphics::Glyph::Rect;
-use Sanger::Graphics::Glyph::Poly;
-use Sanger::Graphics::Glyph::Text;
-use Sanger::Graphics::Glyph::Line;
-use Sanger::Graphics::Glyph::Space;
+use Bio::EnsEMBL::Glyph::Rect;
+use Bio::EnsEMBL::Glyph::Poly;
+use Bio::EnsEMBL::Glyph::Text;
+use Bio::EnsEMBL::Glyph::Line;
+use Bio::EnsEMBL::Glyph::Space;
+use SiteDefs;
 
 sub init_label {
     my ($self) = @_;
     my $SPECIES_T = $ENV{'ENSEMBL_SPECIES'};
     $SPECIES_T =~ s/_/ /g;
-    my $label = new Sanger::Graphics::Glyph::Text({
+    my $label = new Bio::EnsEMBL::Glyph::Text({
         'text'      => "$SPECIES_T chromosome ".uc($self->{'container'}->{'chr'}),
         'font'      => 'Small',
         'absolutey' => 1,
@@ -58,8 +59,6 @@ sub _init {
     my $chr         = $self->{'container'}->{'chr'} || 1;
     my $kba         = $self->{'container'}->{'ka_main'};
     my $kba2        = $self->{'container'}->{'ka_secondary'};
-    my $ca         = $self->{'container'}->{'ca_main'};
-    my $ca2        = $self->{'container'}->{'ca_secondary'};
     my $synteny_data= $self->{'container'}->{'synteny'};
     my $OTHER       = $self->{'container'}->{'other_species'};
     my $OTHER_T     = $OTHER; $OTHER_T =~s/_/ /g;
@@ -73,8 +72,8 @@ sub _init {
     
 ## LETS GRAB THE CHROMOSOME BANDS FOR THE CENTRAL CHROMOSOME
 
-    my $chr_length  = $ca->fetch_by_chr_name( $chr )->length();
-    my $bands       = $kba->fetch_all_by_chr_name( $chr );
+    my $chr_length  = $kba->fetch_chromosome_length( $chr );
+    my @bands       = $kba->fetch_all_by_chromosome( $chr );
 
 ## NOW LETS GRAB THE IMAGE PARAMETERS
     my $im_width            = $Config->image_width();
@@ -136,19 +135,6 @@ sub _init {
             $colour{$other_chr} = $COL;
             $border{$other_chr} = $BORD;
         }
-        my $ZMENU = {
-                'caption' => "$OTHER_T chr $other_chr",
-                sprintf("01:%s Chr %s:%0.1fM-%0.1fM",$SPECIES_SHORT,
-                        $this_chr,$box->{'chr_start'}/1e6,$box->{'chr_end'}/1e6) => 
-    qq(/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$this_chr&vc_start=$box->{'chr_start'}&vc_end=$box->{'chr_end'}),                        
-                sprintf("02:%s Chr %s:%0.1fM-%0.1fM",$OTHER_SHORT,
-                        $other_chr,$box->{'hit_chr_start'}/1e6,$box->{'hit_chr_end'}/1e6) => 
-		( $CANSEE_OTHER ? qq(/$OTHER/contigview?chr=$other_chr&vc_start=$box->{'hit_chr_start'}&vc_end=$box->{'hit_chr_end'}) : '' ),
-
-	    '03:Centre gene list' => qq(/$ENV{'ENSEMBL_SPECIES'}/syntenyview?species=$OTHER&chr=$this_chr&loc=).int(($box->{'chr_end'}+$box->{'chr_start'})/2)
-
-	    };
-
         push @{$highlights_main->{$this_chr}}, {
             'id' => $box->{'synteny_id'},
             'start'=> $box->{'chr_start'},
@@ -157,7 +143,15 @@ sub _init {
             'border' => $BORD,
             'side' => $SIDE,
             'href' => qq(/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$this_chr&vc_start=$box->{'chr_start'}&vc_end=$box->{'chr_end'}),
-            'zmenu' => $ZMENU
+            'zmenu' => {
+                'caption' => "$OTHER_T chr $other_chr",
+                sprintf("01:%s Chr %s:%0.1fM-%0.1fM",$SPECIES_SHORT,
+                        $this_chr,$box->{'chr_start'}/1e6,$box->{'chr_end'}/1e6) => 
+    qq(/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$this_chr&vc_start=$box->{'chr_start'}&vc_end=$box->{'chr_end'}),                        
+                sprintf("02:%s Chr %s:%0.1fM-%0.1fM",$OTHER_SHORT,
+                        $other_chr,$box->{'hit_chr_start'}/1e6,$box->{'hit_chr_end'}/1e6) => 
+( $CANSEE_OTHER ? qq(/$OTHER/contigview?chr=$other_chr&vc_start=$box->{'hit_chr_start'}&vc_end=$box->{'hit_chr_end'}) : '' )
+            }
         };
         if($SIDE) {
             my $marked =
@@ -187,7 +181,7 @@ sub _init {
                 ) => 
                     ( $CANSEE_OTHER ? qq(/$OTHER/contigview?chr=$other_chr&vc_start=$box->{'hit_chr_start'}&vc_end=$box->{'hit_chr_end'}) : '' )
             );
-            my $href = $CANSEE_OTHER ? qq(/$OTHER/syntenyview?species=$ENV{'ENSEMBL_SPECIES'}&chr=$other_chr&loc=).int(($box->{'hit_chr_end'}+$box->{'hit_chr_start'})/2) : '' ;
+            my $href = $CANSEE_OTHER ? qq(/$OTHER/syntenyview?species=$ENV{'ENSEMBL_SPECIES'}&chr=$other_chr) : '' ;
             $zmenu { 'Centre display on this chr.' } = $href if $CANSEE_OTHER;
             push @{$highlights_secondary->{$other_chr}}, {
                 'rel_ori' => $box->{'rel_ori'},
@@ -204,7 +198,7 @@ sub _init {
         }
     }
     my %main_coords = $self->draw_chromosome( 
-        'bands'         => $bands,
+        'bands'         => \@bands,
         'h_offset'      => $outer_padding + $inner_padding + $secondary_width,
         'v_offset'      => $h_offset,
         'length'        => $length,
@@ -230,8 +224,8 @@ sub _init {
     return if $num_chr==0;
     my $secondary_length = int( 2 * ( $length + $spacing ) / ($num_chr+1-$FLAG) - $spacing );
     foreach my $chr2 ( @chromosomes ) {
-        my $chr_length_2  = $ca2->fetch_by_chr_name( $chr2 )->length() || 0;
-        my $bands_2       = $kba2->fetch_all_by_chr_name( $chr2 );
+        my $chr_length_2  = $kba2->fetch_chromosome_length( $chr2 ) || 0;
+        my @bands_2       = $kba2->fetch_all_by_chromosome( $chr2 );
         my ($h_offset2, $v_offset2) = $flag==0 ?
             ( $h_offset + $N/2 * ( $secondary_length + $spacing ),
               $outer_padding) : # LHS
@@ -240,7 +234,7 @@ sub _init {
         my $mb_p_p = ($chr_length_2 / $secondary_length / 1e6);
         my $ruler = $mb_p_p > 0.75 ? 5e7 : ($mb_p_p > 0.15 ? 2e7 : 1e7);
         my %t = $self->draw_chromosome( 
-            'bands'         => $bands_2,
+            'bands'         => \@bands_2,
             'h_offset'      => $v_offset2,
             'v_offset'      => $h_offset2,
             'length'        => $secondary_length,
@@ -276,7 +270,7 @@ sub _init {
             $Y2 = $main_coords{$_}->{'left'};
         }
         my $COL = $secondary_coords{$_}->{'rel_ori'} == 1 ? $black : $brown;
-        $self->push(new Sanger::Graphics::Glyph::Line({
+        $self->push(new Bio::EnsEMBL::Glyph::Line({
             'x'       => $X1,
             'y'       => $Y1,
             'width'   => 0,
@@ -284,7 +278,7 @@ sub _init {
             'colour'           =>  $COL,
             'absolutey'        => 1, 'absolutex'        => 1
         }));
-        $self->push(new Sanger::Graphics::Glyph::Line({
+        $self->push(new Bio::EnsEMBL::Glyph::Line({
             'x'       => $X1,
             'y'       => $Y1 + ($Y2-$Y1)/10,
             'width'   => $X2-$X1,
@@ -292,7 +286,7 @@ sub _init {
             'colour'           => $COL,
             'absolutey'        => 1, 'absolutex'        => 1
         }));
-        $self->push(new Sanger::Graphics::Glyph::Line({
+        $self->push(new Bio::EnsEMBL::Glyph::Line({
             'x'       => $X2,
             'y'       => $Y2 - ($Y2-$Y1)/10,
             'width'   => 0,
@@ -303,7 +297,7 @@ sub _init {
     }
     my $w = $self->{'config'}->texthelper->width('Tiny');
     my $h = $self->{'config'}->texthelper->height('Tiny');
-    $self->unshift(new Sanger::Graphics::Glyph::Text({
+    $self->unshift(new Bio::EnsEMBL::Glyph::Text({
             'x'          => $im_width - $h - 1,
             'y'          => $outer_padding + $secondary_width/2 - $w * length($OTHER_T)/2,
             'font'       => 'Tiny',
@@ -311,7 +305,7 @@ sub _init {
             'text'       => $OTHER_T,
             'absolutey'  => 1, 'absolutex' => 1
     }));
-    $self->unshift(new Sanger::Graphics::Glyph::Text({
+    $self->unshift(new Bio::EnsEMBL::Glyph::Text({
             'x'          => $im_width - $h - 1  ,
             'y'          => $outer_padding + $inner_padding*2 + $main_width + 3*$secondary_width/2 - $w * length($OTHER_T)/2,
             'font'       => 'Tiny',
@@ -319,7 +313,7 @@ sub _init {
             'text'       => $OTHER_T,
             'absolutey'  => 1, 'absolutex' => 1
     }));
-    $self->unshift(new Sanger::Graphics::Glyph::Rect({
+    $self->unshift(new Bio::EnsEMBL::Glyph::Rect({
             'x'          => 0,
             'y'          => 0,
             'width'      => $im_width,
@@ -354,7 +348,7 @@ sub draw_chromosome {
         if ($stain eq "acen"){
             my $gband;
             if ($done_1_acen){
-                $self->push(new Sanger::Graphics::Glyph::Poly({
+                $self->push(new Bio::EnsEMBL::Glyph::Poly({
                     'points'       => [ 
                         $vc_band_start, $h_offset + $h_wid, 
                         $vc_band_end,   $h_offset,
@@ -364,7 +358,7 @@ sub draw_chromosome {
                     'absolutey'    => 1,    'absolutex'    => 1
                 }));
             } else {
-                $self->push(new Sanger::Graphics::Glyph::Poly({
+                $self->push(new Bio::EnsEMBL::Glyph::Poly({
                     'points'       => [ 
                         $vc_band_start, $h_offset, 
                         $vc_band_end,   $h_offset + $h_wid,
@@ -376,7 +370,7 @@ sub draw_chromosome {
                 $done_1_acen = 1;
             }
         } elsif ($stain eq "stalk"){
-            $self->push(new Sanger::Graphics::Glyph::Poly({
+            $self->push(new Bio::EnsEMBL::Glyph::Poly({
                 'points'           => [
                     $vc_band_start, $h_offset, 
                     $vc_band_end,   $h_offset + $wid,
@@ -386,7 +380,7 @@ sub draw_chromosome {
                 'colour'           => $params{'grey'},
                 'absolutey'    => 1,    'absolutex'    => 1
             }));
-            $self->push(new Sanger::Graphics::Glyph::Rect({
+            $self->push(new Bio::EnsEMBL::Glyph::Rect({
                 'x'                => $vc_band_start,
                 'y'                => $h_offset + int($wid/4),
                 'width'            => $vc_band_end - $vc_band_start,
@@ -395,7 +389,7 @@ sub draw_chromosome {
                 'absolutey'    => 1,    'absolutex'    => 1
             }));
         } else {
-            $self->unshift(new Sanger::Graphics::Glyph::Rect({
+            $self->unshift(new Bio::EnsEMBL::Glyph::Rect({
                 'x'          => $vc_band_start,
                 'y'          => $h_offset,
                 'width'      => $vc_band_end - $vc_band_start,
@@ -404,7 +398,7 @@ sub draw_chromosome {
                 'absolutey'  => 1,
                 'absolutex'  => 1
             }));
-            $self->push(new Sanger::Graphics::Glyph::Line({
+            $self->push(new Bio::EnsEMBL::Glyph::Line({
                 'x'                => $vc_band_start,
                 'y'                => $h_offset,
                 'width'            => $vc_band_end - $vc_band_start,
@@ -412,7 +406,7 @@ sub draw_chromosome {
                 'colour'           => $params{'black'},
                 'absolutey'        => 1, 'absolutex'        => 1
             }));
-            $self->push(new Sanger::Graphics::Glyph::Line({
+            $self->push(new Bio::EnsEMBL::Glyph::Line({
                 'x'                => $vc_band_start,
                 'y'                => $h_offset+$wid,
                 'width'            => $vc_band_end - $vc_band_start,
@@ -437,7 +431,7 @@ sub draw_chromosome {
         foreach my $I ( 0..$#lines ) {
             my ( $bg_x, $black_x ) = @{$lines[$I]};
             my $xx =  ($end==1 ? $v_offset : $v_offset + $length) + $end * $I;
-            $self->push(new Sanger::Graphics::Glyph::Line({
+            $self->push(new Bio::EnsEMBL::Glyph::Line({
                     'x'         => $xx,
                     'y'         => $h_offset,
                     'width'     => 0,
@@ -445,7 +439,7 @@ sub draw_chromosome {
                     'colour'    => $params{'bg'},
                     'absolutey' => 1,   'absolutex' => 1
             }));
-            $self->push(new Sanger::Graphics::Glyph::Line({
+            $self->push(new Bio::EnsEMBL::Glyph::Line({
                     'x'         => $xx,
                     'y'         => $h_offset + 1 + $wid * (1-$bg_x/$divisor),
                     'width'     => 0,
@@ -453,7 +447,7 @@ sub draw_chromosome {
                     'colour'    => $params{'bg'},
                     'absolutey' => 1,   'absolutex' => 1
             }));
-            $self->push(new Sanger::Graphics::Glyph::Line({
+            $self->push(new Bio::EnsEMBL::Glyph::Line({
                     'x'         => $xx,
                     'y'         => $h_offset + $wid * $bg_x/$divisor,
                     'width'     => 0,
@@ -461,7 +455,7 @@ sub draw_chromosome {
                     'colour'    => $params{'black'},
                     'absolutey' => 1, 'absolutex' => 1
             }));
-            $self->push(new Sanger::Graphics::Glyph::Line({
+            $self->push(new Bio::EnsEMBL::Glyph::Line({
                     'x'         => $xx,
                     'y'         => $h_offset + 1 + $wid * (1-$bg_x/$divisor-$black_x/$divisor),
                     'width'     => 0,
@@ -481,7 +475,7 @@ sub draw_chromosome {
         my $flag = $params{'ruler_offset'};
         while($X<$chr_length) {
             my $xx = $X * $scale + $v_offset;
-            $self->push(new Sanger::Graphics::Glyph::Line({
+            $self->push(new Bio::EnsEMBL::Glyph::Line({
                     'x'         => $xx,
                     'y'         => $h_offset + ($params{'ruler_offset'} eq 'r' ? $wid : ($params{'ruler_offset'} eq 'l' ? -3  : 0)),
                     'width'     => 0,
@@ -491,7 +485,7 @@ sub draw_chromosome {
             }));
             if($params{'font'}) {
                 my $TEXT = int($X/1000000)."M";
-                $self->push(new Sanger::Graphics::Glyph::Text({
+                $self->push(new Bio::EnsEMBL::Glyph::Text({
                     'x'          => $xx-$h/2,
                     'y'          => $h_offset + ($params{'ruler_offset'} eq 'r' ? $wid + 5 : ($params{'ruler_offset'} eq 'l' ? -5-length($TEXT)*$w : 5)), 
                     'font'       => $params{'font'},
@@ -504,7 +498,7 @@ sub draw_chromosome {
         }
     }
     if($params{'font'} && $params{'chr_name'}) {
-        $self->push(new Sanger::Graphics::Glyph::Text({
+        $self->push(new Bio::EnsEMBL::Glyph::Text({
             'x'          => $v_offset + $length +3 ,
             'y'          => $h_offset + $h_wid - $w * length($params{'chr_name'})/2,
             'font'       => $params{'font'},
@@ -525,7 +519,7 @@ sub draw_chromosome {
             'bottom'=> $vc_end,
             'rel_ori' => $box->{'rel_ori'}
         };
-        $self->push(new Sanger::Graphics::Glyph::Rect({
+        $self->push(new Bio::EnsEMBL::Glyph::Rect({
             'x'          => $vc_start,
             'y'          => $h_offset + $box->{'side'} * ($wid+4),
             'width'      => $vc_end - $vc_start,
@@ -538,7 +532,7 @@ sub draw_chromosome {
             'zmenu' => $box->{'zmenu'}
         }));
         if($box->{'marked'}==1 || $box->{'marked'}==-1) {
-            $self->push(new Sanger::Graphics::Glyph::Rect({
+            $self->push(new Bio::EnsEMBL::Glyph::Rect({
                 'x'          => $vc_start -2,
                 'y'          => $h_offset + ($box->{'marked'}==1 ? $wid+3 : -4 ), 
                 'width'      => $vc_end - $vc_start + 4,
@@ -550,7 +544,7 @@ sub draw_chromosome {
         }
     }
     if($params{'line'}) {
-        $self->push(new Sanger::Graphics::Glyph::Rect({
+        $self->push(new Bio::EnsEMBL::Glyph::Rect({
             'x'          => $v_offset + $params{'line'} * $scale - 1,
             'y'          => $h_offset - 2,
             'width'      => 3,
@@ -558,11 +552,11 @@ sub draw_chromosome {
             'bordercolour' => $params{'red'},
             'absolutey'  => 1,
             'absolutex'  => 1,
-            'href'       => "/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$params{'chr'}&vc_start=".($params{'line'}-5e5)."&vc_end=".($params{'line'}+5e5),
+            'href'       => "/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$params{'this_chr'}&vc_start=".($params{'line'}-5e5)."&vc_end=".($params{'line'}+5e5),
             'zmenu'       => {
                 'caption' => "Entry point",
                 "Jump to ContigView" =>
-                "/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$params{'chr'}&vc_start=".($params{'line'}-5e5)."&vc_end=".($params{'line'}+5e5)
+                "/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$params{'this_chr'}&vc_start=".($params{'line'}-5e5)."&vc_end=".($params{'line'}+5e5)
             }
         }));
     }

@@ -1,4 +1,4 @@
-package Bio::EnsEMBL::GlyphSet::Vannot_known;
+package Bio::EnsEMBL::GlyphSet::Vannot_cds;
 use strict;
 use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet;
@@ -13,9 +13,9 @@ sub init_label {
     my ($self) = @_;
     my $Config = $self->{'config'};	
     my $label = new Bio::EnsEMBL::Glyph::Text({
-		'text'      => 'Known',
+		'text'      => 'Novel CDS',
 		'font'      => 'Small',
-		'colour'	=> $Config->get('Vannot_known','col'),
+		'colour'	=> $Config->get('Vannot_cds','col'),
 		'absolutey' => 1,
     });
 		
@@ -26,23 +26,26 @@ sub _init {
     my ($self) = @_;
     my $Config = $self->{'config'};
     my $chr      = $self->{'container'}->{'chr'};
-    my $gene     = $self->{'container'}->{'da'}->get_density_per_chromosome_type( $chr,'known' );
-    return unless $gene->size();
+    my $cds     = $self->{'container'}->{'da'}->get_density_per_chromosome_type( $chr,'novel_cds' );
+    my $known_genes = $self->{'container'}->{'da'}->get_density_per_chromosome_type($chr,'known');
+    return unless $known_genes->size && $cds->size(); 
+    
+return unless $Hscale_factor =$cds->{'_biggest_value'} && $known_genes->{'_biggest_value'};
 
+    my $Hscale_factor =$cds->{'_biggest_value'} / $known_genes->{'_biggest_value'};
 
+    my $cds_col = $Config->get( 'Vannot_cds','col' );
+    $cds->scale_to_fit( $Config->get( 'Vannot_cds', 'width' ) * $Hscale_factor );
+    $cds->stretch(0);
+    my @cds = $cds->get_binvalues();
 
-    my $gene_col = $Config->get( 'Vannot_known','col' );
-    $gene->scale_to_fit( $Config->get( 'Vannot_known', 'width' ) );
-    $gene->stretch(0);
-    my @gene = $gene->get_binvalues();
-
-    foreach (@gene){
+    foreach (@cds){
 	    my $g_x = new Bio::EnsEMBL::Glyph::Rect({
 		    'x'      => $_->{'chromosomestart'},
 		    'y'      => 0,
 		    'width'  => $_->{'chromosomeend'}-$_->{'chromosomestart'},
 		    'height' => $_->{'scaledvalue'},
-		    'bordercolour' => $gene_col,
+		    'bordercolour' => $cds_col,
 		    'absolutey' => 1,
 		    'href'   => "/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$chr&vc_start=$_->{'chromosomestart'}&vc_end=$_->{'chromosomeend'}"
 	    });

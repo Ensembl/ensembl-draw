@@ -10,6 +10,7 @@ use Sanger::Graphics::Glyph::Text;
 use Sanger::Graphics::Glyph::Composite;
 use Sanger::Graphics::Glyph::Line;
 use Sanger::Graphics::Glyph::Space;
+use SiteDefs;
 
 sub init_label {
     my ($self) = @_;
