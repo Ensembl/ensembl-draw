@@ -2,6 +2,7 @@ package Bio::EnsEMBL::GlyphSet;
 use strict;
 use Exporter;
 use Sanger::Graphics::GlyphSet;
+use Sanger::Graphics::Glyph::Rect;
 
 use vars qw(@ISA $AUTOLOAD);
 
