@@ -92,14 +92,18 @@ $self->errorTrack( "No ".$self->my_label." in this region" )
     
 
         my @bits = sort {$a->start() <=> $b->start()} @{$id{$i}};
-        my $start   = $bits[0]->start;
+        my $start   = $bits[0]->start < $bits[0]->end ? $bits[0]->start : $bits[0]->end;
 
         my $ZZ = "contig=$i&fpos_start=$start&fpos_end=$start&fpos_context=50000";
         my $Composite = new Bio::EnsEMBL::Glyph::Composite({
             'zmenu'     => $self->zmenu( $i, $ZZ ),
             'href'     => $self->href( $i, $ZZ )
         });
+        
         foreach my $f (@bits){
+            my $START = $f->start();
+            my $END   = $f->end();
+            ($START,$END) = ($END, $START) if $END<$START;
             unless (defined $has_origin){
                 $Composite->x($f->start());
                 $Composite->y(0);
@@ -107,9 +111,9 @@ $self->errorTrack( "No ".$self->my_label." in this region" )
             }
             print STDERR "F: ",$f->id," - ",$f->start()," - ",$f->end(),"\n";
             my $glyph = new Bio::EnsEMBL::Glyph::Rect({
-                'x'          => $f->start(),
+                'x'          => $START,
                 'y'          => 0,
-                'width'      => $f->length(),
+                'width'      => $END-$START+1,
                 'height'     => $h,
                 'colour'     => $feature_colour,
                 'absolutey'  => 1,
