@@ -70,6 +70,7 @@ sub zmenu {
         $zmenu->{"06:Peptide:$pid"} =  "/@{[$self->{container}{_config_file_name_}]}/protview?peptide=$pid";
         $zmenu->{'09:Export Peptide'}	= "/@{[$self->{container}{_config_file_name_}]}/exportview?tab=fasta&type=feature&ftype=peptide&id=$pid";
     }
+    #$zmenu->{"10:View in Ensembl"} = $self->ID_URL('ENS_CONTIGVIEW', $gid);
     return $zmenu;
 }
 
