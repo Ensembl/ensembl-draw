@@ -559,11 +559,11 @@ sub draw_chromosome {
             'bordercolour' => $params{'red'},
             'absolutey'  => 1,
             'absolutex'  => 1,
-            'href'       => "/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$params{'this_chr'}&vc_start=".($params{'line'}-5e5)."&vc_end=".($params{'line'}+5e5),
+            'href'       => "/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$params{'chr'}&vc_start=".($params{'line'}-5e5)."&vc_end=".($params{'line'}+5e5),
             'zmenu'       => {
                 'caption' => "Entry point",
                 "Jump to ContigView" =>
-                "/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$params{'this_chr'}&vc_start=".($params{'line'}-5e5)."&vc_end=".($params{'line'}+5e5)
+                "/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$params{'chr'}&vc_start=".($params{'line'}-5e5)."&vc_end=".($params{'line'}+5e5)
             }
         }));
     }

@@ -6,6 +6,8 @@ use Bio::EnsEMBL::GlyphSet;
 use Sanger::Graphics::Glyph::Composite;
 use Sanger::Graphics::Glyph::Rect;
 use Sanger::Graphics::Glyph::Text;
+use Sanger::Graphics::Glyph::Intron;
+use Sanger::Graphics::Bump;
 use ExtURL;
 use SiteDefs;
 

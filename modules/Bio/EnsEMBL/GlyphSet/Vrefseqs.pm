@@ -26,27 +26,27 @@ sub _init {
     my ($self) = @_;
     my $Config = $self->{'config'};
     my $chr      = $self->{'container'}->{'chr'};
-    my $refseqs     = $self->{'container'}->{'da'}->get_density_per_chromosome_type( $chr,'refseq' );
+    my $refseqs  = $self->{'container'}->{'da'}->get_density_per_chromosome_type( $chr,'refseq' );
     return unless $refseqs->size(); # Return nothing if their is no data
     
-	my $refseqs_col = $Config->get( 'Vrefseqs','col' );
+    my $refseqs_col = $Config->get( 'Vrefseqs','col' );
 	
-   	$refseqs->scale_to_fit( $Config->get( 'Vrefseqs', 'width' ) );
-	$refseqs->stretch(0);
-	my @refseqs = $refseqs->get_binvalues();
+    $refseqs->scale_to_fit( $Config->get( 'Vrefseqs', 'width' ) );
+    $refseqs->stretch(0);
+    my @refseqs = $refseqs->get_binvalues();
 
     foreach (@refseqs){
-		my $g_x = new Sanger::Graphics::Glyph::Rect({
-			'x'      => $_->{'chromosomestart'},
-			'y'      => 0,
-			'width'  => $_->{'chromosomeend'}-$_->{'chromosomestart'},
-			'height' => $_->{'scaledvalue'},
-			'bordercolour' => $refseqs_col,
-			'absolutey' => 1,
-			'href'   => "/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$chr&vc_start=$_->{'chromosomestart'}&vc_end=$_->{'chromosomeend'}"
-		});
-	    $self->push($g_x);
-	}
+	my $g_x = new Sanger::Graphics::Glyph::Rect({
+		'x'      => $_->{'chromosomestart'},
+		'y'      => 0,
+		'width'  => $_->{'chromosomeend'}-$_->{'chromosomestart'},
+		'height' => $_->{'scaledvalue'},
+		'bordercolour' => $refseqs_col,
+		'absolutey' => 1,
+		'href'   => "/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$chr&vc_start=$_->{'chromosomestart'}&vc_end=$_->{'chromosomeend'}"
+	});
+        $self->push($g_x);
+    }
 }
 
 1;
