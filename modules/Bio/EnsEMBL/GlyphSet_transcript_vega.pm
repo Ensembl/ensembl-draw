@@ -383,7 +383,7 @@ sub href {
 
 sub zmenu {
   my ($self, $gene, $transcript) = @_;
-  my $tid = $transcript->external_name() || $transcript->stable_id();
+  my $tid = $transcript->stable_id();
   my $pid = $transcript->translation->stable_id() ,
   my $gid = $gene->stable_id();
   my $id   = $transcript->external_name() eq '' ? $tid : ( $transcript->external_db.": ".$transcript->external_name() );
@@ -391,8 +391,8 @@ sub zmenu {
 
     my $zmenu = {
 		 'caption' 			=> $self->zmenu_caption(),
-		 "00:Locus information:"		=> "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$gid",
-		 "01:Transcript information: "	=> "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$tid",
+		 "00:Locus information"		=> "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$gid",
+		 "01:Transcript information"	=> "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$tid",
 		
 		 '04:Exon information'	        => "/$ENV{'ENSEMBL_SPECIES'}/exonview?transcript=$tid&db=core",
 		 '05:Supporting evidence'	=> "/$ENV{'ENSEMBL_SPECIES'}/exonview?transcript=$tid&db=core#evidence",
