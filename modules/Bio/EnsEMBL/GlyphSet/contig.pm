@@ -198,7 +198,7 @@ sub _init {
             my $cid = $rid;
             #$cid=~s/^([^\.]+\.[^\.]+)\..*/$1/;
             $cid=~s/^([^\.]+)\..*/$1/;
-            $glyph->{'href'} = "/$ENV{'ENSEMBL_SPECIES'}/contigview?contig=$rid";
+            $glyph->{'href'} = "/$ENV{'ENSEMBL_SPECIES'}/$ENV{'ENSEMBL_SCRIPT'}?contig=$rid";
             $glyph->{'zmenu'} = {
                 'caption' => $rid,
 	            "01:Clone: $clone"    => '',
