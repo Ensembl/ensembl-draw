@@ -95,7 +95,7 @@ sub zmenu {
     $zmenu->{'14:State: '.substr($f->state,3)        } = ''              if($f->state);
     $zmenu->{'15:Seq length: '.$f->seq_len } = ''        if($f->seq_len);    
     $zmenu->{'16:FP length:  '.$f->fp_size } = ''        if($f->fp_size);    
-    $zmenu->{'17:super_ctg:  '.$f->superctg} = ''        if($f->superctg);    
+    $zmenu->{'17:FPC contig:  '.$f->superctg} = ''        if($f->superctg);    
     $zmenu->{'18:BAC flags:  '.$f->bacinfo } = ''        if($f->BACend_flag);    
     return $zmenu;
 }
