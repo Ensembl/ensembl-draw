@@ -91,16 +91,12 @@ $self->errorTrack( "No ".$self->my_label." in this region" )
         my $has_origin = undef;
     
 
-        my @bits = sort {$a->start() <=> $b->start()} @{$id{$i}};
-        my $start   = $bits[0]->start < $bits[0]->end ? $bits[0]->start : $bits[0]->end;
+        my $start   = 100000000;
+        my $end   = 0;
 
-        my $ZZ = "contig=$i&fpos_start=$start&fpos_end=$start&fpos_context=50000";
-        my $Composite = new Bio::EnsEMBL::Glyph::Composite({
-            'zmenu'     => $self->zmenu( $i, $ZZ ),
-            'href'     => $self->href( $i, $ZZ )
-        });
+        my $Composite = new Bio::EnsEMBL::Glyph::Composite({});
         
-        foreach my $f (@bits){
+        foreach my $f (@{$id{$i}}){
             my $START = $f->start();
             my $END   = $f->end();
             ($START,$END) = ($END, $START) if $END<$START;
@@ -109,6 +105,8 @@ $self->errorTrack( "No ".$self->my_label." in this region" )
                 $Composite->y(0);
                 $has_origin = 1;
             }
+	    $start = $f->hstart() if $f->hstart < $start;
+	    $end   = $f->hend() if $f->hend >$end;
             print STDERR "F: ",$f->id," - ",$f->start()," - ",$f->end(),"\n";
             my $glyph = new Bio::EnsEMBL::Glyph::Rect({
                 'x'          => $START,
@@ -122,6 +120,10 @@ $self->errorTrack( "No ".$self->my_label." in this region" )
             $Composite->push($glyph);
         }
     
+	$start =int(( $start + $end) /2);
+        my $ZZ = "contig=$i&fpos_start=$start&fpos_end=$start&fpos_context=50000";
+	$Composite->zmenu( $self->zmenu( $i, $ZZ ) );
+	$Composite->href( $self->href( $i, $ZZ ) );
         if ($dep > 0){ # we bump
             my $bump_start = int($Composite->x() * $pix_per_bp);
             $bump_start    = 0 if $bump_start < 0;
