@@ -134,7 +134,7 @@ sub _init {
             my $end   = $features[-1]->das_end;
             
             $T += @features;
-            $T += @features-1 if ( $f->das_group_type || $f->das_type_id() ) =~ /(CDS|translation|transcript|exon)/i;
+            $T += @features-1 if ( $f->das_group_type || $f->das_type_id() ) =~ /(gene|CDS|translation|transcript|exon)/i;
             ### A general list of features we don't want to draw via DAS ###
             # Compute the length of the label...
             my $ID    = $f->das_group_id || $f->das_id;
@@ -164,7 +164,8 @@ sub _init {
                 } else {
                   $colour = $feature_colour;
                 }
-            if( ( $f->das_group_type || $f->das_type_id() ) =~ /(CDS|translation|transcript|exon)/i ) { ## TRANSCRIPT!
+            if( ( $f->das_group_type =~ /(gene|CDS|translation|transcript|exon)/i ) ||
+                ( $f->das_type_id() =~ /(gene|CDS|translation|transcript|exon)/i )  ) { ## TRANSCRIPT!
                 my $f     = shift @features;
                 my $START = $f->das_start() < 1        ? 1       : $f->das_start();
                 my $END   = $f->das_end()   > $length  ? $length : $f->das_end();
