@@ -6,23 +6,24 @@ use Bio::EnsEMBL::Utils::Eprof qw(eprof_start eprof_end eprof_dump);
 
 @ISA = qw(Bio::EnsEMBL::GlyphSet_simple);
 
-sub my_label { return "Variation"; }
+sub my_label { return "Variations"; }
 
 sub features {
   my ($self) = @_;
   
-  my @variations = 
-             map { $_->[1] } 
-             sort { $a->[0] <=> $b->[0] }
-             map { [ substr($_->type,0,2) * 1e9 + $_->start, $_ ] }
-             grep { $_->score < 4 } @{$self->{'container'}->get_all_variation()};
+  my @vari_features;# = 
+            # map { $_->[1] } 
+            # sort { $a->[0] <=> $b->[0] }
+            # map { [ substr($_->type,0,2) * 1e9 + $_->start, $_ ] }
+            # grep { $_->score < 4 } @{$self->{'container'}->get_all_SNPs()};
 
-  if(@variations) {
-    $self->{'config'}->{'snp_legend_features'}->{'variations'} 
+ # warn "here are var @vari_features", @{$self->{'container'}->get_all_vari_features()};
+  if(@vari_features) {
+    $self->{'config'}->{'snp_legend_features'}->{'snps'} 
         = { 'priority' => 1000, 'legend' => [] };
   }
 
-  return \@variations;
+  return \@vari_features;
 }
 
 sub href {
@@ -34,7 +35,7 @@ sub href {
     my $source = $f->source_tag;
     my $chr_name = $self->{'container'}->seq_region_name();
 
-    return "/@{[$self->{container}{_config_file_name_}]}/snpview?snp=$snp_id&source=$source&chr=$chr_name&vc_start=$chr_start";
+    return "/@{[$self->{container}{_config_file_name_}]}/variationview?snp=$snp_id&source=$source&chr=$chr_name&vc_start=$chr_start";
 }
 
 sub image_label {
