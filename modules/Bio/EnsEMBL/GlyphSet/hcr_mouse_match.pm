@@ -7,7 +7,7 @@ use Bio::EnsEMBL::GlyphSet_feature2;
 @ISA = qw(Bio::EnsEMBL::GlyphSet_feature2);
 
 
-sub my_label { return "Mm high cons"; }
+sub my_label { return "Mm blz net tight"; }
 
 sub features {
     my ($self) = @_;
@@ -15,7 +15,7 @@ sub features {
     my $assembly = 
       EnsWeb::species_defs->other_species('Mus_musculus','ENSEMBL_GOLDEN_PATH');
 
-    return $self->{'container'}->get_all_compara_DnaAlignFeatures( $assembly,'BLASTZ_NET_TIGHT');
+    return $self->{'container'}->get_all_compara_DnaAlignFeatures( 'Mus musculus', $assembly,'BLASTZ_NET_TIGHT');
 }
 
 sub href {

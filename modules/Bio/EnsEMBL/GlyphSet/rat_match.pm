@@ -5,7 +5,7 @@ use       Bio::EnsEMBL::GlyphSet_feature2;
 @ISA = qw(Bio::EnsEMBL::GlyphSet_feature2);
 
 
-sub my_label { return "Rn cons"; }
+sub my_label { return "Rn blz net"; }
 
 sub features {
     my ($self) = @_;
