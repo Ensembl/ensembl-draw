@@ -15,7 +15,7 @@ sub init_label {
     my $label = new Sanger::Graphics::Glyph::Text({
 		'text'      => 'Novel trans.',
 		'font'      => 'Small',
-		'colour'	=> $Config->get('Vannot_novel_trans','col'),
+		'colour'	=> $Config->get('_colours','Novel_Transcript'),
 		'absolutey' => 1,
     });
 		
@@ -32,7 +32,7 @@ sub _init {
     return unless  $trans->{'_biggest_value'} && $known_genes->{'_biggest_value'};
     my $Hscale_factor = $trans->{'_biggest_value'} / $known_genes->{'_biggest_value'};
 
-    my $trans_col = $Config->get( 'Vannot_novel_trans','col' );
+    my $trans_col = $Config->get( '_colours','Novel_Transcript' );
     $trans->scale_to_fit( $Config->get( 'Vannot_novel_trans', 'width' ) * $Hscale_factor );
     $trans->stretch(0);
     my @trans = $trans->get_binvalues();

@@ -15,7 +15,7 @@ sub init_label {
     my $label = new Sanger::Graphics::Glyph::Text({
 		'text'      => 'Novel CDS',
 		'font'      => 'Small',
-		'colour'	=> $Config->get('Vannot_cds','col'),
+		'colour'	=> $Config->get('_colours','Novel_CDS'),
 		'absolutey' => 1,
     });
 		
@@ -36,7 +36,7 @@ sub _init {
 
     my $Hscale_factor =$cds->{'_biggest_value'} / $known_genes->{'_biggest_value'};
 
-    my $cds_col = $Config->get( 'Vannot_cds','col' );
+    my $cds_col = $Config->get( '_colours','Novel_CDS' );
     $cds->scale_to_fit( $Config->get( 'Vannot_cds', 'width' ) * $Hscale_factor );
     $cds->stretch(0);
     my @cds = $cds->get_binvalues();

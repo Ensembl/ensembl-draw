@@ -15,7 +15,7 @@ sub init_label {
     my $label = new Sanger::Graphics::Glyph::Text({
 		'text'      => 'Known',
 		'font'      => 'Small',
-		'colour'	=> $Config->get('Vannot_known','col'),
+		'colour'	=> $Config->get('_colours','Known'),
 		'absolutey' => 1,
     });
 		
@@ -31,7 +31,7 @@ sub _init {
 
 
 
-    my $gene_col = $Config->get( 'Vannot_known','col' );
+    my $gene_col = $Config->get('_colours','Known');
     $gene->scale_to_fit( $Config->get( 'Vannot_known', 'width' ) );
     $gene->stretch(0);
     my @gene = $gene->get_binvalues();

@@ -15,13 +15,13 @@ sub init_label {
     my $label = new Sanger::Graphics::Glyph::Text({
 		'text'      => 'Ig Segment',				   
 		'font'      => 'Small',
-		'colour'	=> $Config->get('Vannot_ig_and_ig_pseudo','col_ig'),
+		'colour'	=> $Config->get( '_colours','Ig_Segment' ),
 		'absolutey' => 1,
     });
     my $label2 = new Sanger::Graphics::Glyph::Text({
 		'text'      => 'Ig Pseudo Seg.',
 		'font'      => 'Small',
-		'colour'	=>  $Config->get('Vannot_ig_and_ig_pseudo','col_ig_pseudo'),		
+		'colour'	=>  $Config->get( '_colours','Ig_Pseudogene' ),		
 		'absolutey' => 1,
     });
 		
@@ -33,10 +33,9 @@ sub _init {
     my ($self) = @_;
     my $Config = $self->{'config'};
     my $chr      = $self->{'container'}->{'chr'};
-    my $known_col = $Config->get( 'Vannot_ig_and_ig_pseudo','col_ig' );
-   
+    my $known_col = $Config->get( '_colours','Ig_Segment' ;
+    my $genes_col = $Config->get( '_colours','Ig_Pseudogene' ); 	
 
- my $genes_col = $Config->get( 'Vannot_ig_and_ig_pseudo','col_ig_pseudo' ); 		
     my $known_genes = $self->{'container'}->{'da'}->get_density_per_chromosome_type($chr,'ig_segment');
     my $genes = $self->{'container'}->{'da'}->get_density_per_chromosome_type($chr,'ig_pseudogene');
 

@@ -15,7 +15,7 @@ sub init_label {
     my $label = new Sanger::Graphics::Glyph::Text({
 		'text'      => 'Pseudo',
 		'font'      => 'Small',
-		'colour'	=> $Config->get('Vannot_pseudo','col'),
+		'colour'	=> $Config->get('_colours','Pseudogene'),
 		'absolutey' => 1,
     });
 		
@@ -34,7 +34,7 @@ return unless     $pseudo->{'_biggest_value'} && $known_genes->{'_biggest_value'
 
     my $Hscale_factor = $pseudo->{'_biggest_value'}/$known_genes->{'_biggest_value'} ;
 
-    my $pseudo_col = $Config->get( 'Vannot_pseudo','col' );
+    my $pseudo_col = $Config->get('_colours','Pseudogene');
     $pseudo->scale_to_fit( $Config->get( 'Vannot_pseudo', 'width' ) * $Hscale_factor);
     $pseudo->stretch(0);
     my @pseudo = $pseudo->get_binvalues();

@@ -25,14 +25,14 @@ my $text1 = ""; my $text2 = "";
  my $label = new Sanger::Graphics::Glyph::Text({
 		'text'      => $text1,
 		'font'      => 'Small',
-		'colour'	=> $Config->get('Vannot_predicted_and_putative','col_put'),
+		'colour'	=> $Config->get( '_colours','Putative' ),
 		'absolutey' => 1,
     }); $self->label($label);
 
  my $label2 = new Sanger::Graphics::Glyph::Text({
 		'text'      => $text2,
 		'font'      => 'Small',
-		'colour'	=>  $Config->get('Vannot_predicted_and_putative','col_pred'),		
+		'colour'	=>  $Config->get( '_colours','Predicted_Gene' ),		
 		'absolutey' => 1,
     }); $self->label2($label2);
 
@@ -42,10 +42,11 @@ sub _init {
     my ($self) = @_;
     my $Config = $self->{'config'};
     my $chr      = $self->{'container'}->{'chr'};
-    my $known_col = $Config->get( 'Vannot_predicted_and_putative','col_pred' );
-    my $genes_col = $Config->get( 'Vannot_predicted_and_putative','col_put' );
+   
 
- 		
+
+    my $known_col = $Config->get( '_colours','Predicted_Gene' );
+    my $genes_col = $Config->get( '_colours','Putative' );
 
     my $known_genes = $self->{'container'}->{'da'}->get_density_per_chromosome_type($chr,'predicted');
 
