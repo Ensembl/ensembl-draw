@@ -158,7 +158,7 @@ sub _init {
             'border' => $BORD,
             'side' => $SIDE,
             'href' => qq(/$ENV{'ENSEMBL_SPECIES'}/contigview?chr=$this_chr&vc_start=$box->{'chr_start'}&vc_end=$box->{'chr_end'}),
-            'zmenu' => 
+            'zmenu' => $ZMENU
         };
         if($SIDE) {
             my $marked =
