@@ -374,18 +374,15 @@ sub zmenu {
   my $gid = $gene->stable_id();
   my $id   = $transcript->external_name() eq '' ? $tid : ( $transcript->external_db.": ".$transcript->external_name() );
 
-  
-my $genetype = $gene->type();
-print $genetype;
 
     my $zmenu = {
-	'caption' 			=> $gid . "asdf",
+	'caption' 			=> $self->zmenu_caption(),
 	"00:Locus information:"		=> "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$gid",
 	"01:Transcript information: "	=> "",
 #	'03:Transcript information'	=> "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$gid",
 	'04:Protein information'	=> "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=$pid",	
 	'05:Supporting evidence'	=> "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$tid",
-	'07:Protein sequence (FASTA)'	=> "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=pid",
+	'07:Protein sequence (FASTA)'	=> "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=$pid",
 	'08:cDNA sequence (FASTA)'	=> "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=cdna&id=$tid",
 	'09:Type: ' . $gene->type()	=> "",
     };
