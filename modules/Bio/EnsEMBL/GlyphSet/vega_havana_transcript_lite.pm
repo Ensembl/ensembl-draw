@@ -17,8 +17,4 @@ sub zmenu_caption {
 return 'Havana Gene';
 }
 
-
-
-
-
 1;
