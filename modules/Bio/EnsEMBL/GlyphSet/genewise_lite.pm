@@ -6,28 +6,25 @@ use Bio::EnsEMBL::GlyphSet_transcript;
 
 sub my_label {
     my $self = shift;
-    return $self->{'config'}->{'_draw_single_Transcript'} || 'Genewise';
+    return $self->{'config'}->{'_draw_single_Transcript'} || 'Genewise trans.';
 }
 
 sub colours {
     my $self = shift;
     my $Config = $self->{'config'};
     return {
-        'unknown'   => $Config->get('genewise_lite','unknown'),
-        'known'     => $Config->get('genewise_lite','known'),
-        'pseudo'    => $Config->get('genewise_lite','pseudo'),
-        'ext'       => $Config->get('genewise_lite','ext'),
-        'hi'        => $Config->get('genewise_lite','hi'),
-        'superhi'   => $Config->get('genewise_lite','superhi')
+        'unknown'   => $Config->get('transcript_lite','unknown'),
+        'known'     => $Config->get('transcript_lite','known'),
+        'pseudo'    => $Config->get('transcript_lite','pseudo'),
+        'ext'       => $Config->get('transcript_lite','ext'),
+        'hi'        => $Config->get('transcript_lite','hi'),
+        'superhi'   => $Config->get('transcript_lite','superhi')
     };
 }
 
 sub features {
     my $self = shift;
-    my $core = $self->{'container'}->get_all_VirtualGenewise_startend_lite( 'core' );
-    my $ens  = $self->{'container'}->get_all_VirtualGenewise_startend_lite( 'ensembl' );
-    my @features = (@$core,@$ens);
-    return \@features;
+    return $self->{'container'}->get_all_VirtualTranscripts_startend_lite_coding( 'genewise' );
 }
 
 sub colour {
@@ -86,6 +83,6 @@ sub legend {
     );
 }
 
-sub error_track_name { return 'EnsEMBL genewises'; }
+sub error_track_name { return 'EnsEMBL transcripts'; }
 
 1;
