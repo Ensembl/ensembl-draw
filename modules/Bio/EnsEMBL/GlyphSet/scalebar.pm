@@ -142,7 +142,7 @@ sub interval {
     my ( $self, $chr, $start, $end, $global_offset, $width, $highlights) = @_;
     my $interval_middle = ($start + $end)/2;
     return( $self->zoom_URL($chr, $interval_middle, $width,  1  , $highlights),
-            $self->zoom_zmenu( $chr, $interval_middle, $width, $highlights ) );
+            $self->zoom_zmenu( $chr, $interval_middle, $width/2, $highlights ) );
 }
 
 sub zoom_interval {
@@ -150,7 +150,7 @@ sub zoom_interval {
     my ( $self, $chr, $start, $end, $global_offset, $width, $highlights, $zoom_width ) = @_;
     my $interval_middle = ($start + $end)/2;
     return( $self->zoom_URL($chr, $interval_middle, $width,  1  , $highlights),
-           $self->zoom_zoom_zmenu( $chr, $interval_middle, $width, $highlights, $zoom_width )
+           $self->zoom_zoom_zmenu( $chr, $interval_middle, $width/2, $highlights, $zoom_width )
     );
 }
 
