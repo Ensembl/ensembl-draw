@@ -107,7 +107,6 @@ sub text_label {
 sub features {
   my ($self) = @_;
 
-  warn "GRABBING ALL GENES OF TYPE otter from VEGA";
   if( $self->{'config'}->{'fakecore'} ) {
     return $self->{'container'}->get_all_Genes('otter');
   } else {
