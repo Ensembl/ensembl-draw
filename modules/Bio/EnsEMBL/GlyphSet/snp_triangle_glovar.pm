@@ -50,7 +50,11 @@ sub tag {
 	return( { 'style' => 'left-snp', 'colour' => $col } );
     }
     if ($f->snpclass eq 'SNP - indel' ) {
-	return( { 'style' => 'delta', 'colour' => $col } );
+        if ($f->start == $f->end) {
+	    return( { 'style' => 'delta', 'colour' => $col } );
+        } else {
+            return( { 'style' => 'left-snp', 'colour' => $col } );
+        }
     }
     return ( { 'style'  => 'box', 'colour' => $col, 'letter' => ' ' } );
 }

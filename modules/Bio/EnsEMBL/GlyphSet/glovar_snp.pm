@@ -69,6 +69,27 @@ sub features {
     return \@snps;
 }
 
+=head2 tag
+
+  Arg[1]      : a Bio::EnsEMBL::SNP object
+  Example     : my $tag = $self->tag($f);
+  Description : retrieves the SNP tag (ambiguity code) in the right colour
+  Return type : hashref
+  Exceptions  : none
+  Caller      : $self->_init()
+
+=cut
+
+sub tag {
+    my ($self, $f) = @_;
+    if (($f->snpclass eq 'SNP - indel') && ($f->start ne $f->end)) {
+        my $type = $f->type;
+        return ( { 'style' => 'insertion', 'colour' => $self->{'colours'}{"_$type"} } );
+    } else {
+        return undef;
+    }
+}
+
 =head2 colour
 
   Arg[1]      : a Bio::EnsEMBL::SNP object
@@ -95,7 +116,7 @@ sub colour {
         push @{ $self->{'config'}->{'snp_legend_features'}->{'snps'}->{'legend'} }, $labels{"_$T"} => $self->{'colours'}{"_$T"};
         $self->{'config'}->{'snp_types'}{$T}=1;
     }
-    return( $self->{'colours'}{"_$T"}, $self->{'colours'}{"label_$T"}, $f->{'_range_type'} eq 'between' ? 'invisible' : '' );
+    return( $self->{'colours'}{"_$T"}, $self->{'colours'}{"label_$T"}, (($f->snpclass eq 'SNP - indel') && ($f->start ne $f->end)) ? 'invisible' : '' );
 }
 
 =head2 zmenu
@@ -128,13 +149,14 @@ sub zmenu {
         '01:SNPView' => $self->href($f),
         #'02:Sanger SNP Report' => $self->ID_URL('GLOVAR_SNP', $id),
         "03:bp: $pos" => '',
-        "04:class: ".$f->snpclass => '',
-        "05:status: ".$f->raw_status => '',
-        "06:ambiguity code: ".$f->{'_ambiguity_code'} => '',
-        "07:alleles: ".(length($allele)<16 ? $allele : substr($allele,0,14).'..') => '',
-        "08:type: ".($f->type||'other') => '',
-        "09:consequence: ".($f->consequence||'unknown') => '',
-   );
+        "04:Strand: ".$f->strand => '',
+        "05:Class: ".$f->snpclass => '',
+        "06:Status: ".$f->raw_status => '',
+        "08:Alleles: ".(length($allele)<16 ? $allele : substr($allele,0,14).'..') => '',
+        "09:Position type: ".($f->type||'other') => '',
+        "10:Consequence: ".($f->consequence||'unknown') => '',
+    );
+    $zmenu{"07:Ambiguity code: ".$f->{'_ambiguity_code'}} = '' if $f->{'_ambiguity_code'};
 
     my %links;
     
