@@ -181,7 +181,7 @@ sub _init {
         foreach my $f (
             sort { $a->[0] <=> $b->[0] }
             map { [$_->start, $_->end,$_ ] }
-            grep { !($strand_flag eq 'b' && $strand != ($_->strand||-1) || $_->start > $length || $_->end < 1) } 
+            grep { !($strand_flag eq 'b' && $strand != ($_->hstrand*$_->strand||-1) || $_->start > $length || $_->end < 1) } 
             map { @$_ } @features
         ) {
             my $START   = $f->[0];
