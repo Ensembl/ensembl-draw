@@ -295,20 +295,20 @@ sub colours {
     my $self = shift;
     my $Config = $self->{'config'};
      return {
- 	    'unknown'   => $Config->get('_colours','unknown'),
- 	    'xref'      => $Config->get('_colours','xref'),
- 	    'pred'      => $Config->get('_colours','pred'),
- 	   'known'     => $Config->get('_colours','known'),
- 	    'hi'        => $Config->get('_colours','hi'),
- 	    'superhi'   => $Config->get('_colours','superhi'),
- 	    'Novel_CDS'        => $Config->get('_colours','Novel_CDS'), 
- 	    'Putative'         => $Config->get('_colours','Putative'), 
- 	    'Known'            => $Config->get('_colours','Known'),  
- 	    'Novel_Transcript' => $Config->get('_colours','Novel_Transcript'), 
- 	    'Pseudogene'       => $Config->get('_colours','Pseudogene'),
- 	    'Ig_Segment'       => $Config->get('_colours','Ig_Segment'), 	  
- 	    'Ig_Pseudogene_Segment'   =>$Config->get('_colours','Ig_Pseudogene') , 
-  	    'Predicted_Gene'  => $Config->get('_colours','Predicted_Gene'), 
+	     'unknown'   => $Config->get('_colours','unknown'),
+	     'xref'      => $Config->get('_colours','xref'),
+	     'pred'      => $Config->get('_colours','pred'),
+	     'known'     => $Config->get('_colours','known'),
+	     'hi'        => $Config->get('_colours','hi'),
+	     'superhi'   => $Config->get('_colours','superhi'),
+	     'Novel_CDS'        => $Config->get('_colours','Novel_CDS'), 
+	     'Putative'         => $Config->get('_colours','Putative'), 
+	     'Known'            => $Config->get('_colours','Known'),  
+	     'Novel_Transcript' => $Config->get('_colours','Novel_Transcript'), 
+	     'Pseudogene'       => $Config->get('_colours','Pseudogene'),
+	     'Ig_Segment'       => $Config->get('_colours','Ig_Segment'), 	  
+	     'Ig_Pseudogene_Segment'   =>$Config->get('_colours','Ig_Pseudogene') , 
+	     'Predicted_Gene'  => $Config->get('_colours','Predicted_Gene'), 
 
 	      }; 
 
@@ -404,11 +404,7 @@ sub zmenu {
 
 sub text_label {
   my ($self, $gene, $transcript) = @_;
-  my $id = $transcript->stable_id();
-  my $external_id  = $transcript->external_name(); 
-  if( $self->{'config'}->{'_both_names_'} eq 'yes') {
-    $id .=  ' $external_id' ;
-  }
+  my $id = $transcript->external_name() || $transcript->stable_id();
   return $id;
 }
 
