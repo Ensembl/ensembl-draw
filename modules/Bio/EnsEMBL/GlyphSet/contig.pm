@@ -86,7 +86,7 @@ sub _init {
     if (!@map_contigs) {
 ## Draw a warning track....
         $self->errorTrack("Golden path gap - no contigs to display!");
-    } elsif($useAssembly) { ## THIS IS THE FAKE STUFF FOR MOUSE
+    } elsif($useAssembly && $length<5e6) { ## THIS IS THE FAKE STUFF FOR MOUSE
         my @assembly_contigs = $vc->each_AssemblyContig;
         my %contigs = ();
         my %big_contigs = ();
