@@ -12,7 +12,7 @@ use Bio::EnsEMBL::Utils::Eprof qw(eprof_start eprof_end);
 
 
 sub my_label {
-return 'Dunham Group Genes';
+return 'Collins et al Genes';
 }
 
 sub logic_name {
