@@ -9,8 +9,8 @@ package Bio::EnsEMBL::GlyphSet::annot_gene_label_lite;
 use strict;
 use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet;
-use Bio::EnsEMBL::Glyph::Rect;
-use Bio::EnsEMBL::Glyph::Text;
+use Sanger::Graphics::Glyph::Rect;
+use Sanger::Graphics::Glyph::Text;
 use Bump;
 
 @ISA = qw(Bio::EnsEMBL::GlyphSet);
@@ -180,7 +180,7 @@ sub _init {
         my $label = $g->{'label'};
 
 	    next if $label eq '';
-        my $tglyph = new Bio::EnsEMBL::Glyph::Text({
+        my $tglyph = new Sanger::Graphics::Glyph::Text({
             'x'         => $start,	
             'y'         => $y,
             'height'    => $Config->texthelper->height($fontname),
@@ -224,7 +224,7 @@ sub _init {
         ##################################################
         # Draw little taggy bit to indicate start of gene
         ##################################################
-        my $taggy = new Bio::EnsEMBL::Glyph::Rect({
+        my $taggy = new Sanger::Graphics::Glyph::Rect({
             'x'            => $start,
             'y'            => $tglyph->y - 1,
             'width'        => 1,
@@ -234,7 +234,7 @@ sub _init {
         });
     
         push @gene_glyphs, $taggy;
-        $taggy = new Bio::EnsEMBL::Glyph::Rect({
+        $taggy = new Sanger::Graphics::Glyph::Rect({
             'x'            => $start,
             'y'            => $tglyph->y - 1 + 4,
             'width'        => $font_w_bp * 0.5,
@@ -248,7 +248,7 @@ sub _init {
         # Highlight label if required.....
         ##################################################
         if($g->{'high'}) {
-            my $rect2 = new Bio::EnsEMBL::Glyph::Rect({
+            my $rect2 = new Sanger::Graphics::Glyph::Rect({
                 'x'         => $tglyph->x() + $font_w_bp,
                 'y'         => $tglyph->y(),
                 'width'     => $font_w_bp * length($label),

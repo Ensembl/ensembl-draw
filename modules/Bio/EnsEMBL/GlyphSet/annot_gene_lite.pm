@@ -10,15 +10,15 @@ use strict;
 use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet;
 @ISA = qw(Bio::EnsEMBL::GlyphSet);
-use Bio::EnsEMBL::Glyph::Rect;
-use Bio::EnsEMBL::Glyph::Text;
+use Sanger::Graphics::Glyph::Rect;
+use Sanger::Graphics::Glyph::Text;
 use Bump;
 use EnsWeb;
 
 sub init_label {
     my ($self) = @_;
         return if( defined $self->{'config'}->{'_no_label'} );
-    my $label = new Bio::EnsEMBL::Glyph::Text({
+    my $label = new Sanger::Graphics::Glyph::Text({
         'text'      => 'Genes',
         'font'      => 'Small',
         'absolutey' => 1,
@@ -204,7 +204,7 @@ sub _init {
         $start = 1 if $start<1;
         $end = $vc_length if $end > $vc_length;
 
-        my $rect = new Bio::EnsEMBL::Glyph::Rect({
+        my $rect = new Sanger::Graphics::Glyph::Rect({
                 'x'         => $start,
                 'y'         => 0,
                 'width'     => $end - $start,
@@ -244,7 +244,7 @@ sub _init {
         }
         push @gene_glyphs, $rect;
         if($g->{'high'}) {
-            my $rect2 = new Bio::EnsEMBL::Glyph::Rect({
+            my $rect2 = new Sanger::Graphics::Glyph::Rect({
                 'x'         => $start - 1/$pix_per_bp,
                 'y'         => $rect->y()-1,
                 'width'     => $end - $start  + 2/$pix_per_bp,
