@@ -58,8 +58,8 @@ sub render_Intron {
 
 sub render_Poly {
     my ($self, $glyph) = @_;
-	my $href = $self->_getHref( $glyph );
-	return unless(defined $href);
+    my $href = $self->_getHref( $glyph );
+    return unless(defined $href);
     my $pointslist = join ' ',map { int } @{$glyph->pixelpoints()};
     $self->{'canvas'} = qq(<area shape="poly" coords="$pointslist"$href>\n).$self->{'canvas'} ; 
 }
@@ -81,7 +81,7 @@ sub render_Line {
 sub _getHref {
   my ($self, $glyph) = @_;
 
-  my %actions = {}; 
+  my %actions = ();
   my @X = qw( onmouseover onmouseout alt href );
   foreach(@X) {
     my $X = $glyph->$_;
@@ -103,6 +103,7 @@ sub _getHref {
       $actions{'href'} ||= qq"javascript:void(0)";
     }
   }
-  return join ' ', map { qq($_="$actions{$_}") } keys %actions;
+  return undef unless keys %actions;
+  return join ' ', '', map { qq($_="$actions{$_}") } keys %actions;
 }
 1;
