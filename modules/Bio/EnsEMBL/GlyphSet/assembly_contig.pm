@@ -106,7 +106,7 @@ sub _init {
 			
             $self->push($glyph);
 
-            $clone = $strand > 0 ? $clone."->" : "<-$clone";
+            $clone = $strand > 0 ? $rid."->" : "<-$rid";
         
             my $bp_textwidth = $w * length($clone) * 1.2; # add 20% for scaling text
             unless ($bp_textwidth > ($rend - $rstart)){
