@@ -39,10 +39,7 @@ sub colour {
 
 sub href {
     my ($self, $vt) = @_;
-    return $self->{'config'}->{'_href_only'} eq '#tid' ?
-        "#$vt->{'stable_id'}" :
-        qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$vt->{'gene'});
-
+    return $self->{'config'}->{'ext_url'}->get_url( 'WZEST', $vt );
 }
 
 sub zmenu {
@@ -50,7 +47,7 @@ sub zmenu {
     my $vtid = $vt->{'stable_id'};
     my $zmenu = {
         'caption'                       => $vtid,
-        "00:Transcr:$vtid"              => "",
+        "00:Transcr:$vtid"              => $self->href($vtid),
     };
     return $zmenu;
 }
