@@ -8,6 +8,7 @@ use Bio::EnsEMBL::Glyph::Rect;
 use Bio::EnsEMBL::Glyph::Intron;
 use Bio::EnsEMBL::Glyph::Text;
 use Bio::EnsEMBL::Glyph::Composite;
+use Bio::EnsEMBL::Glyph::Line;
 use Bump;
 
 sub init_label {
