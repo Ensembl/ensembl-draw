@@ -5,7 +5,7 @@ use Bio::EnsEMBL::GlyphSet_transcript_vega;
 @ISA = qw(Bio::EnsEMBL::GlyphSet_transcript_vega);
 
 sub my_label {
-    return 'Sanger trans.';
+    return 'Dunham Group trans.';
 }
 
 sub logic_name {
@@ -14,7 +14,7 @@ return 'sanger';
 }
 
 sub zmenu_caption {
-return 'Sanger Gene';
+return 'Dunham Group Gene';
 }
 
 
