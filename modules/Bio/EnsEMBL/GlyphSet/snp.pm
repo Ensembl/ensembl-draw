@@ -37,10 +37,12 @@ sub _init {
     my $bitmap_length = $VirtualContig->length();
     my $type          = $Config->get('gene','src');
 
-    my @xf            = $VirtualContig->get_all_ExternalFeatures( $self->glob_bp() );
+#    my @xf            = $VirtualContig->get_all_ExternalFeatures( $self->glob_bp() );
 
     ## need to sort external features into SNPs or traces and treat them differently
-    my @snp = grep $_->isa("Bio::EnsEMBL::ExternalData::Variation"), @xf;
+#    my @snp = grep $_->isa("Bio::EnsEMBL::ExternalData::Variation"), @xf;
+    
+    my @snp = $VirtualContig->get_all_SNPFeatures( $self->glob_bp() );
 
     my $rect;
     my $colour;
