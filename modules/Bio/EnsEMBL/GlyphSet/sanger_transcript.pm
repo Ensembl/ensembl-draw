@@ -105,8 +105,9 @@ TRANSCRIPT:
         ########## set colour for transcripts and test if we're highlighted or not
             my @dblinks = ();
             my $tid = $transcript->stable_id();
-            my $pid = $tid;
-                my $id = $tid;
+            my $pid = $transcript->_translation_stable_id;  
+            print STDERR "X:$pid\n";
+            my $id = $tid;
             my $highlight = $highlight_gene;
             my $superhighlight = exists $highlights{$tid} ? 1 : 0;
             eval {
@@ -124,14 +125,19 @@ TRANSCRIPT:
                     $Composite->{'href'} = qq(#$tid);
                 } elsif ($tid !~ /$PREFIX/o){
 		    $Composite->{'href'} = $type=~/seudo/ ? undef : qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?db=sanger&gene=$vgid);
+		    $gene_label ||= $vgid;
 			my %zmenu = (
                             'caption'           => "Sanger Gene",
 				    "01:$tid" => '',
-				    "03:Sanger curated ($T)" => ''
+				    "02:Gene: $gene_label" => $Composite->{'href'},
+				    "04:Sanger curated ($T)" => ''
 			);
+		    if($pid) {
+		         $zmenu{'03:Protein Information'} = qq(/$ENV{'ENSEMBL_SPECIES'}/protview?db=sanger&peptide=$pid);
+                    } else {
+		         $zmenu{'03:No Translation'} = '';
+                    }
                     # if we have an EMBL external transcript we need different links...
-		    $gene_label ||= $vgid;
-                    $zmenu{ "02:Gene: $gene_label"}=$Composite->{'href'};
                     $Composite->{'zmenu'} = \%zmenu;
                 }
             } #end of Skip this next chunk if single transcript mode

@@ -96,7 +96,8 @@ TRANSCRIPT:
       ########## set colour for transcripts and test if we're highlighted or not
       my @dblinks = ();
       my $tid = $transcript->stable_id();
-      my $pid = $tid;
+      my $pid = $transcript->_translation_stable_id();
+	print STDERR "STABLE ID: $pid\n";
       my $id = $tid;
       my $highlight = $highlight_gene;
       my $superhighlight = exists $highlights{$tid} ? 1 : 0;
@@ -157,12 +158,16 @@ TRANSCRIPT:
 	     "00:Transcr:$tid"        => "",
 	     "01:(Gene:$vgid)"        => "",
 	     '03:Transcript information' => "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$vgid",
-	     '04:Protein information'    => "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=$pid",
 	     '05:Supporting evidence'    => "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$tid",
 	     '06:Expression information' => "/$ENV{'ENSEMBL_SPECIES'}/sageview?alias=$vgid",
 	     '07:Protein sequence (FASTA)' => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=$tid",
 	     '08:cDNA sequence'          => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=cdna&id=$tid",
                     };
+	    if($pid) {
+		    $Composite->{'zmenu'}->{'04:Protein information'} = qq(/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=$pid);
+	    } else {
+		    $Composite->{'zmenu'}->{'04:No Translation'} = '';
+	    }
 
 	  if( $ENV{'ENSEMBL_SPECIES'} eq "Drosophila_melanogaster" ){
 	    delete( $Composite->{'zmenu'}->{'06:Expression information'} )
