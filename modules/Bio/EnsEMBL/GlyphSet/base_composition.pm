@@ -1,34 +1,39 @@
 package Bio::EnsEMBL::GlyphSet::base_composition;
 use strict;
-use base qw(Bio::EnsEMBL::GlyphSet_simple);
+use vars qw(@ISA);
+use Bio::EnsEMBL::GlyphSet_simple;
+@ISA = qw(Bio::EnsEMBL::GlyphSet_simple);
 
 sub my_label { return "Base Composition"};
 
-
 sub features {
-  my $self = shift;
-  my @bases = @{$self->{'container'}->get_all_ExternalLiteFeatures('GlovarBaseComp')};
- # warn map { "(@{[$_->start]},@{[$_->end]})" } @bases;
-  return \@bases;
+    my $self = shift;
+    my @bases = @{$self->{'container'}->get_all_ExternalLiteFeatures('GlovarBaseComp')};
+    # warn map { "(@{[$_->start]},@{[$_->end]})" } @bases;
+    return \@bases;
 }
-
 
 sub zmenu {
     my ($self, $f ) = @_;
     my $chr_start = $f->start() + $self->{'container'}->chr_start() - 1;
-    my $a_count = $f->alleles->{'A'};
-    my $c_count = $f->alleles->{'C'};
-    my $g_count = $f->alleles->{'G'};
-    my $t_count = $f->alleles->{'T'};
-
+    my (@c, $total, $key);
+    my @a = qw(A C G T);
+    foreach (@a) {
+        push @c, [ $_, $f->alleles->{$_} ];
+        $total += $f->alleles->{$_};
+    }
     my %zmenu = (
-            'caption'              => "base comp",
-	    "01:bp: $chr_start"    => '',
-	    "02:A count: $a_count" => '',
-	    "03:C count: $c_count" => '',
-	    "04:G count: $g_count" => '',
-            "05:T count: $t_count" => '',
-   );
+        'caption'              => "base composition",
+	"01:bp: $chr_start"    => '',
+        "02:genomic base: ".$f->genomic_base => '',
+    );
+    my $i = 10;
+    foreach (@c) {
+	$zmenu{"$i:".$_->[0].": ".$_->[1]." (".int(100*$_->[1]/$total)."%)"} = '' if $_->[1];
+    }
+    foreach (qw(unknown Caucasian Asian African-American)) {
+        $zmenu{"20:$_: ".$f->ethnicity->{$_}} = '';
+    }
     return \%zmenu;
 }
 
@@ -43,177 +48,222 @@ sub _init {
     my $strand_flag     = $Config->get($type, 'str');
     my $BUMP_WIDTH      = $Config->get($type, 'bump_width');
        $BUMP_WIDTH      = 1 unless defined $BUMP_WIDTH;
+    my $im_width        = $Config->image_width();
+    my $colours         = $Config->get($type, 'colours');
+    my $flag = 1;
 
-## If only displaying on one strand skip IF not on right strand....
+    ## If only displaying on one strand skip IF not on right strand....
     return if( $strand_flag eq 'r' && $strand != -1 ||
                $strand_flag eq 'f' && $strand != 1 );
 
-# Get information about the VC - length, and whether or not to
-# display track/navigation
+    # Get information about the VC - length, and whether or not to
+    # display track/navigation
     my $vc_length      = $VirtualContig->length( );
     my $max_length     = $Config->get( $type, 'threshold' ) || 200000000;
     my $navigation     = $Config->get( $type, 'navigation' ) || 'on';
     my $max_length_nav = $Config->get( $type, 'navigation_threshold' ) || 15000000;
 
-## VC too long to display featues dump an error message
+    ## VC too long to display featues dump an error message
     if( $vc_length > $max_length *1010 ) {
         $self->errorTrack( $self->my_label." only displayed for less than $max_length Kb.");
         return;
     }
 
-## Decide whether we are going to include navigation (independent of switch) 
+    ## Decide whether we are going to include navigation (independent of switch) 
     $navigation = ($navigation eq 'on') && ($vc_length <= $max_length_nav *1010);
     
-## Get highlights...
-    my %highlights;
-    @highlights{$self->highlights()} = ();
-## Set up bumping bitmap
-    my @bitmap         = undef;
-## Get information about bp/pixels
-    my $pix_per_bp     = $Config->transform()->{'scalex'};
-    my $bitmap_length  = int($VirtualContig->length * $pix_per_bp);
+    ## Get information about bp/pixels
+    my $pix_per_bp = $Config->transform()->{'scalex'};
+    my $bitmap_length = int($VirtualContig->length * $pix_per_bp);
+    my ($w, $th) = $Config->texthelper()->px2bp('Tiny');
+    my $bp_textwidth = $w * 1.1; # add 10% for scaling text
 
-    my $colours = $Config->get($type, 'colours') || [qw(background2 blue rust)];
-    my $coloursteps = 20;
-    my @gradient = $self->{'config'}->colourmap->build_linear_gradient($coloursteps, @{$colours});
-
-    my $h    = $Config->get($type,'height') || 36;
-
-
-    my $flag           = 1;
-
+    my $h = 93;
+    my $ih = 36;
+    my $sp = 5;
+    my $isp = 9;
 
     my $features = $self->features();
     unless(ref($features)eq'ARRAY') {
-        # warn( ref($self), ' features not array ref ',ref($features) );
-    return;
+        return;
     }
 
     foreach my $f ( @{$features} ) {
-		#print STDERR "Added feature ", $f->id(), " for drawing.\n";
-## Check strand for display ##
+        ## Check strand for display ##
         next if( $strand_flag eq 'b' && $strand != $f->strand );
-## Check start are not outside VC.... ##
+        ## Check start are not outside VC.... ##
         my $start = $f->start();
         next if $start>$vc_length; ## Skip if totally outside VC
         $start = 1 if $start < 1;
-## Check end are not outside VC.... ##
-        my $end   = $f->end();
+        ## Check end are not outside VC.... ##
+        my $end = $f->end();
         next if $end<1;            ## Skip if totally outside VC
-        $end   = $vc_length if $end>$vc_length;
-	my $t_strength = $f->alleles->{'T'};
-	my $a_strength = $f->alleles->{'A'};
-	my $g_strength = $f->alleles->{'G'};
-	my $c_strength = $f->alleles->{'C'};
+        $end = $vc_length if $end>$vc_length;
+        
+        ## sort alleles to get genomic base first
+        my $ga;
+        $ga->{$f->genomic_base} = 1;
+        my @alleles = sort { $ga->{$a} <=> $ga->{$b} } qw(T A G C);
+        
+        ## count non-genomic alleles
+        my $num;
+        foreach (@alleles) {
+            $num++ if ($f->alleles->{$_});
+        }
+        $num--;
 
-        my $img_start = $start;
-        my $img_end   = $end;
-
+        ## count ethnicities
+        my $ne;
+        my @ethni = qw(unknown Caucasian Asian African-American);
+        foreach (@ethni) {
+            $ne++ if ($f->ethnicity->{$_});
+        }
+        
+        ## variation bases
+        $flag = 0;
+        my $i;
         my $composite = new Sanger::Graphics::Glyph::Composite();
-
+        foreach (@alleles) {
+            next if ((!$f->alleles->{$_}) || ($_ eq $f->genomic_base));
             $composite->push( new Sanger::Graphics::Glyph::Rect({
                 'x'          => $start-1,
-                'y'          => 0,
+                'y'          => $sp + $i*$ih/$num,
                 'width'      => $end - $start + 1,
-                'height'     => $h/4,
-                "colour"     => $gradient[$t_strength],
-                'absolutey'  => 1
+                'height'     => $ih/$num,
+                "colour"     => $colours->{$_},
             }) );
+            if ($bp_textwidth < ($end - $start + 1)) {
+                $composite->push(new Sanger::Graphics::Glyph::Text({
+                    'x'      => ($end + $start - 1 - $bp_textwidth)/2,
+                    'y'      => $sp + $ih*$i/$num + ($ih/$num - $th)/2,
+                    'width'  => $bp_textwidth,
+                    'height' => $th,
+                    'font'   => 'Tiny',
+                    'colour' => 'black',
+                    'text'   => $_,
+                }));
+            }
+            $i++;
+        }
 
+        ## genomic base
+        $composite->push( new Sanger::Graphics::Glyph::Rect({
+            'x'          => $start-1,
+            'y'          => $sp + $ih,
+            'width'      => $end - $start + 1,
+            'height'     => $isp,
+            "colour"     => $colours->{$f->genomic_base},
+        }) );
+        if ($bp_textwidth < ($end - $start + 1)) {
+            $composite->push(new Sanger::Graphics::Glyph::Text({
+                'x'         => ($end + $start - 1 - $bp_textwidth)/2,
+                'y'         => $sp + $ih + ($isp-$th)/2,
+                'width'     => $bp_textwidth,
+                'height'    => $th,
+                'font'      => 'Tiny',
+                'colour'    => 'blaock',
+                'text'      => $f->genomic_base,
+            }));
+        }
+
+        ## ethnicities
+        my $j;
+        foreach (@ethni) {
+            next unless ($f->ethnicity->{$_} && $num);
             $composite->push( new Sanger::Graphics::Glyph::Rect({
                 'x'          => $start-1,
-                'y'          => $h/4,
+                'y'          => $sp + $ih + $isp + $j*$ih/$ne,
                 'width'      => $end - $start + 1,
-                'height'     => $h/4,
-                "colour"     => $gradient[$a_strength],
-                'absolutey'  => 1
+                'height'     => $ih/$ne,
+                "colour"     => $colours->{$_},
             }) );
+            $j++;
+        }
 
-            $composite->push( new Sanger::Graphics::Glyph::Rect({
+        ## borders (if zoomed in)
+        if (($vc_length < ($max_length*1010/2)) && $num) {
+            $composite->push(new Sanger::Graphics::Glyph::Rect({
+                'x'         => $start-1,
+                'y'         => $sp,
+                'width'     => 0,
+                'height'    => $ih,
+                'colour'    => 'black',
+            }));
+            $composite->push(new Sanger::Graphics::Glyph::Rect({
+                'x'         => $end,
+                'y'         => $sp,
+                'width'     => 0,
+                'height'    => $ih,
+                'colour'    => 'black',
+            }));
+            $composite->push(new Sanger::Graphics::Glyph::Rect({
                 'x'          => $start-1,
-                'y'          => $h/2,
+                'y'          => $sp,
                 'width'      => $end - $start + 1,
-                'height'     => $h/4,
-                "colour"     => $gradient[$c_strength],
-                'absolutey'  => 1
-            }) );
-
-            $composite->push( new Sanger::Graphics::Glyph::Rect({
+                'height'     => 0,
+                "colour"     => 'black',
+            }));
+            $composite->push(new Sanger::Graphics::Glyph::Rect({
+                'x'         => $start-1,
+                'y'         => $sp + $ih + $isp,
+                'width'     => 0,
+                'height'    => $ih,
+                'colour'    => 'black',
+            }));
+            $composite->push(new Sanger::Graphics::Glyph::Rect({
+                'x'         => $end,
+                'y'         => $sp + $ih + $isp,
+                'width'     => 0,
+                'height'    => $ih,
+                'colour'    => 'black',
+            }));
+            $composite->push(new Sanger::Graphics::Glyph::Rect({
                 'x'          => $start-1,
-                'y'          => $h*0.75,
+                'y'         => $sp + 2*$ih + $isp,
                 'width'      => $end - $start + 1,
-                'height'     => $h/4,
-                "colour"     => $gradient[$g_strength],
-                'absolutey'  => 1
-            }) );
+                'height'     => 0,
+                "colour"     => 'black',
+            }));
+        }
 
-        my $rowheight = int($h * 1.5);
-
-## Lets see if we can Show navigation ?...
+        ## Lets see if we can Show navigation ?...
         if($navigation) {
             $composite->{'zmenu'} = $self->zmenu( $f ) if $self->can('zmenu');
             $composite->{'href'}  = $self->href(  $f ) if $self->can('href');
         }
 
         $self->push($composite);
-
-
     }
 
-
-    my $key = new Sanger::Graphics::Glyph::Composite();
-
-    $key->push(new Sanger::Graphics::Glyph::Text({
-	    'x'         => -6 / $pix_per_bp,
-	    'y'         => 0,
-            #'absolutey' => 1,
-            #'absolutex' => 1,
-            'font'      => 'Tiny',
+    ## horizontal grid
+    my $grid = new Sanger::Graphics::Glyph::Composite();
+    ## top spacer
+    $grid->push(new Sanger::Graphics::Glyph::Rect({
+        'x'         => 0,
+        'y'         => 0,
+        'width'     => $vc_length,
+        'height'    => 0,
+    }));
+    ## lines
+    foreach (($sp+$ih, $sp+$ih+$isp)) {
+        $grid->push(new Sanger::Graphics::Glyph::Rect({
+            'x'         => 0,
+            'y'         => $_,
+            'width'     => $vc_length,
+            'height'    => 0,
             'colour'    => 'black',
-            'height'    => $h/4,
-            'width'     => 4,
-            'text'      => 'T',
-            }));
+        }));
+    }
+    ## bottom spacer
+    $grid->push(new Sanger::Graphics::Glyph::Rect({
+        'x'         => 0,
+        'y'         => $h,
+        'width'     => $vc_length,
+        'height'    => 0,
+    }));
+    $self->push($grid);
 
-    $key->push(new Sanger::Graphics::Glyph::Text({
-	    'x'         =>  -6 / $pix_per_bp,
-	    'y'         => $h/4,
-            #'absolutey' => 1,
-            #'absolutex' => 1,
-            'font'      => 'Tiny',
-            'colour'    => 'black',
-            'height'    => $h/4,
-            'width'     => 4,
-            'text'      => 'A',
-            }));
-
-    $key->push(new Sanger::Graphics::Glyph::Text({
-	    'x'         =>  -6 / $pix_per_bp,
-	    'y'         => $h/2,
-            #'absolutey' => 1,
-            #'absolutex' => 1,
-            'font'      => 'Tiny',
-            'colour'    => 'black',
-            'height'    => $h/4,
-            'width'     => 4,
-            'text'      => 'C',
-            }));
-
-    $key->push(new Sanger::Graphics::Glyph::Text({
-	    'x'         =>  -6 / $pix_per_bp,
-	    'y'         => $h*0.75,
-            #'absolutey' => 1,
-            #'absolutex' => 1,
-            'font'      => 'Tiny',
-            'colour'    => 'black',
-            'height'    => $h/4,
-            'width'     => 4,
-            'text'      => 'G',
-            }));
-
-    $self->push($key);
-
-## No features show "empty track line" if option set....  ##
+    ## No features show "empty track line" if option set....  ##
     $self->errorTrack( "No ".$self->my_label." in this region" )
         if( $Config->get('_settings','opt_empty_tracks')==1 && $flag );
 }
