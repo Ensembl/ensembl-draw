@@ -7,6 +7,10 @@ use Bio::EnsEMBL::GlyphSet;
 sub init_label {
     my ($self) = @_;
     my $Config = $self->{'config'}; 
+    my $chr      = $self->{'container'}->{'chr'};
+    my $snps     = $self->{'container'}->{'da'}->get_density_per_chromosome_type( $chr,'glovar_snp' );
+    return unless $snps->size();
+
     my $label = new Sanger::Graphics::Glyph::Text({
         'text'      => 'SNPs',
         'font'      => 'Small',
