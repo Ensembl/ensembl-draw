@@ -158,7 +158,7 @@ sub new {
 		    'labelUPSTREAM'             => 'white',
 		    'labelDOWNSTREAM'           => 'white',
 		    'label5PRIME_UTR'           => 'black',
-		    'label3PRIME_UTR'           => 'black',
+		    'label3PRIME_UTR'           => 'white',
 		    'labelNON_SYNONYMOUS_CODING'=> 'white',
 		    'labelSYNONYMOUS_CODING'    => 'black',
 		    'labelFRAMESHIFT_CODING'    => 'white',

@@ -10,7 +10,7 @@ sub tag {
     my ($col, $labcol) =  $self->colour($f);
     #warn( "snp - $col - $labcol" );
    # if($f->snpclass eq 'snp' ) {
-	return( { 'style' => 'box', 'letter' => $f->{'_ambiguity_code'}, 'colour' => $col, 'label_colour' => $labcol } );
+	return( { 'style' => 'box', 'letter' => $f->ambig_code, 'colour' => $col, 'label_colour' => $labcol } );
    # }
    # if($f->{'_range_type'} eq 'between' ) {
    #	return( { 'style' => 'left-snp', 'colour' => $col } );
