@@ -12,6 +12,7 @@ use Bio::EnsEMBL::Utils::Eprof qw(eprof_start eprof_end);
 #
 sub new {
     my ($class, $VirtualContig, $Config, $highlights, $strand) = @_;
+    $highlights = [] unless defined $highlights;
     my $self = {
 	'glyphs'     => [],
 	'x'          => undef,
