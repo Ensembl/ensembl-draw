@@ -83,7 +83,6 @@ sub _init {
         
        foreach(@$styles) {
           $styles{$_->{'category'}}{$_->{'type'}} = $_ unless $_->{'zoom'};
-          warn Dumper( $_ );
           $h = $_->{'attrs'}{'height'} if exists $_->{'attrs'} && exists $_->{'attrs'}{'height'};
        } 
     }
