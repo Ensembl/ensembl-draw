@@ -301,7 +301,7 @@ sub _label_highlight {
     my ($self,$label,$highlight,$highlights,$dblinks) = @_;
     my $max_pref = 0;
     my %db_names = ( # preference for naming scheme based on numerical precidence!
-		    'Gene_name' => 110,
+		    'FlyBase' => 110,
         'HUGO'          => 100, 'SP'            =>  90,
         'SWISS-PROT'    =>  80, 'SPTREMBL'      =>  70,
         'SCOP'          =>  60, 'LocusLink'     =>  50,
