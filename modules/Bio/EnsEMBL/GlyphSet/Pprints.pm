@@ -46,7 +46,7 @@ sub _init {
     
     foreach my $key (keys %hash) {
 	my @row = @{$hash{$key}};
-	my $desc = $row[0]->idesc();
+	my $desc = $row[0]->idesc() || $key;
 		
 	my $Composite = new Sanger::Graphics::Glyph::Composite({
 	    'x'     => $row[0]->feature1->start(),
@@ -94,7 +94,7 @@ sub _init {
 	#########
 	# add a label
 	#
-	my $desc = $prsave->idesc();
+	my $desc = $prsave->idesc() || $key;
 	my $text = new Sanger::Graphics::Glyph::Text({
 	    'font'   => $font,
 	    'text'   => $desc,
