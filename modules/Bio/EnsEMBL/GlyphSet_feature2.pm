@@ -74,7 +74,8 @@ sub _init {
 
     foreach my $f ( $self->features ){
         next if( $strand_flag eq 'b' && $strand != $f->strand );
-        next if( $f->start < 1 || $f->end > $LEN );
+        next if( $f->start < $f->end && ($f->start < 1 || $f->end   > $LEN) );
+        next if( $f->start > $f->end && ($f->end   < 1 || $f->start > $LEN) );
         $id{$f->id()} = [] unless $id{$f->id()};
         push @{$id{$f->id()}}, $f;
     }
@@ -104,6 +105,7 @@ $self->errorTrack( "No ".$self->my_label." in this region" )
                 $Composite->y(0);
                 $has_origin = 1;
             }
+            print STDERR "F: ",$f->id," - ",$f->start()," - ",$f->end(),"\n";
             my $glyph = new Bio::EnsEMBL::Glyph::Rect({
                 'x'          => $f->start(),
                 'y'          => 0,
