@@ -4,18 +4,18 @@ use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet;
 @ISA = qw(Bio::EnsEMBL::GlyphSet);
 
-use Bio::EnsEMBL::Glyph::Rect;
-use Bio::EnsEMBL::Glyph::Poly;
-use Bio::EnsEMBL::Glyph::Text;
-use Bio::EnsEMBL::Glyph::Line;
-use Bio::EnsEMBL::Glyph::Space;
+use Sanger::Graphics::Glyph::Rect;
+use Sanger::Graphics::Glyph::Poly;
+use Sanger::Graphics::Glyph::Text;
+use Sanger::Graphics::Glyph::Line;
+use Sanger::Graphics::Glyph::Space;
 use SiteDefs;
 
 sub init_label {
     my ($self) = @_;
     my $SPECIES_T = $ENV{'ENSEMBL_SPECIES'};
     $SPECIES_T =~ s/_/ /g;
-    my $label = new Bio::EnsEMBL::Glyph::Text({
+    my $label = new Sanger::Graphics::Glyph::Text({
         'text'      => "$SPECIES_T chromosome ".uc($self->{'container'}->{'chr'}),
         'font'      => 'Small',
         'absolutey' => 1,
@@ -270,7 +270,7 @@ sub _init {
             $Y2 = $main_coords{$_}->{'left'};
         }
         my $COL = $secondary_coords{$_}->{'rel_ori'} == 1 ? $black : $brown;
-        $self->push(new Bio::EnsEMBL::Glyph::Line({
+        $self->push(new Sanger::Graphics::Glyph::Line({
             'x'       => $X1,
             'y'       => $Y1,
             'width'   => 0,
@@ -278,7 +278,7 @@ sub _init {
             'colour'           =>  $COL,
             'absolutey'        => 1, 'absolutex'        => 1
         }));
-        $self->push(new Bio::EnsEMBL::Glyph::Line({
+        $self->push(new Sanger::Graphics::Glyph::Line({
             'x'       => $X1,
             'y'       => $Y1 + ($Y2-$Y1)/10,
             'width'   => $X2-$X1,
@@ -286,7 +286,7 @@ sub _init {
             'colour'           => $COL,
             'absolutey'        => 1, 'absolutex'        => 1
         }));
-        $self->push(new Bio::EnsEMBL::Glyph::Line({
+        $self->push(new Sanger::Graphics::Glyph::Line({
             'x'       => $X2,
             'y'       => $Y2 - ($Y2-$Y1)/10,
             'width'   => 0,
@@ -297,7 +297,7 @@ sub _init {
     }
     my $w = $self->{'config'}->texthelper->width('Tiny');
     my $h = $self->{'config'}->texthelper->height('Tiny');
-    $self->unshift(new Bio::EnsEMBL::Glyph::Text({
+    $self->unshift(new Sanger::Graphics::Glyph::Text({
             'x'          => $im_width - $h - 1,
             'y'          => $outer_padding + $secondary_width/2 - $w * length($OTHER_T)/2,
             'font'       => 'Tiny',
@@ -305,7 +305,7 @@ sub _init {
             'text'       => $OTHER_T,
             'absolutey'  => 1, 'absolutex' => 1
     }));
-    $self->unshift(new Bio::EnsEMBL::Glyph::Text({
+    $self->unshift(new Sanger::Graphics::Glyph::Text({
             'x'          => $im_width - $h - 1  ,
             'y'          => $outer_padding + $inner_padding*2 + $main_width + 3*$secondary_width/2 - $w * length($OTHER_T)/2,
             'font'       => 'Tiny',
@@ -313,7 +313,7 @@ sub _init {
             'text'       => $OTHER_T,
             'absolutey'  => 1, 'absolutex' => 1
     }));
-    $self->unshift(new Bio::EnsEMBL::Glyph::Rect({
+    $self->unshift(new Sanger::Graphics::Glyph::Rect({
             'x'          => 0,
             'y'          => 0,
             'width'      => $im_width,
@@ -348,7 +348,7 @@ sub draw_chromosome {
         if ($stain eq "acen"){
             my $gband;
             if ($done_1_acen){
-                $self->push(new Bio::EnsEMBL::Glyph::Poly({
+                $self->push(new Sanger::Graphics::Glyph::Poly({
                     'points'       => [ 
                         $vc_band_start, $h_offset + $h_wid, 
                         $vc_band_end,   $h_offset,
@@ -358,7 +358,7 @@ sub draw_chromosome {
                     'absolutey'    => 1,    'absolutex'    => 1
                 }));
             } else {
-                $self->push(new Bio::EnsEMBL::Glyph::Poly({
+                $self->push(new Sanger::Graphics::Glyph::Poly({
                     'points'       => [ 
                         $vc_band_start, $h_offset, 
                         $vc_band_end,   $h_offset + $h_wid,
@@ -370,7 +370,7 @@ sub draw_chromosome {
                 $done_1_acen = 1;
             }
         } elsif ($stain eq "stalk"){
-            $self->push(new Bio::EnsEMBL::Glyph::Poly({
+            $self->push(new Sanger::Graphics::Glyph::Poly({
                 'points'           => [
                     $vc_band_start, $h_offset, 
                     $vc_band_end,   $h_offset + $wid,
@@ -380,7 +380,7 @@ sub draw_chromosome {
                 'colour'           => $params{'grey'},
                 'absolutey'    => 1,    'absolutex'    => 1
             }));
-            $self->push(new Bio::EnsEMBL::Glyph::Rect({
+            $self->push(new Sanger::Graphics::Glyph::Rect({
                 'x'                => $vc_band_start,
                 'y'                => $h_offset + int($wid/4),
                 'width'            => $vc_band_end - $vc_band_start,
@@ -389,7 +389,7 @@ sub draw_chromosome {
                 'absolutey'    => 1,    'absolutex'    => 1
             }));
         } else {
-            $self->unshift(new Bio::EnsEMBL::Glyph::Rect({
+            $self->unshift(new Sanger::Graphics::Glyph::Rect({
                 'x'          => $vc_band_start,
                 'y'          => $h_offset,
                 'width'      => $vc_band_end - $vc_band_start,
@@ -398,7 +398,7 @@ sub draw_chromosome {
                 'absolutey'  => 1,
                 'absolutex'  => 1
             }));
-            $self->push(new Bio::EnsEMBL::Glyph::Line({
+            $self->push(new Sanger::Graphics::Glyph::Line({
                 'x'                => $vc_band_start,
                 'y'                => $h_offset,
                 'width'            => $vc_band_end - $vc_band_start,
@@ -406,7 +406,7 @@ sub draw_chromosome {
                 'colour'           => $params{'black'},
                 'absolutey'        => 1, 'absolutex'        => 1
             }));
-            $self->push(new Bio::EnsEMBL::Glyph::Line({
+            $self->push(new Sanger::Graphics::Glyph::Line({
                 'x'                => $vc_band_start,
                 'y'                => $h_offset+$wid,
                 'width'            => $vc_band_end - $vc_band_start,
@@ -431,7 +431,7 @@ sub draw_chromosome {
         foreach my $I ( 0..$#lines ) {
             my ( $bg_x, $black_x ) = @{$lines[$I]};
             my $xx =  ($end==1 ? $v_offset : $v_offset + $length) + $end * $I;
-            $self->push(new Bio::EnsEMBL::Glyph::Line({
+            $self->push(new Sanger::Graphics::Glyph::Line({
                     'x'         => $xx,
                     'y'         => $h_offset,
                     'width'     => 0,
@@ -439,7 +439,7 @@ sub draw_chromosome {
                     'colour'    => $params{'bg'},
                     'absolutey' => 1,   'absolutex' => 1
             }));
-            $self->push(new Bio::EnsEMBL::Glyph::Line({
+            $self->push(new Sanger::Graphics::Glyph::Line({
                     'x'         => $xx,
                     'y'         => $h_offset + 1 + $wid * (1-$bg_x/$divisor),
                     'width'     => 0,
@@ -447,7 +447,7 @@ sub draw_chromosome {
                     'colour'    => $params{'bg'},
                     'absolutey' => 1,   'absolutex' => 1
             }));
-            $self->push(new Bio::EnsEMBL::Glyph::Line({
+            $self->push(new Sanger::Graphics::Glyph::Line({
                     'x'         => $xx,
                     'y'         => $h_offset + $wid * $bg_x/$divisor,
                     'width'     => 0,
@@ -455,7 +455,7 @@ sub draw_chromosome {
                     'colour'    => $params{'black'},
                     'absolutey' => 1, 'absolutex' => 1
             }));
-            $self->push(new Bio::EnsEMBL::Glyph::Line({
+            $self->push(new Sanger::Graphics::Glyph::Line({
                     'x'         => $xx,
                     'y'         => $h_offset + 1 + $wid * (1-$bg_x/$divisor-$black_x/$divisor),
                     'width'     => 0,
@@ -475,7 +475,7 @@ sub draw_chromosome {
         my $flag = $params{'ruler_offset'};
         while($X<$chr_length) {
             my $xx = $X * $scale + $v_offset;
-            $self->push(new Bio::EnsEMBL::Glyph::Line({
+            $self->push(new Sanger::Graphics::Glyph::Line({
                     'x'         => $xx,
                     'y'         => $h_offset + ($params{'ruler_offset'} eq 'r' ? $wid : ($params{'ruler_offset'} eq 'l' ? -3  : 0)),
                     'width'     => 0,
@@ -485,7 +485,7 @@ sub draw_chromosome {
             }));
             if($params{'font'}) {
                 my $TEXT = int($X/1000000)."M";
-                $self->push(new Bio::EnsEMBL::Glyph::Text({
+                $self->push(new Sanger::Graphics::Glyph::Text({
                     'x'          => $xx-$h/2,
                     'y'          => $h_offset + ($params{'ruler_offset'} eq 'r' ? $wid + 5 : ($params{'ruler_offset'} eq 'l' ? -5-length($TEXT)*$w : 5)), 
                     'font'       => $params{'font'},
@@ -498,7 +498,7 @@ sub draw_chromosome {
         }
     }
     if($params{'font'} && $params{'chr_name'}) {
-        $self->push(new Bio::EnsEMBL::Glyph::Text({
+        $self->push(new Sanger::Graphics::Glyph::Text({
             'x'          => $v_offset + $length +3 ,
             'y'          => $h_offset + $h_wid - $w * length($params{'chr_name'})/2,
             'font'       => $params{'font'},
@@ -519,7 +519,7 @@ sub draw_chromosome {
             'bottom'=> $vc_end,
             'rel_ori' => $box->{'rel_ori'}
         };
-        $self->push(new Bio::EnsEMBL::Glyph::Rect({
+        $self->push(new Sanger::Graphics::Glyph::Rect({
             'x'          => $vc_start,
             'y'          => $h_offset + $box->{'side'} * ($wid+4),
             'width'      => $vc_end - $vc_start,
@@ -532,7 +532,7 @@ sub draw_chromosome {
             'zmenu' => $box->{'zmenu'}
         }));
         if($box->{'marked'}==1 || $box->{'marked'}==-1) {
-            $self->push(new Bio::EnsEMBL::Glyph::Rect({
+            $self->push(new Sanger::Graphics::Glyph::Rect({
                 'x'          => $vc_start -2,
                 'y'          => $h_offset + ($box->{'marked'}==1 ? $wid+3 : -4 ), 
                 'width'      => $vc_end - $vc_start + 4,
@@ -544,7 +544,7 @@ sub draw_chromosome {
         }
     }
     if($params{'line'}) {
-        $self->push(new Bio::EnsEMBL::Glyph::Rect({
+        $self->push(new Sanger::Graphics::Glyph::Rect({
             'x'          => $v_offset + $params{'line'} * $scale - 1,
             'y'          => $h_offset - 2,
             'width'      => 3,

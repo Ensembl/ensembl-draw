@@ -3,16 +3,16 @@ use strict;
 use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet;
 @ISA = qw(Bio::EnsEMBL::GlyphSet);
-use Bio::EnsEMBL::Glyph::Rect;
-use Bio::EnsEMBL::Glyph::Poly;
-use Bio::EnsEMBL::Glyph::Text;
-use Bio::EnsEMBL::Glyph::Line;
+use Sanger::Graphics::Glyph::Rect;
+use Sanger::Graphics::Glyph::Poly;
+use Sanger::Graphics::Glyph::Text;
+use Sanger::Graphics::Glyph::Line;
 use SiteDefs;
 
 sub init_label {
     my ($self) = @_;
     my $Config = $self->{'config'};	
-    my $label = new Bio::EnsEMBL::Glyph::Text({
+    my $label = new Sanger::Graphics::Glyph::Text({
 		'text'      => 'Novel CDS',
 		'font'      => 'Small',
 		'colour'	=> $Config->get('Vannot_cds','col'),
@@ -40,7 +40,7 @@ return unless $Hscale_factor =$cds->{'_biggest_value'} && $known_genes->{'_bigge
     my @cds = $cds->get_binvalues();
 
     foreach (@cds){
-	    my $g_x = new Bio::EnsEMBL::Glyph::Rect({
+	    my $g_x = new Sanger::Graphics::Glyph::Rect({
 		    'x'      => $_->{'chromosomestart'},
 		    'y'      => 0,
 		    'width'  => $_->{'chromosomeend'}-$_->{'chromosomestart'},
