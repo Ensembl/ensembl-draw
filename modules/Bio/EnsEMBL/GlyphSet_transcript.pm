@@ -67,13 +67,10 @@ sub transcript_type {
   my $self = shift;
 
  # Implemented by subclass 
-
 }
   
 sub _init {
     my ($self) = @_;
-
-    print STDERR "IN GlypSet_transcript->_init\n";
 
     my $type = $self->check();
     return unless defined $type;
@@ -97,8 +94,6 @@ sub _init {
     my $bitmap_length = int($Config->container_width() * $pix_per_bp);
  
     ($type) = reverse(split('::', ref( $self )));
-    print STDERR "DRAWING TRANSCRIPTS FOR: $type\n";
-
 
     my $strand  = $self->strand();
     my $transcript_drawn = 0;
@@ -106,13 +101,10 @@ sub _init {
     my @genes = $self->genes();
 
     foreach my $gene (@genes) {
-      print STDERR "DRAWING TRANSCRIPTS FOR GENE: ".$gene->stable_id()."\n";
       # For alternate splicing diagram only draw transcripts in gene
       next if $target_gene && ($gene->stable_id() ne $target_gene);
 
       foreach my $transcript ($gene->get_all_Transcripts()) {
-	print STDERR "DRAWING TRANSCRIPT:".$transcript->stable_id()."\n";
-
 	#sort exons on their start coordinate
 	my @exons = sort {$a->start <=> $b->start} $transcript->get_all_Exons();
 	
@@ -130,22 +122,15 @@ sub _init {
         
         $Composite->{'href'} = $self->href( $gene, $transcript );
 	
-	print STDERR "HREF for TRANS = " . $Composite->{'href'} . "\n";
-
 	unless( $Config->{'_href_only'} ) {
 	  $Composite->{'zmenu'} = $self->zmenu( $gene, $transcript );
-	  print STDERR "CREATED ZMENU FOR TRANSCRIPT\n";
 	} 
 	
 	my($colour, $hilight) = 
 	  $self->colour( $gene, $transcript, $colours, %highlights );
 
-	print STDERR "GOT COLOURS FOR TRANSCRIPT\n";
-
         my $coding_start = $transcript->coding_start() || $transcript->start();
         my $coding_end   = $transcript->coding_end()   || $transcript->end();
-
-	print STDERR "CODING START: $coding_start, CODING END: $coding_end\n";
 
         for(my $i = 0; $i < @exons; $i++) {
 	  my $exon = @exons[$i];
@@ -174,8 +159,6 @@ sub _init {
 	      # region OR the end of the transcript is after the end of the
 	      # coding regions.  Non coding portions of exons, are drawn as
 	      # non-filled rectangles
-
-	      print STDERR "DRAWING PARTIALLY FILLED EXON box_start=$box_start, box_end=$box_end\n";
 
 	      #Draw a non-filled rectangle around the entire exon
 	      my $rect = new Bio::EnsEMBL::Glyph::Rect({
@@ -209,8 +192,6 @@ sub _init {
                     });
 	      $Composite->push($rect);
 	  } else {
-	    print STDERR "DRAWING ENTIRELY FILLED EXON box_start=$box_start, box_end=$box_end\n";
-
 	      #This entire exon is coding, draw it as a filled rectangle
 	      my $rect = new Bio::EnsEMBL::Glyph::Rect({
                         'x'         => $box_start,
@@ -250,7 +231,6 @@ sub _init {
 	  my $intron;
 
           if( $box_start == $intron_start && $box_end == $intron_end ) {
-	    print STDERR "DRAWING ENTIRE INTRON box_start=$box_start, box_end=$box_end\n"; 
 	    # draw an wholly in slice intron
 	    $intron = new Bio::EnsEMBL::Glyph::Intron({
                     'x'         => $box_start,
@@ -262,7 +242,6 @@ sub _init {
                     'strand'    => $strand,
                 });
 	  } else { 
-	    print STDERR "DRAWING PARTIAL INTRON box_start=$box_start, box_end=$box_end\n";
 	      # else draw a "not in slice" intron
 	      $intron = new Bio::EnsEMBL::Glyph::Line({
                      'x'         => $box_start,

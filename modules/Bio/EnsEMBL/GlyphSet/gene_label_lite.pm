@@ -83,34 +83,36 @@ sub _init {
 ##############################################################################
 
 ##############################################################################
-# Stage 2a: Retrieve all EnsEMBL genes                                       #
+# Stage 2a: Retrieve all Sanger genes                                        #
 ##############################################################################
     &eprof_start("gene-virtualgene_start-get");
-    my $res = $vc->get_all_SangerGenes_startend_lite(); 
-    foreach my $g (@$res){ 
-        my( $gene_col, $gene_label, $high); 
-        $high       = exists $highlights{ $g->{'stable_id'} } ? 1 : 0; 
-        $gene_label = $g->{'stable_id'}; 
-        $high       = 1 if(exists $highlights{ $gene_label }); 
-        my $T = $g->{'type'}; 
-        $T =~ s/HUMACE-//; 
-        $gene_col = $sanger_colours->{ $T }; 
+
+    my @res = $vc->get_Genes_by_source('sanger'); 
+    foreach my $g (@res){ 
+      my $gene_label = $g->stable_id();  
+      my $high = exists $highlights{ $gene_label }; 
+      my $type = $g->type(); 
+      $type =~ s/HUMACE-//; 
+      my $gene_col = $sanger_colours->{ $type }; 
         push @genes, { 
-            'chr_start' => $g->{'chr_start'}, 
-            'chr_end'   => $g->{'chr_end'}, 
-            'start'     => $g->{'start'}, 
-            'strand'    => $g->{'strand'}, 
-            'end'       => $g->{'end'}, 
+            'chr_start' => $g->start() + $vc->chr_start() - 1, 
+            'chr_end'   => $g->end() + $vc->chr_start() - 1, 
+            'start'     => $g->start(), 
+            'strand'    => $g->strand(), 
+            'end'       => $g->end(), 
             'ens_ID'    => '', #$g->{'stable_id'}, 
             'label'     => $gene_label, 
             'colour'    => $gene_col, 
-            'ext_DB'    => $g->{'external_db'}, 
+            'ext_DB'    => $g->external_db(), 
             'high'      => $high, 
-            'type'      => $g->{'type'} 
+            'type'      => $g->type() 
         }; 
     } 
 
-    my @res = $vc->get_all_Genes();
+##############################################################################
+# Stage 2b: Retrieve all core (ensembl) genes                                #
+##############################################################################
+    my @res = $vc->get_Genes_by_source('core');
     foreach my $gene (@res) {
         my( $gene_col, $gene_label, $high);
         $high = exists $highlights{$gene->stable_id()} ? 1 : 0;
@@ -138,28 +140,27 @@ sub _init {
     &eprof_end("gene-virtualgene_start-get");
 
 ##############################################################################
-# Stage 2b: Retrieve all EMBL (external) genes                               #
+# Stage 2c: Retrieve all EMBL (external) genes                               #
 ##############################################################################
     &eprof_start("gene-externalgene_start-get");
-    my $res = $vc->get_all_EMBLGenes_startend_lite();
-    foreach my $g (@$res){
-        my( $gene_col, $gene_label, $high);
-        $high       = exists $highlights{ $g->{'stable_id'} } ? 1 : 0;
-        $gene_label = $g->{'synonym'} || $g->{'stable_id'};
-        $high       = 1 if(exists $highlights{ $gene_label });
-        $gene_col = $g->{'type'} eq 'pseudo' ? $pseudo_col : $ext_col;
+    my @res = $vc->get_Genes_by_source('embl');
+    foreach my $g (@res){
+       	my $gene_label = $g->external_name() || $g->stable_id();          
+	my $high = (exists $highlights{ $g->stable_id() }) || 
+	  exists ($highlights{$gene_label});
+        my $gene_col = ($g->type() eq 'pseudo') ? $pseudo_col : $ext_col;
         push @genes, {
-                'chr_start' => $g->{'chr_start'},
-                'chr_end'   => $g->{'chr_end'},
-                'start'     => $g->{'start'},
-                'strand'    => $g->{'strand'},
-                'end'       => $g->{'end'},
+                'chr_start' => $g->start() + $vc->chr_start() - 1,
+                'chr_end'   => $g->end() + $vc->chr_end() -1,
+                'start'     => $g->start(),
+                'strand'    => $g->strand(),
+                'end'       => $g->end(),
                 'ens_ID'    => '', #$g->{'stable_id'},
                 'label'     => $gene_label,
                 'colour'    => $gene_col,
-                'ext_DB'    => $g->{'external_db'},
+                'ext_DB'    => $g->external_db(),
                 'high'      => $high,
-                'type'      => $g->{'type'}
+                'type'      => $g->type()
         };
     }
     &eprof_end("gene-externalgene_start-get");

@@ -30,34 +30,48 @@ sub transcript_type {
 }
 
 sub colour {
-    my ($self, $vt, $colours, %highlights) = @_;
-    return ( 
-        $colours->{$vt->{'type'}}, 
-        exists $highlights{$vt->{'stable_id'}} ? $colours->{'superhi'} : (
-         exists $highlights{$vt->{'synonym'}}  ? $colours->{'superhi'} : (
-          exists $highlights{$vt->{'gene'}}    ? $colours->{'hi'} : undef ))
-    );
-}
+    my ($self, $gene, $transcript, $colours, %highlights) = @_;
+
+    my $highlight = undef;
+    my $colour = $colours->{$transcript->type()};
+
+    if(exists $highlights{$transcript->stable_id()}) {
+      $highlight = $colours->{'superhi'};
+    } elsif(exists $highlights{$transcript->external_name}) {
+      $highlight = $colours->{'superhi'};
+    } elsif(exists $highlights{$gene->stable_id()}) {
+      $highlight = $colours->{'hi'};
+    }
+
+    return ($colour, $highlight); 
+  }
 
 sub href {
     my ($self, $gene, $transcript) = @_;
+
+    my $tid = $transcript->stable_id();
+    my $gid = $gene->stable_id();
+
     return $self->{'config'}->{'_href_only'} eq '#tid' ?
-       "#$transcript->stable_id()" :
-       qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?db=sanger&gene=$gene->stable_id());
+       "#$tid" :
+       qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?db=sanger&gene=$gid);
 }
 
 sub zmenu {
     my ($self, $gene, $transcript) = @_;
     my $type = $transcript->type();
+    my $tid = $transcript->stable_id();
+    my $gid = $gene->stable_id();
+
     $type =~ s/HUMACE-//g;
     my $zmenu = {
-        'caption'                  => "Sanger Gene",
-        "01:$transcript->stable_id()"    => '',
-        "02:Gene: $gene->stable_id()"   => $self->href( $gene, $transcript ),
-        "04:Sanger curated ($type)"   => ''
+        'caption'                   => "Sanger Gene",
+	"01:$tid"                   => '',
+        "02:Gene: $gid"             => $self->href( $gene, $transcript ),
+        "04:Sanger curated ($type)" => ''
     };
 
-    my $translation_id = $transcript->translation_id();
+    my $translation_id = $transcript->translation()->stable_id();
 
     if($translation_id ne '') {
       $zmenu->{"03:Protien"} = 

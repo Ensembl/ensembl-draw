@@ -52,8 +52,8 @@ sub href {
     my $tid = $transcript->stable_id();
 
     return $self->{'config'}->{'_href_only'} eq '#tid' ?
-        "#$transcript->stable_id()" : 
-        qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$gene->stable_id());
+        "#$tid" : 
+        qq(/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$gid);
 
 }
 
