@@ -1,23 +1,19 @@
-package Bio::EnsEMBL::GlyphSet::sanger_transcript_lite;
+package Bio::EnsEMBL::GlyphSet::vega_zfish_transcript_lite;
 use strict;
 use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet_transcript_vega;
 @ISA = qw(Bio::EnsEMBL::GlyphSet_transcript_vega);
 
-
 sub my_label {
-    return 'Vega trans.';
+    return 'Zfish trans.';
 }
 
 sub logic_name {
-return ('genoscope', 'havana', 'sanger', 'zfish');
+    return 'zfish';
 }
 
 sub zmenu_caption {
-return 'Vega Gene';
+    return 'Zfish Gene';
 }
-
-
-
 
 1;
