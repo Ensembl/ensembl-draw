@@ -69,10 +69,8 @@ sub _init {
     my $h = $self->{'textheight'};
     
     my @features;
-    warn ( "DAS-track:". $self->{'extras'}->{'dsn'} );
     # warn( "KEYS: ".join '', keys(%{$vc->get_all_DASFeatures()||{}}) );
     my ( $features, $styles ) = @{ $vc->get_all_DASFeatures()->{$self->{'extras'}{'dsn'}} };
-    warn( @{$styles} ) ;
     $use_style = 0 unless $styles && @{$styles};
 
     eval{
@@ -80,14 +78,10 @@ sub _init {
     };
     my %styles = ();
     if( $use_style ) { 
-       warn("USING STYLE ",$self->{'extra'}{'dsn'}) ;
-       warn Data::Dumper->Dump( [ $styles ] );
        foreach(@$styles) {
           $styles{$_->{'category'}}{$_->{'type'}} = $_ unless $_->{'zoom'};
        } 
-    } else {
-       warn("NO STYLE    ",$self->{'extra'}{'dsn'});
-    } 
+    }
     # warn map { "DAS: ". $_->das_dsn. ": ". $_->das_start."-".$_->das_end."|\n"}  @features;
     if($@) {
         print STDERR "----------\n",$@,"---------\n";
