@@ -432,6 +432,6 @@ sub legend {
 
 }
 
-sub error_track_name { return '$self->zmenu_caption() transcripts'; }
+sub error_track_name { return 'transcripts'; }
 
 1;
