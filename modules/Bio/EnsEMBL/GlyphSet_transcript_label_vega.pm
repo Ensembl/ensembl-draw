@@ -1,4 +1,4 @@
-package Bio::EnsEMBL::GlyphSet::GlyphSet_transcript_label_vega;
+package Bio::EnsEMBL::GlyphSet_transcript_label_vega;
 use strict;
 use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet;
@@ -9,9 +9,12 @@ use  Sanger::Graphics::Bump;
 use Bio::EnsEMBL::Utils::Eprof qw(eprof_start eprof_end);
 
 @ISA = qw(Bio::EnsEMBL::GlyphSet);
-
+ 
 
 sub _init {
+
+
+
     my $self = shift;
 
 ##############################################################################
@@ -60,7 +63,10 @@ sub _init {
 ##############################################################################
 # Stage 1b: Now the virtual contig                                           #
 ##############################################################################
-    my $vc              = $self->{'container'};
+  
+
+
+ my $vc              = $self->{'container'};
     my $vc_length       = $vc->length;
     if( $vc_length > ($max_length*1001)) {
         $self->errorTrack("Gene labels only displayed for less than $max_length Kb.");
@@ -90,10 +96,10 @@ sub _init {
     &eprof_start("gene-virtualgene_start-get");
 
 
-my $features = $self->features();
 
 
-foreach my $g (@{$features}) {
+foreach my $g (@{$vc->get_all_Genes($self->logic_name(), )} ) {
+
 
   #  foreach my $g (@{ $vc->get_all_Genes_by_source('sanger', 1) } ) { ## Hollow genes
       my $gene_label = $g->stable_id();  
