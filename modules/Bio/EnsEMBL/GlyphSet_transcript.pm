@@ -111,7 +111,10 @@ sub _init {
       foreach my $transcript ($gene->get_all_Transcripts()) {
 	print STDERR "DRAWING TRANSCRIPT:".$transcript->stable_id()."\n";
 
-	my @exons = $transcript->get_all_Exons();
+	#sort exons on their start coordinate
+	my @exons = sort {$a->start <=> $b->start} $transcript->get_all_Exons();
+	
+
 	# Skip if no exons for this transcript
 	next if (@exons == 0);
 	# If stranded diagram skip if on wrong strand
@@ -123,27 +126,28 @@ sub _init {
         my $Composite = new 
 	  Bio::EnsEMBL::Glyph::Composite({'y'=>$y,'height'=>$h});
         
-        $Composite->{'href'}  = $self->href( $gene, $transcript );
+        $Composite->{'href'} = $self->href( $gene, $transcript );
 	
+	print STDERR "HREF for TRANS = " . $Composite->{'href'} . "\n";
+
 	unless( $Config->{'_href_only'} ) {
 	  $Composite->{'zmenu'} = $self->zmenu( $gene, $transcript );
+	  print STDERR "CREATED ZMENU FOR TRANSCRIPT\n";
 	} 
 	
 	my($colour, $hilight) = 
 	  $self->colour( $gene, $transcript, $colours, %highlights );
 
-	#Calculate start and end of transcript region in slice coords
-	my $transcript_start = $transcript->start_exon()->start();
-	my $transcript_end = $transcript->end_exon()->end();
+	print STDERR "GOT COLOURS FOR TRANSCRIPT\n";
 
-        #my $end = $transcript_start - 1;
-        #my $start = 0;
-        my $coding_start = $transcript->coding_start() || $transcript_start;
-        my $coding_end   = $transcript->coding_end()   || $transcript_end;
+        my $coding_start = $transcript->coding_start() || $transcript->start();
+        my $coding_end   = $transcript->coding_end()   || $transcript->end();
+
+	print STDERR "CODING START: $coding_start, CODING END: $coding_end\n";
 
         for(my $i = 0; $i < @exons; $i++) {
 	  my $exon = @exons[$i];
-	  my $next_exon = ($i+1 < @exons) ? @exons[$i+1] : undef;
+	  my $next_exon = ($i+1 < scalar(@exons)) ? @exons[$i+1] : undef;
 	    
 	  #First draw the exon
 	  # We are finished if this exon starts outside the slice
@@ -168,6 +172,8 @@ sub _init {
 	      # region OR the end of the transcript is after the end of the
 	      # coding regions.  Non coding portions of exons, are drawn as
 	      # non-filled rectangles
+
+	      print STDERR "DRAWING PARTIALLY FILLED EXON box_start=$box_start, box_end=$box_end\n";
 
 	      #Draw a non-filled rectangle around the entire exon
 	      my $rect = new Bio::EnsEMBL::Glyph::Rect({
@@ -200,7 +206,9 @@ sub _init {
                         'absolutey' => 1,
                     });
 	      $Composite->push($rect);
-	    } else {
+	  } else {
+	    print STDERR "DRAWING ENTIRELY FILLED EXON box_start=$box_start, box_end=$box_end\n";
+
 	      #This entire exon is coding, draw it as a filled rectangle
 	      my $rect = new Bio::EnsEMBL::Glyph::Rect({
                         'x'         => $box_start,
@@ -213,17 +221,13 @@ sub _init {
 	      $Composite->push($rect);
 	    }
 	  }
-	  
-	  #we are finished if this exon is the last exon in the translation
-	  last if($exon->dbID() == 
-		      $transcript->translation()->last_exon()->dbID());
-	  
+	  	  	  
 	  #we are finished if there is no other exon defined
 	  last unless defined $next_exon;
 
 	  #calculate the start and end of this intron
-	  my $intron_start = $exon->end();
-	  my $intron_end = $next_exon->start();
+	  my $intron_start = $exon->end() + 1;
+	  my $intron_end = $next_exon->start()-1;
 
 	  #grab the next exon if this intron is before the slice
 	  next if($intron_end < 0);
@@ -243,7 +247,8 @@ sub _init {
 
 	  my $intron;
 
-          if( $box_start == $intron_start && $box_end == $intron_end ) { 
+          if( $box_start == $intron_start && $box_end == $intron_end ) {
+	    print STDERR "DRAWING ENTIRE INTRON box_start=$box_start, box_end=$box_end\n"; 
 	    # draw an wholly in slice intron
 	    $intron = new Bio::EnsEMBL::Glyph::Intron({
                     'x'         => $box_start,
@@ -255,8 +260,9 @@ sub _init {
                     'strand'    => $strand,
                 });
 	  } else { 
+	    print STDERR "DRAWING PARTIAL INTRON box_start=$box_start, box_end=$box_end\n";
 	      # else draw a "not in slice" intron
-	      intron = new Bio::EnsEMBL::Glyph::Line({
+	      $intron = new Bio::EnsEMBL::Glyph::Line({
                      'x'         => $box_start,
                      'y'         => $y+int($h/2),
                      'width'     => $box_end-$box_start,
