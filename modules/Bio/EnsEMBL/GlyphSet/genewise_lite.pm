@@ -61,6 +61,7 @@ sub features {
 sub zmenu {
     my ($self, $gene, $transcript) = @_;
     my $vtid = $transcript->stable_id();
+    my $pid  = $transcript->translation->stable_id();
     my $id   = $transcript->external_name() eq '' 
       ? $vtid : $transcript->external_name();
     my $zmenu = {
@@ -70,7 +71,7 @@ sub zmenu {
         '03:Transcript information'     => "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=".$gene->stable_id(),
         '04:Protein information'        => "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=" . $transcript->translation->stable_id(),
         '05:Supporting evidence'        => "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$vtid",
-        '07:Protein sequence (FASTA)'   => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=$vtid",
+        '07:Protein sequence (FASTA)'   => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=$pid",
         '08:cDNA sequence'              => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=cdna&id=$vtid",
     };
     my $DB = EnsWeb::species_defs->databases;
