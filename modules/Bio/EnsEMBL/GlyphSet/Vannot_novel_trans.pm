@@ -13,13 +13,20 @@ sub init_label {
     my ($self) = @_;
     my $Config = $self->{'config'};	
     my $label = new Sanger::Graphics::Glyph::Text({
-		'text'      => 'Novel trans.',
+		'text'      => 'Novel',
+		'font'      => 'Small',
+		'colour'	=> $Config->get('_colours','Novel_Transcript'),
+		'absolutey' => 1,
+    });
+    my $label2 = new Sanger::Graphics::Glyph::Text({
+		'text'      => 'trans.',
 		'font'      => 'Small',
 		'colour'	=> $Config->get('_colours','Novel_Transcript'),
 		'absolutey' => 1,
     });
 		
     $self->label($label);
+    $self->label2($label2);
 }
 
 sub _init {
