@@ -103,7 +103,9 @@ sub _init {
     my $strand  = $self->strand();
     my $transcript_drawn = 0;
     
-    foreach my $gene ($self->genes()) {
+    my @genes = $self->genes();
+
+    foreach my $gene (@genes) {
       print STDERR "DRAWING TRANSCRIPTS FOR GENE: ".$gene->stable_id()."\n";
       # For alternate splicing diagram only draw transcripts in gene
       next if $target_gene && ($gene->stable_id() ne $target_gene);

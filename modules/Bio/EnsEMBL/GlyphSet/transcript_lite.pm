@@ -32,7 +32,7 @@ sub genes {
 sub colour {
     my ($self, $gene, $transcript, $colours, %highlights) = @_;
 
-    my $genecol = $colours->{$gene->type()};
+    my $genecol = $colours->{$transcript->is_known() ? 'known' : 'unknown'};
 
     print STDERR "Got colour $genecol for gene of type: " . $gene->type() . "\n";
  
@@ -45,7 +45,7 @@ sub colour {
       return ($genecol, $colours->{'hi'});
     }
       
-    print STDERR "NO COLOUR DEFINED";
+    print STDERR "NO HIGHLIGHTS";
 
     return ($genecol, undef);
 }
