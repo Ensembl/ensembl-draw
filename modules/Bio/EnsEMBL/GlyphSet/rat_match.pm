@@ -13,9 +13,18 @@ sub features {
     my $assembly = 
       EnsWeb::species_defs->other_species('Rattus_norvegicus','ENSEMBL_GOLDEN_PATH');
 
-    return $self->{'container'}->get_all_compara_DnaAlignFeatures(
+    my $f = $self->{'container'}->get_all_compara_DnaAlignFeatures(
 							   'Rattus norvegicus',
-							    $assembly,'WGA');
+							    $assembly,'BLASTZ_NET');
+    my $slice_start = $self->{'container'}->chr_start();
+
+    map { print STDERR "RAT_feature ",$_->start + $slice_start-1," ",$_->end() + $slice_start-1,"\n"} @$f;
+
+    return $f;
+
+#    return $self->{'container'}->get_all_compara_DnaAlignFeatures(
+#							   'Rattus norvegicus',
+#							    $assembly,'BLASTZ_NET');
 }
 
 sub href {

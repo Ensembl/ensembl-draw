@@ -17,7 +17,7 @@ sub features {
     return $self->{'container'}->get_all_compara_DnaAlignFeatures(
 								  'Homo sapiens',
 								  $assembly,
-								  'WGA_HCR'
+								  'BLASTZ_NET_TIGHT'
 								 );
 
 }

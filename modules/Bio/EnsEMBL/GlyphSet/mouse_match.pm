@@ -17,7 +17,7 @@ sub features {
 
     return $self->{'container'}->get_all_compara_DnaAlignFeatures(
 							   'Mus musculus',
-							    $assembly,'WGA');
+							    $assembly,'BLASTZ_NET');
 }
 
 sub href {
