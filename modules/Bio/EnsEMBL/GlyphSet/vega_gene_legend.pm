@@ -4,17 +4,27 @@ use vars qw(@ISA);
 use Bio::EnsEMBL::GlyphSet;
 @ISA = qw(Bio::EnsEMBL::GlyphSet);
 use Sanger::Graphics::Glyph::Rect;
+use EnsWeb;
 use Sanger::Graphics::Glyph::Text;
 use  Sanger::Graphics::Bump;
-use Bio::EnsEMBL::Utils::Eprof qw(eprof_start eprof_end);
+#use Bio::EnsEMBL::Utils::Eprof qw(eprof_start eprof_end);
 
 sub init_label {
     my ($self) = @_;
     return if( defined $self->{'config'}->{'_no_label'} );
+    my $HELP_LINK = $self->check();
+    my $SPECIES_SHORT = EnsWeb::species_defs->SPECIES_SHORT_NAME;
     my $label = new Sanger::Graphics::Glyph::Text({
         'text'      => 'Gene legend',
         'font'      => 'Small',
         'absolutey' => 1,
+         'href'      => qq[javascript:X=window.open(\'/$ENV{'ENSEMBL_SPECIES'}/helpview?se=1&kw=${SPECIES_SHORT}_gene_classification\',\'helpview\',\'height=400,width=500,left=100,screenX=100,top=100,screenY=100,resizable,scrollbars=yes\');X.focus();void(0)],
+
+        'zmenu'     => {
+            'caption'                     => 'HELP',
+            "01:Track information..."     =>
+qq[javascript:X=window.open(\\\'/$ENV{'ENSEMBL_SPECIES'}/helpview?se=1&kw=${SPECIES_SHORT}_gene_classification\\\',\\\'helpview\\\',\\\'height=400,width=500,left=100,screenX=100,top=100,screenY=100,resizable,scrollbars=yes\\\');X.focus();void(0)]
+        }
     });
     $self->label($label);
 }
