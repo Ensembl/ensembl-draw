@@ -51,10 +51,7 @@ sub _init {
     my $fontname      = "Tiny";    
     my $pix_per_bp    = $Config->transform->{'scalex'};
     my $bitmap_length = int($Config->container_width() * $pix_per_bp);
-	my $URL = ExtURL->new(
-		'PID' =>
-		'http://srs6.ebi.ac.uk/srs6bin/cgi-bin/wgetz?-e+[libs%3d{swall%20swissprot%20sptrembl}-alltext:###ID###]'
-	);
+	my $URL = ExtURL->new();
  
     my $colour;
     #&eprof_start('transcript - get_all_Genes_exononly()');
@@ -63,10 +60,7 @@ sub _init {
     #&eprof_start('transcript - get_all_ExternalGenes()');
     unless($target) { # Skip in single transcript mode
         if ($type eq 'all'){
-		    print STDERR "ALL TRANSCRIPTS\n";
-			print STDERR $container->_chr_name(), ' - ', $container->_global_start(), ' - ', $container->_global_end(),"\n";
             foreach my $vg ( $container->get_all_ExternalGenes() ) {
-				print STDERR "EXT TRANSCRIPT: ".$vg->stable_id."\n";
                 $vg->{'_is_external'} = 1;
                 push (@allgenes, $vg);
             }
@@ -133,12 +127,16 @@ TRANSCRIPT:
 							my $DB = $DB_link->database();
 							my $ID = $DB_link->display_id();
 							if( $DB eq 'EMBL' ) {
-								$zmenu{ "06:$DB: $ID" } = $URL->get_url($DB, $ID);
+								my $temp_ID = $ID;
+								$temp_ID = $1 if $temp_ID =~ /^([a-z]+\d+\.\d+)/i;
+								$zmenu{ "06:$DB: $temp_ID" } = $URL->get_url($DB, $temp_ID);
 							} elsif( $DB eq 'SPTREMBL' ) {
 								$zmenu{ "07:$DB: $ID" } = $URL->get_url('SWISS-PROT', $ID);
 							} else {
-								$zmenu{ "08:Protein: $ID" } = 
-									$URL->get_url( 'PID', $ID );
+								my $temp_ID = $ID;
+								$temp_ID = $1 if $temp_ID =~ /^([a-z]+\d+)/i;
+								$zmenu{ "08:Protein: $temp_ID" } = 
+									$URL->get_url( 'PID', $temp_ID );
 							}
                     	}
                     }
@@ -156,15 +154,15 @@ TRANSCRIPT:
                             'caption'            => $id,
                             "00:Transcr:$tid"        => "",
                             "01:(Gene:$vgid)"        => "",
-                            '03:Transcript information' => "/perl/geneview?gene=$vgid",
-                            '04:Protein information'    => "/perl/protview?peptide=$pid",
-                            '05:Supporting evidence'    => "/perl/transview?transcript=$tid",
-                            '06:Expression information' => "/perl/sageview?alias=$vgid",
-                            '07:Protein sequence (FASTA)' => "/perl/exportview?tab=fasta&type=feature&ftype=peptide&id=$tid",
-                            '08:cDNA sequence'          => "/perl/exportview?tab=fasta&type=feature&ftype=cdna&id=$tid",
+                            '03:Transcript information' => "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$vgid",
+                            '04:Protein information'    => "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=$pid",
+                            '05:Supporting evidence'    => "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$tid",
+                            '06:Expression information' => "/$ENV{'ENSEMBL_SPECIES'}/sageview?alias=$vgid",
+                            '07:Protein sequence (FASTA)' => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=$tid",
+                            '08:cDNA sequence'          => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=cdna&id=$tid",
                     };
 					$Composite->{'zmenu'}->{"02:(Gene:$gene_label)"} if $gene_label;
-                    $Composite->{'href'} = "/perl/geneview?gene=$vgid";
+                    $Composite->{'href'} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$vgid";
                 }
             } #end of Skip this next chunk if single transcript mode
             my @exons = $transcript->each_Exon_in_context($vcid);
@@ -178,7 +176,6 @@ TRANSCRIPT:
                 $start_screwed = $transcript->is_end_exon_in_context($vcid);
                 @exons = reverse @exons;
             }
-    
             my $start_exon = $exons[0];
             my $end_exon   = $exons[-1];
     
