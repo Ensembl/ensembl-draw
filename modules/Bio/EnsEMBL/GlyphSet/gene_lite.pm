@@ -183,6 +183,35 @@ sub _init {
 
   # Draw all RefSeq Genes
   $F=0;
+  foreach my $g (@{$gene_objs{'tge_gw'}} ) {
+    $F++;
+    my $gene_label = $g->external_name() || $g->stable_id();
+    my $high = exists $highlights{ $g->external_name() } || exists $highlights{ $g->stable_id() };
+    push @genes, {
+      'db'        => '',
+      'chr_start' => $g->start + $offset,
+      'chr_end'   => $g->end + $offset,
+      'start'     => $g->start(),
+      'strand'    => $g->strand(),
+      'end'       => $g->end(),
+      'ens_ID'    => '', #$g->{'stable_id'},
+      'label'     => $gene_label,
+      'colour'    => $colours->{'_tge'},
+      'ext_DB'    => $g->external_db(),
+      'high'      => $high,
+      'type'      => $g->type()
+     };
+  }
+
+  if($F>0) {
+    $Config->{'legend_features'}->{'genewise_genes'} = {
+      'priority' => 802,
+      'legend'  => [
+         'Targetted GeneWise' => $colours->{'_tge'},
+      ] };
+  }
+
+  $F =0;
   foreach my $g (@{$gene_objs{'refseq'}} ) {
     $F++;
     my $gene_label = $g->external_name() || $g->stable_id();
