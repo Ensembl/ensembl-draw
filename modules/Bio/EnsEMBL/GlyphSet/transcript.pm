@@ -149,13 +149,14 @@ sub _init {
 			# we have a normal Ensembl transcript...
         	$Composite->{'zmenu'}  = {
             	'caption'					   => $id,
-            	'00:Ensembl transcript'    	   => "",
-             	'01:Transcript information'    => "/perl/geneview?gene=$vgid",
-           		'02:Protein information'       => "/perl/protview?peptide=$pid",
-            	'05:Protein sequence (FASTA)'  => "/perl/dumpview?type=peptide&id=$tid",
-            	'03:Supporting evidence'       => "/perl/transview?transcript=$tid",
-            	'04:Expression information'    => "/perl/sageview?alias=$vgid",
-            	'06:cDNA sequence'             => "/perl/dumpview?type=cdna&id=$tid",
+            	"00:Transcript:$tid"   			=> "",
+            	"01:(Gene: $vgid)"     			=> "",
+             	'02:Transcript information'    => "/perl/geneview?gene=$vgid",
+           		'03:Protein information'       => "/perl/protview?peptide=$pid",
+            	'04:Supporting evidence'       => "/perl/transview?transcript=$tid",
+            	'05:Expression information'    => "/perl/sageview?alias=$vgid",
+            	'06:Protein sequence (FASTA)'  => "/perl/dumpview?type=peptide&id=$tid",
+            	'07:cDNA sequence'             => "/perl/dumpview?type=cdna&id=$tid",
 	    	};
 		}
         my @exons = $transcript->each_Exon_in_context($vcid);
