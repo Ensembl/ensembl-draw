@@ -28,144 +28,152 @@ sub init_label {
 }
 
 sub _init {
-    my ($self) = @_;
-    my $Config        = $self->{'config'};
-    my $container     = $self->{'container'};
-    my $target        = $Config->{'_draw_single_Transcript'};
-    my $target_gene   = $Config->{'geneid'};
-    my $y             = 0;
-    my $h             = $target ? 30 : 8;   #Single transcript mode - set height to 30 - width to 8!
-    my $vcid          = $container->id();
-    my %highlights;
-    @highlights{$self->highlights} = ();    # build hashkeys of highlight list
-    my @bitmap        = undef;
-    my $im_width      = $Config->image_width();
-    my $unknown_colour= $Config->get('transcript','unknown');
-    my $known_colour  = $Config->get('transcript','known');
-    my $pseudo_colour = $Config->get('transcript','pseudo');
-    my $ext_colour    = $Config->get('transcript','ext');
-    my $hi_colour     = $Config->get('transcript','hi');
-    my $superhi_colour= $Config->get('transcript','superhi');
-    my $type          = $Config->get('transcript','src');
-    my @allgenes      = ();
-    my $fontname      = "Tiny";    
-    my $pix_per_bp    = $Config->transform->{'scalex'};
-    my $bitmap_length = int($Config->container_width() * $pix_per_bp);
-	my $URL = ExtURL->new();
- 
-    my $colour;
-    #&eprof_start('transcript - get_all_Genes_exononly()');
-    @allgenes = $container->get_all_Genes_exononly();
-    #&eprof_end('transcript - get_all_Genes_exononly()');
-    #&eprof_start('transcript - get_all_ExternalGenes()');
-    unless($target) { # Skip in single transcript mode
-        if ($type eq 'all'){
-            foreach my $vg ( $container->get_all_ExternalGenes() ) {
-                $vg->{'_is_external'} = 1;
-                push (@allgenes, $vg);
-            }
-        } 
-    }                 # end of Skip in single transcript mode
-    #&eprof_end('transcript - get_all_ExternalGenes()');
-    $type = undef;
-    my $PREFIX = "^".EnsWeb::species_defs->ENSEMBL_PREFIX."T";
+  my ($self) = @_;
+  my $Config        = $self->{'config'};
+  my $container     = $self->{'container'};
+  my $target        = $Config->{'_draw_single_Transcript'};
+  my $target_gene   = $Config->{'geneid'};
+  my $y             = 0;
+  my $h             = $target ? 30 : 8;   #Single transcript mode - set height to 30 - width to 8!
+  my $vcid          = $container->id();
+  my %highlights;
+  @highlights{$self->highlights} = ();    # build hashkeys of highlight list
+  my @bitmap        = undef;
+  my $im_width      = $Config->image_width();
+  my $unknown_colour= $Config->get('transcript','unknown');
+  my $known_colour  = $Config->get('transcript','known');
+  my $pseudo_colour = $Config->get('transcript','pseudo');
+  my $ext_colour    = $Config->get('transcript','ext');
+  my $hi_colour     = $Config->get('transcript','hi');
+  my $superhi_colour= $Config->get('transcript','superhi');
+  my $type          = $Config->get('transcript','src');
+  my @allgenes      = ();
+  my $fontname      = "Tiny";    
+  my $pix_per_bp    = $Config->transform->{'scalex'};
+  my $bitmap_length = int($Config->container_width() * $pix_per_bp);
+  my $URL = ExtURL->new();
+  
+  my $colour;
+  #&eprof_start('transcript - get_all_Genes_exononly()');
+  @allgenes = $container->get_all_Genes_exononly();
+  #&eprof_end('transcript - get_all_Genes_exononly()');
+  #&eprof_start('transcript - get_all_ExternalGenes()');
+  unless($target) { # Skip in single transcript mode
+    if ($type eq 'all'){
+      foreach my $vg ( $container->get_all_ExternalGenes() ) {
+	$vg->{'_is_external'} = 1;
+	push (@allgenes, $vg);
+      }
+    } 
+  }                 # end of Skip in single transcript mode
+  #&eprof_end('transcript - get_all_ExternalGenes()');
+  $type = undef;
+  my $PREFIX = "^".EnsWeb::species_defs->ENSEMBL_PREFIX."T";
+  
+ GENE:
+  my $count = 0;
+  for my $eg (@allgenes) {
+    my $vgid = $eg->stable_id();
+    next if ($target_gene && ($vgid ne $target_gene));
+    my $highlight_gene = exists $highlights{$vgid} ? 1 : 0;
+    my $gene_label;
+    eval {
+      my @dblinks = $eg->each_DBLink();
+      unless( $target ) { #Skip in single transcript mode
+	($gene_label, $highlight_gene) = $self->_label_highlight($vgid, $highlight_gene, \%highlights, \@dblinks)
+      }                   #end of Skip in single transcript mode
+    };
+    $type = $eg->type();
     
-GENE:
-    my $count = 0;
-    for my $eg (@allgenes) {
-        my $vgid = $eg->stable_id();
-        next if ($target_gene && ($vgid ne $target_gene));
-        my $highlight_gene = exists $highlights{$vgid} ? 1 : 0;
-        my $gene_label;
-        eval {
-            my @dblinks = $eg->each_DBLink();
-            unless( $target ) { #Skip in single transcript mode
-                ($gene_label, $highlight_gene) = $self->_label_highlight($vgid, $highlight_gene, \%highlights, \@dblinks)
-            }                   #end of Skip in single transcript mode
-        };
-        $type = $eg->type();
+    #        print STDERR sprintf( "%-10s %-20s %-20s %-20s\n",'GENE:',$vgid,$type, $gene_label );
+  TRANSCRIPT:
+    for my $transcript ($eg->each_Transcript()) {
+      next if ($target && ($transcript->stable_id() ne $target) );
+      ########## test transcript strand
       
-#        print STDERR sprintf( "%-10s %-20s %-20s %-20s\n",'GENE:',$vgid,$type, $gene_label );
-TRANSCRIPT:
-        for my $transcript ($eg->each_Transcript()) {
-            next if ($target && ($transcript->stable_id() ne $target) );
-        ########## test transcript strand
-
-            my $tstrand = $transcript->strand_in_context($vcid);
-            next TRANSCRIPT if($tstrand != $self->strand());
-    
-        ########## set colour for transcripts and test if we're highlighted or not
-            my @dblinks = ();
-            my $tid = $transcript->stable_id();
-            my $pid = $tid;
-                my $id = $tid;
-            my $highlight = $highlight_gene;
-            my $superhighlight = exists $highlights{$tid} ? 1 : 0;
-            eval {
-                @dblinks = $transcript->each_DBLink();
-                unless( $target ) { #Skip in single transcript mode
-                    ($id, $highlight) = $self->_label_highlight($tid, $highlight, \%highlights, \@dblinks)
-                }                   #end of Skip in single transcript mode
-            };
+      my $tstrand = $transcript->strand_in_context($vcid);
+      next TRANSCRIPT if($tstrand != $self->strand());
       
-            my $Composite = new Bio::EnsEMBL::Glyph::Composite({});
-            $colour = @dblinks ? $known_colour : $unknown_colour;
-	           unless( $target ) {     #Skip this next chunk if single transcript mode
-                if ($eg->{'_is_external'}) {
-                    $colour = $type eq "pseudo" ? $pseudo_colour : $ext_colour;
-                }
-                if( $Config->{'_href_only'} eq '#tid' ) {
-                    $Composite->{'href'} = qq(#$tid);
-                } elsif ($tid !~ /$PREFIX/o){
-					my %zmenu = (
-                            'caption'           => "EMBL: $tid",
-						    '01:EMBL curated '.($type eq 'pseudo' ? 'pseudogene' : 'transcript') => ''
-					);
-                    @dblinks = $transcript->each_DBLink();
-                    if (@dblinks){
-                    	foreach my $DB_link ( @dblinks ){
-							my $DB = $DB_link->database();
-							my $ID = $DB_link->display_id();
-							if( $DB eq 'EMBL' ) {
-								my $temp_ID = $ID;
-								$temp_ID = $1 if $temp_ID =~ /^([a-z]+\d+\.\d+)/i;
-								$zmenu{ "06:$DB: $temp_ID" } = $URL->get_url($DB, $temp_ID);
-							} elsif( $DB eq 'SPTREMBL' ) {
-								$zmenu{ "07:$DB: $ID" } = $URL->get_url('SWISS-PROT', $ID);
-							} else {
-								my $temp_ID = $ID;
-								$temp_ID = $1 if $temp_ID =~ /^([a-z]+\d+)/i;
-								$zmenu{ "08:Protein: $temp_ID" } = 
-									$URL->get_url( 'PID', $temp_ID );
-							}
-                    	}
-                    }
-					
-                    # if we have an EMBL external transcript we need different links...
-                    if($tid =~ /dJ/o){
-						$zmenu { "05:$tid" } => $URL->get_url('EMBLGENE', $tid);
-                    }
-                    $zmenu{ "02:Gene: $gene_label"}='' if $gene_label;
-
-                    $Composite->{'zmenu'} = \%zmenu;
-                } else {
-                    # we have a normal Ensembl transcript...
-                    $Composite->{'zmenu'}  = {
-                            'caption'            => $id,
-                            "00:Transcr:$tid"        => "",
-                            "01:(Gene:$vgid)"        => "",
-                            '03:Transcript information' => "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$vgid",
-                            '04:Protein information'    => "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=$pid",
-                            '05:Supporting evidence'    => "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$tid",
-                            '06:Expression information' => "/$ENV{'ENSEMBL_SPECIES'}/sageview?alias=$vgid",
-                            '07:Protein sequence (FASTA)' => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=$tid",
-                            '08:cDNA sequence'          => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=cdna&id=$tid",
+      ########## set colour for transcripts and test if we're highlighted or not
+      my @dblinks = ();
+      my $tid = $transcript->stable_id();
+      my $pid = $tid;
+      my $id = $tid;
+      my $highlight = $highlight_gene;
+      my $superhighlight = exists $highlights{$tid} ? 1 : 0;
+      eval {
+	@dblinks = $transcript->each_DBLink();
+	unless( $target ) { #Skip in single transcript mode
+	  ($id, $highlight) = $self->_label_highlight($tid, $highlight, \%highlights, \@dblinks)
+	}                   #end of Skip in single transcript mode
+      };
+      
+      my $Composite = new Bio::EnsEMBL::Glyph::Composite({});
+      $colour = @dblinks ? $known_colour : $unknown_colour;
+      unless( $target ) {     #Skip this next chunk if single transcript mode
+	if ($eg->{'_is_external'}) {
+	  $colour = $type eq "pseudo" ? $pseudo_colour : $ext_colour;
+	}
+	if( $Config->{'_href_only'} eq '#tid' ) {
+	  $Composite->{'href'} = qq(#$tid);
+	} 
+	elsif ($tid !~ /$PREFIX/o){
+	  my %zmenu = (
+		       'caption'           => "EMBL: $tid",
+		       '01:EMBL curated '.($type eq 'pseudo' ? 'pseudogene' : 'transcript') => ''
+		      );
+	  @dblinks = $transcript->each_DBLink();
+	  if (@dblinks){
+	    foreach my $DB_link ( @dblinks ){
+	      my $DB = $DB_link->database();
+	      my $ID = $DB_link->display_id();
+	      if( $DB eq 'EMBL' ) {
+		my $temp_ID = $ID;
+		$temp_ID = $1 if $temp_ID =~ /^([a-z]+\d+\.\d+)/i;
+		$zmenu{ "06:$DB: $temp_ID" } = $URL->get_url($DB, $temp_ID);
+	      } elsif( $DB eq 'SPTREMBL' ) {
+		$zmenu{ "07:$DB: $ID" } = $URL->get_url('SWISS-PROT', $ID);
+	      } else {
+		my $temp_ID = $ID;
+		$temp_ID = $1 if $temp_ID =~ /^([a-z]+\d+)/i;
+		$zmenu{ "08:Protein: $temp_ID" } = 
+		  $URL->get_url( 'PID', $temp_ID );
+	      }
+	    }
+	  }
+	  
+	  # if we have an EMBL external transcript we need different links...
+	  if($tid =~ /dJ/o){
+	    $zmenu { "05:$tid" } => $URL->get_url('EMBLGENE', $tid);
+	  }
+	  $zmenu{ "02:Gene: $gene_label"}='' if $gene_label;
+	  
+	  $Composite->{'zmenu'} = \%zmenu;
+	} 
+	else {
+	  # we have a normal Ensembl transcript...
+	  $Composite->{'zmenu'}  = 
+	    {
+	     'caption'            => $id,
+	     "00:Transcr:$tid"        => "",
+	     "01:(Gene:$vgid)"        => "",
+	     '03:Transcript information' => "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$vgid",
+	     '04:Protein information'    => "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=$pid",
+	     '05:Supporting evidence'    => "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$tid",
+	     '06:Expression information' => "/$ENV{'ENSEMBL_SPECIES'}/sageview?alias=$vgid",
+	     '07:Protein sequence (FASTA)' => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=$tid",
+	     '08:cDNA sequence'          => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=cdna&id=$tid",
                     };
-					$Composite->{'zmenu'}->{"02:(Gene:$gene_label)"} if $gene_label;
-                    $Composite->{'href'} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$vgid";
-                }
-            } #end of Skip this next chunk if single transcript mode
-            my @exons = $transcript->each_Exon_in_context($vcid);
+
+	  if( $ENV{'ENSEMBL_SPECIES'} eq "Drosophila_melanogaster" ){
+	    delete( $Composite->{'zmenu'}->{'06:Expression information'} )
+	  }
+	    
+	  $Composite->{'zmenu'}->{"02:(Gene:$gene_label)"} if $gene_label;
+	  $Composite->{'href'} = "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$vgid";
+	}
+      } #end of Skip this next chunk if single transcript mode
+	my @exons = $transcript->each_Exon_in_context($vcid);
     
             my ($start_screwed, $end_screwed);
             if($tstrand != -1) {
