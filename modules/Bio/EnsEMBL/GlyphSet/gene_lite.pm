@@ -151,7 +151,8 @@ sub _init {
   foreach my $g (@{$gene_objs{lc($authority)}} ) {
     $F++;
     my $high = (exists $highlights{ $g->stable_id() }) || (exists $highlights{ $g->external_name() });
-    my $gene_col = $colours->{'_'.$g->external_status};
+    my $external_status = $g->external_status eq 'PSUEDO' ? 'PSEUDO' : $g->external_status;
+    my $gene_col = $colours->{'_'.$external_status};
     $gene_label = $g->external_name;
     $gene_label = 'NOVEL' unless defined $gene_label && $gene_label ne '';
     push @genes, {
@@ -163,10 +164,10 @@ sub _init {
       'ens_ID'    => $g->stable_id(),
       'db'        => 'core',
       'label'     => $gene_label,
-      'colour'    => $colours->{'_'.$g->external_status},
+      'colour'    => $gene_col,
       'ext_DB'    => $g->external_db(),
       'high'      => $high,
-      'type'      => "$authority ".$g->external_status
+      'type'      => "$authority ".$external_status
     };
   }
   if($F>0) {

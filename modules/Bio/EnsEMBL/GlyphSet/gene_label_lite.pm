@@ -127,7 +127,8 @@ sub _init {
     foreach my $g (@{$gene_objs{lc($authority)}} ) { 
         my( $gene_col, $gene_label, $high);
         $high = exists $highlights{$g->stable_id()} ? 1 : 0;
-        my $gene_col = $colours->{'_'.$g->external_status};
+ my $external_status = $g->external_status eq 'PSUEDO' ? 'PSEUDO' : $g->external_status;
+        my $gene_col = $colours->{'_'.$external_status};
         my $gene_label = $g->external_name() || 'NOVEL';
         push @genes, {
             'chr_start' => $g->start() + $offset,

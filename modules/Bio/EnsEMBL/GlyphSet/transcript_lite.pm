@@ -28,9 +28,10 @@ sub features {
 sub colour {
     my ($self, $gene, $transcript, $colours, %highlights) = @_;
 
-    my $genecol = $colours->{ "_".$transcript->external_status };
+ my $external_status = $transcript->external_status eq 'PSUEDO' ? 'PSEUDO' : $transcript->external_status;
+    my $genecol = $colours->{ "_".$external_status };
 
-    if( $transcript->external_status eq '' and ! $transcript->translation->stable_id ) {
+    if( $external_status eq '' and ! $transcript->translation->stable_id ) {
        $genecol = $colours->{'_pseudogene'};
     }
     if(exists $highlights{$transcript->stable_id()}) {
@@ -96,7 +97,7 @@ sub text_label {
         $id .= $eid ? " ($eid)" : '';
     }
     unless( $short_labels ){
-      $id .= $transcript->external_status eq  'PSEUDO' ? 
+      $id .= $transcript->external_status =~  /PS(EU|UE)DO/ ? 
             "\nEnsembl pseudogene" :
             ( $eid ? "\nEnsembl known trans" : "\nEnsembl novel trans" );
     }
