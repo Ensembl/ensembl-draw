@@ -21,7 +21,7 @@ sub init_label {
     my $label2 = new Sanger::Graphics::Glyph::Text({
 		'text'      => 'Ig Pseudo Seg.',
 		'font'      => 'Small',
-		'colour'	=>  $Config->get( '_colours','Ig_Pseudogene' ),		
+		'colour'	=>  $Config->get( '_colours','Ig_Pseudogene'),		
 		'absolutey' => 1,
     });
 		
@@ -33,7 +33,7 @@ sub _init {
     my ($self) = @_;
     my $Config = $self->{'config'};
     my $chr      = $self->{'container'}->{'chr'};
-    my $known_col = $Config->get( '_colours','Ig_Segment' ;
+    my $known_col = $Config->get( '_colours','Ig_Segment') ;
     my $genes_col = $Config->get( '_colours','Ig_Pseudogene' ); 	
 
     my $known_genes = $self->{'container'}->{'da'}->get_density_per_chromosome_type($chr,'ig_segment');
