@@ -9,7 +9,7 @@ sub my_label { return "STS"; }
 
 sub features {
     my ($self) = @_;
-    return $self->{'container'}->get_all_SimilarityFeatures_by_analysis_id(67);
+    return $self->{'container'}->get_all_SimilarityFeatures("Full_dbSTS",80,$self->glob_bp);
 }
 
 sub href {
