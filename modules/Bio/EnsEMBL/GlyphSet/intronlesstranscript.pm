@@ -44,7 +44,7 @@ sub _init {
     
   my $voffset = 0;
   my($font_w_bp, $font_h_bp) = $Config->texthelper->px2bp($fontname);
-  foreach my $trans_ref (@{$Config->{'transcripts'} } ) {
+  foreach my $trans_ref ( $strand == 1 ? reverse @{$Config->{'transcripts'}} : @{$Config->{'transcripts'} } ) {
     my $gene = $trans_ref->{'gene'};
     my $transcript = $trans_ref->{'transcript'};
     my @exons = sort {$a->[0] <=> $b->[0]} @{$trans_ref->{'exons'}};
@@ -299,8 +299,8 @@ sub _init {
     ########## bump it baby, yeah! bump-nology!
     ########## shift the composite container by however much we're bumped
     ## Now we draw the amino acid changes for all coding SNPs...
-    $Composite->y($Composite->y() - $strand * $voffset );
-    $voffset += $bump_height ;
+    $Composite->y($Composite->y() - $voffset );
+    $voffset -= $bump_height;
     $Composite->colour($hilight) if(defined $hilight);
     $self->push($Composite);
   }
