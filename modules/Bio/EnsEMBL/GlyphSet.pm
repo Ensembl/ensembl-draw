@@ -34,9 +34,9 @@ sub new {
 
 sub __init {
   my $self = shift;
-  eprof_start('init_'.ref($self));
+  #eprof_start('init_'.ref($self));
   $self->_init(@_);
-  eprof_end('init_'.ref($self));
+  #eprof_end('init_'.ref($self));
 }
 sub bumpbutton {
     my ($self, $val) = @_;
