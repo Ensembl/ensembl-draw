@@ -319,25 +319,22 @@ sub _init {
                     'absolutewidth'    => 1,
                 }));
             }
-	}
-
-	elsif ($artificials{uc($chr)}) {
-               # draw blunt ends for artificial chromosomes
-	    my $x = $chr_length * $end - 1;
+	} elsif ($artificials{uc($chr)}) {
+        # draw blunt ends for artificial chromosomes
+	    my $x = $v_offset + $chr_length * $end - 1;
 	    my $y = $h_offset;
 	    my $width = 0;
+            my $height = $wid;
             my $glyph = new Sanger::Graphics::Glyph::Line({
                 'x'      => $x,
                 'y'      => $y,
                 'width'  => $width,
-                'height' => 23,
-                'colour' => $red,
+                'height' => $height,
+                'colour' => $black,
                 'absolutey' => 1,
 		'absolutewidth' => 1,
                 });
             $self->push($glyph);
-
-
 	} else {
         # round ends for full chromosomes
             my @lines = $wid < 16 ?
