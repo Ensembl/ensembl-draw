@@ -77,7 +77,9 @@ sub _init {
 	    #sort exons on their start coordinate
             my @exons = sort {$a->start <=> $b->start} grep { $_ } @{$transcript->get_all_Exons()};
             # Skip if no exons for this transcript
-	    next if (@exons == 0);
+	    
+
+next if (@exons == 0);
 	    # If stranded diagram skip if on wrong strand
 	    next if (@exons[0]->strand() != $strand && $self->{'do_not_strand'}!=1 );
 	    # For exon_structure diagram only given transcript
@@ -94,6 +96,7 @@ sub _init {
 # unless $Config->{'_href_only'};
 	
 	    my($colour, $hilight) = $self->colour( $gene, $transcript, $colours, %highlights );
+	  
             my $coding_start = $transcript->coding_start() || $transcript->start();
             my $coding_end   = $transcript->coding_end()   || $transcript->end();
             my $Composite2 = new Sanger::Graphics::Glyph::Composite({'y'=>$y,'height'=>$h});
@@ -310,14 +313,27 @@ sub colours {
 
 sub features {
   my ($self) = @_;
-  return $self->{'container'}->get_all_Genes($self->logic_name());
+
+ # return $self->{'container'}->get_all_Genes($self->logic_name());
+
+my ($genes, @genes);
+
+my @logic_names = $self->logic_name();
+
+  foreach my $ln (@logic_names) {
+$genes =  $self->{'container'}->get_all_Genes($ln);
+push @genes, @$genes;
+ 
+ }
+return \@genes;
+
 }
 
 
 sub colour {
     my ($self, $gene, $transcript, $colours, %highlights) = @_;
 
-  #  my $genecol = $colours->{ $transcript->is_known() ? lc( $transcript->external_status ) : 'unknown'};
+ # my $genecol = $colours->{ $transcript->is_known() ? lc( $transcript->external_status ) : 'unknown'};
 
 my $genecol = $colours->{$gene->type()};
 
@@ -325,15 +341,17 @@ my $genecol = $colours->{$gene->type()};
       return ($genecol, $colours->{'superhi'});
     } 
 
-elsif(exists $highlights{$transcript->external_name()}) {
+  elsif(exists $highlights{$transcript->external_name()}) {
       return ($genecol, $colours->{'superhi'});
     } 
 
 elsif(exists $highlights{$gene->stable_id()}) {
       return ($genecol, $colours->{'hi'});
     }
-      
-    return ($genecol, undef);
+
+
+   return ($genecol, undef);
+
 }
 
 sub href {
@@ -348,40 +366,40 @@ sub href {
 }
 
 
+
 sub zmenu {
-    my ($self, $gene, $transcript) = @_;
+  my ($self, $gene, $transcript) = @_;
+  my $tid = $transcript->stable_id();
+  my $pid = $transcript->translation->stable_id(),
+  my $gid = $gene->stable_id();
+  my $id   = $transcript->external_name() eq '' ? $tid : ( $transcript->external_db.": ".$transcript->external_name() );
 
-   my $tid = $transcript->stable_id();
-    my $pid = $transcript->translation->stable_id(),
-    my $gid = $gene->stable_id();
-    my $id   = $transcript->external_name() eq '' ? $tid : ( $transcript->external_db.": ".$transcript->external_name() );
   
+my $genetype = $gene->type();
+print $genetype;
 
-
-my $zmenu = {
-'caption'  =>$self->zmenu_caption(),
-"00:$id" => "",
-"01:Gene:$gid" => "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$gid",
-"02:Transcr:$tid" => "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$tid",          
-"04:Export cDNA" => "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=cdna&id=$tid",
-};
-    
-    if($pid) {
-    $zmenu->{"03:Peptide:$pid"}=
-    	qq(/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=$pid);
-    $zmenu->{'05:Export Peptide'}=
-    	qq(/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=$pid);	
-    }
-    
+    my $zmenu = {
+	'caption' 			=> $gid . "asdf",
+	"00:Locus information:"		=> "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$gid",
+	"01:Transcript information: "	=> "",
+#	'03:Transcript information'	=> "/$ENV{'ENSEMBL_SPECIES'}/geneview?gene=$gid",
+	'04:Protein information'	=> "/$ENV{'ENSEMBL_SPECIES'}/protview?peptide=$pid",	
+	'05:Supporting evidence'	=> "/$ENV{'ENSEMBL_SPECIES'}/transview?transcript=$tid",
+	'07:Protein sequence (FASTA)'	=> "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=peptide&id=pid",
+	'08:cDNA sequence (FASTA)'	=> "/$ENV{'ENSEMBL_SPECIES'}/exportview?tab=fasta&type=feature&ftype=cdna&id=$tid",
+	'09:Type: ' . $gene->type()	=> "",
+    };
     my $DB = EnsWeb::species_defs->databases;
+    $zmenu->{'06:Expression information'} = "/$ENV{'ENSEMBL_SPECIES'}/sageview?alias=$gid" if $DB->{'ENSEMBL_EXPRESSION'};
+   
+ return $zmenu;
 
-   if($DB->{'ENSEMBL_EXPRESSION'}) {
-     $zmenu->{'06:Expression information'} = 
-	"/$ENV{'ENSEMBL_SPECIES'}/sageview?alias=$gid";
-    }
 
-    return $zmenu;
 }
+
+
+
+
 
 
 
