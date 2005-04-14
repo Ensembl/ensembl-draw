@@ -379,7 +379,7 @@ sub RENDER_grouped {
       $colour = $configuration->{'colour'};
     }
 
-    $group_height || = $row_height;
+    $group_height ||= $row_height;
 
     # if it is a summary of non-positional features then just display a 
     # gene-wide line with a link to geneview where all annotations can be viewed
