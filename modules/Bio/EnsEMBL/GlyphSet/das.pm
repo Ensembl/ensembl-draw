@@ -121,6 +121,7 @@ sub RENDER_simple {
 	my $fdata = $self->get_featuredata($f, $configuration, $y_offset);
 
 	# override to draw this as a span
+	my $oldglyph = $style->{'glyph'};
 	$style->{'glyph'} = 'span';
    
 	# Change zmenu to summary menu
@@ -129,6 +130,9 @@ sub RENDER_simple {
 
 	my $symbol = $self->get_symbol ($style, $fdata, $y_offset);
 	$self->push($symbol->draw);
+
+	# put the style back to how it was
+	$style->{'glyph'} = $oldglyph;
   } 
   else {
     unless ($glyph_symbol eq 'box'){
@@ -273,6 +277,13 @@ sub RENDER_grouped {
     my $colour = $groupstyle->{'attrs'}{'colour'};
     my $row_height = $configuration->{'h'};
 
+    # store a couple of style attributes that we might change.  We'll want to
+    # change these back later (remember styles are references to the original
+    # style data - change them, and they change for all features that use that
+    # style). 
+    my $orig_groupstyle_glyph = $groupstyle->{'glyph'};
+    my $orig_groupstyle_line = $groupstyle->{'attrs'}{'style'};
+
     # Draw label
     my $label_height =$self->feature_label( $Composite, 
 					    $label, 
@@ -293,7 +304,8 @@ sub RENDER_grouped {
 	my $style = $self->get_featurestyle($f, $configuration);
 	my $fdata = $self->get_featuredata($f, $configuration, $y_offset);
 
-	# override to draw this as a span
+	# override glyph to draw this as a span
+	my $oldglyph = $style->{'glyph'};
 	$style->{'glyph'} = 'span';
    
 	# Change zmenu to summary menu
@@ -302,6 +314,9 @@ sub RENDER_grouped {
 
 	my $symbol = $self->get_symbol ($style, $fdata, $y_offset);
 	$self->push($symbol->draw);
+
+	# put the style back to how it was
+	$style->{'glyph'} = $oldglyph;
 	next;
     }
     if ( ( "@{[$f->das_group_type]} @{[$f->das_type_id()]}" ) =~ /(CDS|translation|transcript|exon)/i ) { 
@@ -345,6 +360,11 @@ sub RENDER_grouped {
     $Composite->y($Composite->y() + $y_offset);
  
     $self->push($Composite);
+
+    # put back original properties of the style, so it can be re-used:
+    $groupstyle->{'glyph'} = $orig_groupstyle_glyph;
+    $groupstyle->{'attrs'}{'style'} = $orig_groupstyle_line ;
+   
   }
 
     if($more_features) {
@@ -724,13 +744,27 @@ sub get_groupstyle {
     if($configuration->{'use_style'}) {
 	$style = $configuration->{'styles'}{'group'}{$group};
 	$style ||= $configuration->{'styles'}{'group'}{'default'};
+	unless ($style){
+	    # Can't use this directly, as it is a feature style and we don't
+	    # want to change it.
+	    my $tempstyle = $configuration->{'styles'}{'default'}{'default'};
+	    if ($tempstyle){
+		my $colour = $tempstyle->{'attrs'}{'fgcolor'};
+		my $height = $style->{'attrs'}{'height'};
+
+		$style = {};
+		$style->{'attrs'}{'colour'} = $colour;
+		$style->{'attrs'}{'height'} = $height;
+	    }
+	}
     }
     $style ||= {};
     $style->{'attrs'} ||= {};
     
     # Set some defaults
     my $colour = $style->{'attrs'}{'fgcolor'} || $configuration->{'colour'};
-
+    
+    $style->{'glyph'} ||= 'line';
     $style->{'attrs'}{'height'} ||= $configuration->{'h'};
     $style->{'attrs'}{'colour'} ||= $colour;
 
