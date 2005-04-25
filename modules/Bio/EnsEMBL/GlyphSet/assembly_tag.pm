@@ -82,7 +82,7 @@ sub zmenu {
     my $start = $self->{'container'}->start + $f->start - 1;
     my $end   = $self->{'container'}->start + $f->end - 1;
     return {
-        'caption' => $attrib->name,
+        'caption' => 'Assembly tag',
         '01:'.$attrib->value => '',
         "02:bp: $start-$end" => '',
     };
