@@ -147,16 +147,14 @@ sub RENDER_simple {
 	$style->{'glyph'} = $oldglyph;
   } 
   else {
-    unless ($glyph_symbol eq 'box'){
-	# make clickable box to anchor zmenu
-	  $Composite->push( new Sanger::Graphics::Glyph::Space({
-	    'x'         => $START-1,
-	    'y'         => 0,
-	    'width'     => $END-$START+1,
-	    'height'    => $glyph_height,
-	    'absolutey' => 1
-	  }) );
-    }
+    # make clickable box to anchor zmenu
+    $Composite->push( new Sanger::Graphics::Glyph::Space({
+    	'x'         => $START-1,
+    	'y'         => 0,
+	'width'     => $END-$START+1,
+	'height'    => $glyph_height,
+	'absolutey' => 1
+    }) );
 
     my $style = $self->get_featurestyle($f, $configuration);
     my $fdata = $self->get_featuredata($f, $configuration, $y_offset);
