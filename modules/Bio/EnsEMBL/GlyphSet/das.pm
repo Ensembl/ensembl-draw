@@ -355,7 +355,7 @@ sub RENDER_grouped {
 	my $to = $symbol->feature->{'start'};
 
 	$self->push($symbol->draw);
-	if ($to > $from){
+	if ((($to - $from) * $self->{pix_per_bp}) > 1){ # i.e. if the gap is > 1pix
 	    my $groupsymbol = $self->get_groupsymbol($groupstyle, $from, $to, $configuration, $y_offset);
 	    $self->push($groupsymbol->draw);
 	}
@@ -508,8 +508,11 @@ sub gmenu{
   $zmenu->{"08:DAS LINK: ".$f->das_link_label()     } = $f->das_link() if $f->das_link() && uc($f->das_link()) ne 'NULL';
   $zmenu->{"09:".$f->das_note()     } = '' if $f->das_note() && uc($f->das_note()) ne 'NULL';
 
-  my $href = undef;
-  #$href = $f->das_link() if $f->das_link() && !$href;
+  my $href;
+  if($self->{'extras'}->{'linkURL'}){
+      $href = $zmenu->{"10:".$self->{'link_text'}} = $self->{'ext_url'}->get_url( $self->{'extras'}->{'linkURL'}, $id );
+  } 
+ 
   return( $href, $zmenu );
 }
 
