@@ -127,8 +127,48 @@ sub href_realign {
     }
     $C++;
   }
-  return $self->href( %param );
+  return $self->realign_href( %param );
 }
+
+#get parameters for realign sprite only
+sub realign_href {
+	my( $self , %param ) = @_;
+	my $primary_species = $ENV{'ENSEMBL_SPECIES'};
+	my $C = 0;
+	foreach( @{ $self->{'config'}{'other_slices'}} ) {
+		my $l = $self->os($C);
+		my $CS = $C ? $C : '';
+		unless( defined( $param{ "c$CS" } ) ) {
+			if( $l->{'location'} ) {
+				if ($CS == 0) { #if this is the first time through (ie the primary slice) then get full details
+					$param{ "c$CS" } = join( ':', $l->{'location'}->seq_region_name, $l->{'location'}->centrepoint, $l->{'ori'} < 0 ? -1 : 1 );
+			} 
+				elsif ($l->{'species'} eq $primary_species) { #otherwise if we're working with a single species compara get chr name
+					$param{ "c$CS" } = $l->{'location'}->seq_region_name;
+				}
+			}
+		}
+		unless( defined( $param{ "s$CS" } ) ) {
+			$param{ "s$CS" } = $l->{'species'};
+		}
+		unless( defined( $param{ "w$CS" } ) ) {
+			if( $l->{'location'} ) {
+				if ($CS == 0) {
+					$param{ "w$CS" } = $l->{'location'}->length;
+				} elsif ($l->{'species'} eq $primary_species) { 
+					#set location of secondary slice for intraspecies compara to zero
+					#needed for create_locations_location in NewSupport.pm to work properly
+					$param{ "w$CS" } = 0;
+				}
+			}
+		}
+		$C++;
+	}
+	$param{'s'}||= $ENV{'ENSEMBL_SPECIES'};
+	my $return = "/$param{'s'}/$ENV{'ENSEMBL_SCRIPT'}?". join '&', map { $_ eq 's' || !$param{$_} ? () : "$_=$param{$_}" } sort keys %param;
+	return $return;
+}
+
 
 sub _init {
   my ($self) = @_;
