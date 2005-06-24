@@ -97,7 +97,7 @@ sub expanded_init {
 ## Now go through each feature in turn, drawing them
   my @glyphs;
   my $BLOCK = 0;
-  my $HREF  = $Config->get( $type, 'linkto' ).'/'.$Config->get( $type, 'species' ). '/'. $ENV{'ENSEMBL_SCRIPT'};
+  my $HREF  = $Config->get( $type, 'linkto' ).'/'.$Config->get( $type, 'species' ). '/contigview';
   foreach my $i (keys %id){
     my @F = sort { $a->[0] <=> $b->[0] } @{$id{$i}};
     $T+=@F; ## Diagnostic report....
