@@ -75,8 +75,6 @@ sub expanded_init {
   my $self_species   = $container->{_config_file_name_};
   my $compara        = $self->{'config'}{'compara'};
   my $link = 0;
-  
-
   my $TAG_PREFIX;
   my $METHOD         = $Config->get($type, 'method' );
   if( $compara) {
@@ -143,6 +141,7 @@ sub expanded_init {
         if( $strand_flag eq 'z' && $join_col) {
           $self->join_tag( $BOX, "BLOCK_$type$BLOCK", $strand == -1 ? 0 : 1, 0 , $join_col, 'fill', $join_z ) ;
           $self->join_tag( $BOX, "BLOCK_$type$BLOCK", $strand == -1 ? 1 : 0, 0 , $join_col, 'fill', $join_z ) ;
+#warn "BLOCK_$type$BLOCK";
           $BLOCK++;
         }
         $Composite->push($BOX);
@@ -179,9 +178,13 @@ sub expanded_init {
     }
     my $href = "$HREF?$ZZ";
     $Composite->href(  "$HREF?$ZZ" );
+
+	#decide whether to jump within or between species;
+	my $jump_type = $self_species eq $species_2 ? "chromosome $seqregion" : $species_2;
+
     $Composite->zmenu( {
       'caption'  => "$seqregion: $start-$end",
-      "Jump to $species_2" => "$HREF?$ZZ",
+      "Jump to $jump_type" => "$HREF?$ZZ",
       "Orientation: @{[ $F[0][1]->hstrand * $F[0][1]->strand>0 ? 'Forward' : 'Reverse' ]}"         => ''
     } );
     $self->push( $Composite );
@@ -284,8 +287,20 @@ sub compact_init {
     my $s_2   = $f->hstart;
     my $e_2   = $f->hend;
     my $href  = '';
+	#decide whether to jump within or between species;
+	my $jump_type;
+	if ($self_species eq $species_2) {
+		$jump_type = "chromosome $chr_2";
+		if ($compara) {			
+			$CONTIGVIEW_TEXT_LINK = "Go to chromosome $chr";
+		}
+	} else {
+		$jump_type = $species_2;
+	}
+
+
     my $zmenu = { 'caption'              => "$chr_2:$s_2-$e_2",
-                  "Jump to $species_2"   => "$domain/$other_species/contigview?l=$chr_2:$s_2-$e_2",
+                  "Jump to $jump_type"   => "$domain/$other_species/contigview?l=$chr_2:$s_2-$e_2",
                   $CONTIGVIEW_TEXT_LINK  => "/$self_species/contigview?l=$chr:$rs-$re" };
     unless( $domain ) {
       $href = sprintf $HREF_TEMPLATE, ($rs+$re)/2, $chr_2, ($s_2 + $e_2)/2;
