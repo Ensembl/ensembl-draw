@@ -96,7 +96,10 @@ sub expanded_init {
   my @glyphs;
   my $BLOCK = 0;
   my $HREF  = $Config->get( $type, 'linkto' ).'/'.$Config->get( $type, 'species' ). '/contigview';
-  foreach my $i (keys %id){
+
+  # sort alignments by size
+  my @s_i = sort {($id{$b}[0][1]->hend() - $id{$b}[0][1]->hstart()) <=> ($id{$a}[0][1]->hend() - $id{$a}[0][1]->hstart())} keys %id;
+  foreach my $i (@s_i){
     my @F = sort { $a->[0] <=> $b->[0] } @{$id{$i}};
     $T+=@F; ## Diagnostic report....
     my( $seqregion,$group ) = split /:/, $i;
