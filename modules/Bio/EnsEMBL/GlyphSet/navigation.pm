@@ -130,11 +130,23 @@ sub href_realign {
   return $self->realign_href( %param );
 }
 
+sub count_species {
+	my $self=shift;	
+	my %species_count;
+	foreach my $config ( @{$self->{'config'}{'other_slices'}} ) {
+		$species_count{$config->{'species'}}++;
+	}
+	return %species_count;
+}
+
+
 #get parameters for realign sprite only
 sub realign_href {
 	my( $self , %param ) = @_;
 	my $primary_species = $ENV{'ENSEMBL_SPECIES'};
 	my $C = 0;
+	# get a count of all species (to see if we are using a self_compara or not)
+	my %species_list = $self->count_species;
 	foreach( @{ $self->{'config'}{'other_slices'}} ) {
 		my $l = $self->os($C);
 		my $CS = $C ? $C : '';
@@ -143,7 +155,8 @@ sub realign_href {
 				if ($CS == 0) { #if this is the first time through (ie the primary slice) then get full details
 					$param{ "c$CS" } = join( ':', $l->{'location'}->seq_region_name, $l->{'location'}->centrepoint, $l->{'ori'} < 0 ? -1 : 1 );
 			} 
-				elsif ($l->{'species'} eq $primary_species) { #otherwise if we're working with a single species compara get chr name
+				#otherwise if we're working with a single species compara get chr name
+				elsif (grep {$species_list{$_} > 1 } keys %species_list){
 					$param{ "c$CS" } = $l->{'location'}->seq_region_name;
 				}
 			}
@@ -155,7 +168,7 @@ sub realign_href {
 			if( $l->{'location'} ) {
 				if ($CS == 0) {
 					$param{ "w$CS" } = $l->{'location'}->length;
-				} elsif ($l->{'species'} eq $primary_species) { 
+				} elsif (grep {$species_list{$_} > 1 } keys %species_list){
 					#set location of secondary slice for intraspecies compara to zero
 					#needed for create_locations_location in NewSupport.pm to work properly
 					$param{ "w$CS" } = 0;
@@ -168,6 +181,7 @@ sub realign_href {
 	my $return = "/$param{'s'}/$ENV{'ENSEMBL_SCRIPT'}?". join '&', map { $_ eq 's' || !$param{$_} ? () : "$_=$param{$_}" } sort keys %param;
 	return $return;
 }
+
 
 
 sub _init {
