@@ -92,7 +92,8 @@ sub compact_init {
  
   my $compara = $Config->{'compara'};
   my $link    = $compara ? $Config->get('_settings','opt_join_transcript') : 0;
-  my $join_col = 'blue';
+  my $join_col1 = 'blue';
+  my $join_col2 = 'chocolate1';
   my $join_z   = -10;
   foreach my $gene ( @{$self->features()} ) { # For alternate splicing diagram only draw transcripts in gene
     my $gene_strand = $gene->strand;
@@ -137,20 +138,27 @@ sub compact_init {
         $self->join_tag( $Composite2, $_, 1, $self->strand==-1 ? 0 : 1, 'grey60' );
       }
     }
+	my $tsid;
+	my @GENE_TAGS;
     if( $link && ( $compara eq 'primary' || $compara eq 'secondary' )) {
-      if( $gene_stable_id ) {
-        if( $Config->{'previous_species'} ) {
-          foreach my $msid ( $self->get_homologous_gene_ids( $gene_stable_id, $Config->{'previous_species'} ) ) {
-            $self->join_tag( $Composite2, $Config->{'slice_id'}."#$gene_stable_id#$msid", 0.5, 0.5 , $join_col, 'line', $join_z ) 
-          } 
-        }
-        if( $Config->{'next_species'} ) {
-          foreach my $msid ( $self->get_homologous_gene_ids( $gene_stable_id, $Config->{'next_species'} ) ) {
-            $self->join_tag( $Composite2, ($Config->{'slice_id'}+1)."#$msid#$gene_stable_id", 0.5, 0.5 , $join_col, 'line', $join_z ) 
-          } 
-        }
-      }
-    }
+		if( $gene_stable_id ) {
+			my $alt_alleles = $gene->get_all_alt_alleles();
+			if( $Config->{'previous_species'} ) {
+				foreach my $msid ( $self->get_homologous_gene_ids( $gene_stable_id, $Config->{'previous_species'} ) ) {
+					$self->join_tag( $Composite2, $Config->{'slice_id'}."#$gene_stable_id#$msid", 0.5, 0.5 , $join_col1, 'line', $join_z )}
+				push @GENE_TAGS, map { $Config->{'slice_id'}. "=@{[$_->stable_id]}=$gene_stable_id" } @{$alt_alleles};
+			}
+			if( $Config->{'next_species'} ) {
+				foreach my $msid ( $self->get_homologous_gene_ids( $gene_stable_id, $Config->{'next_species'} ) ) {
+					$self->join_tag( $Composite2, ($Config->{'slice_id'}+1)."#$msid#$gene_stable_id", 0.5, 0.5 , $join_col1, 'line', $join_z )}
+				push @GENE_TAGS, map { ($Config->{'slice_id'}+1). "=$gene_stable_id=@{[$_->stable_id]}" } @{$alt_alleles};
+			}
+		}
+	}
+	#join alt_alleles
+	foreach( @GENE_TAGS) {
+		$self->join_tag( $Composite2, $_, 0.5, 0.5 , $join_col2, 'line', $join_z ) ;
+	}
 
     $Composite->push($Composite2);
     my $bump_height = $h + 2;
