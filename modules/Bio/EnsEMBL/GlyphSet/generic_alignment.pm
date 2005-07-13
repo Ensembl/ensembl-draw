@@ -290,12 +290,19 @@ sub compact_init {
     my $s_2   = $f->hstart;
     my $e_2   = $f->hend;
     my $href  = '';
-	#decide whether to jump within or between species;
+	#z menu links depend on whether jumping within or between species;
 	my $jump_type;
-	if ($self_species eq $species_2) {
-		$jump_type = "chromosome $chr_2";
-		if ($compara) {			
-			$CONTIGVIEW_TEXT_LINK = "Go to chromosome $chr";
+	if (EnsWeb::species_defs->ENSEMBL_SITETYPE eq 'Vega') {
+		if ($self_species eq $species_2) {
+			$jump_type = "chromosome $chr_2";
+			if ($compara) {			
+				$CONTIGVIEW_TEXT_LINK = "Go to chromosome $chr";
+			}
+		} else {	
+			$jump_type = "$other_species chr $chr_2";
+			if ($compara) {			
+				$CONTIGVIEW_TEXT_LINK = "Go to $self_species chr $chr";
+			}
 		}
 	} else {
 		$jump_type = $species_2;
