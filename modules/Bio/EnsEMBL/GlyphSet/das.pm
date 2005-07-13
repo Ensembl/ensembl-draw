@@ -654,8 +654,8 @@ sub _init {
   ( my $das_name        = (my $das_config_key = $self->das_name() ) ) =~ s/managed_(extdas_)?//g;
   $das_config_key =~ s/^managed_das/das/;
   my $Config = $self->{'config'};
-  my $strand = $Config->get($das_config_key, 'str');
   my $Extra  = $self->{'extras'};
+  my $strand = $Config->get($das_config_key, 'str') || $Extra->{'strand'};
 
 # If strand is 'r' or 'f' then we display everything on one strand (either
 # at the top or at the bottom!
@@ -685,7 +685,7 @@ sub _init {
   my $dastype = $Extra->{'type'} || 'ensembl_location';
   my @das_features = ();
 
-  $configuration->{colour} = $Config->get($das_config_key, 'col') || $Extra->{color} || 'contigblue1';
+  $configuration->{colour} = $Config->get($das_config_key, 'col') || $Extra->{col} || 'contigblue1';
   $configuration->{depth} =  defined($Config->get($das_config_key, 'dep')) ? $Config->get($das_config_key, 'dep') : $Extra->{depth} || 4;
   $configuration->{use_style} = $Extra->{stylesheet} ? uc($Extra->{stylesheet}) eq 'Y' : uc($Config->get($das_config_key, 'stylesheet')) eq 'Y';
   $configuration->{labelling} = $Extra->{labelflag} =~ /^[ou]$/i ? 1 : 0;
