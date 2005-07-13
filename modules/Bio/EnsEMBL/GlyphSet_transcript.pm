@@ -337,7 +337,7 @@ sub expanded_init {
       }
     }
     my $join_col1 = 'blue';
-	my $join_col2 = 'darkcyan';
+	my $join_col2 = 'chocolate1';
     my $join_z   = -10;
 
     foreach my $transcript (@{$gene->get_all_Transcripts()}) {
