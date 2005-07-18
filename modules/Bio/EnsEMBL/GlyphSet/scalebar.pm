@@ -11,50 +11,49 @@ use Sanger::Graphics::Glyph::Text;
 use Sanger::Graphics::Glyph::Composite;
 use Data::Dumper;
 
-sub init_label {
-  my ($self) = @_;
-  my $chr = $self->{'config'}->get('scalebar','label');
-  if( $self->{'config'}->{'compara'} && $chr ) {
-    return if $self->strand < 0;
-    my $label = new Sanger::Graphics::Glyph::Sprite({
-      'z'             => 10,
-      'x'             => -110,
-      'y'             => 0,
-      'sprite'        => lc($chr),
-      'width'         => 100,
-      'height'        => 20,
-      'absolutex'     => 1,
-      'absolutewidth' => 1,
-      'absolutey'     => 1,
-    });
-    $self->push($label);
-    my $line = new Sanger::Graphics::Glyph::Rect({
-      'z' => 11,
-      'x' => -120,
-      'y' => 0,
-      'colour' => 'black',
-      'width' => 120,
-      'height' => 0,
-      'absolutex'     => 1,
-      'absolutewidth' => 1,
-      'absolutey'     => 1,
-    });
-    $self->join_tag( $line, "bracket", 0,0, 'black' );
-    if( $self->{'config'}->{'compara'} eq 'primary' ) {
-      $self->join_tag( $line, "bracket2", 0,0, 'rosybrown1', 'fill', -40 );
-      $self->join_tag( $line, "bracket2", 0.9,0, 'rosybrown1', 'fill', -40 );
-    }
-    $self->push($line);
-  } elsif( $chr ) {
-    my $label = new Sanger::Graphics::Glyph::Text({
-      'text'      => "$chr",	
-      'font'      => 'Small',
-      'absolutey' => 1,
-    });
-    $self->label($label);
-  }
-}
+my %SHORT = qw(
+  chromosome Chr.
+  supercontig S'ctg
+);
 
+
+sub init_label {
+	my ($self) = @_;
+	return unless $self->{'config'}->get('scalebar','label');
+	return if $self->strand < 0 ;
+	my $type = $self->{'container'}->coord_system->name();
+	my $chr = $self->{'container'}->seq_region_name(); 
+	unless( $chr =~ /^$type/i ) {
+		$type = $SHORT{lc($type)} || ucfirst( $type );
+		$chr = "$type $chr";
+	}
+	if( $self->{'config'}->{'compara'} ) {
+		$chr = join( '', map { substr($_,0,1) } split( /_/, $self->{'config'}->{'species'}),'.')." $chr";
+		my $line = new Sanger::Graphics::Glyph::Rect({
+													  'z' => 11,
+													  'x' => -120,
+													  'y' => 0,
+													  'colour' => 'black',
+													  'width' => 120,
+													  'height' => 0,
+													  'absolutex'     => 1,
+													  'absolutewidth' => 1,
+													  'absolutey'     => 1,
+													 });
+		$self->join_tag( $line, "bracket", 0,0, 'black' );
+		if( $self->{'config'}->{'compara'} eq 'primary' ) {
+			$self->join_tag( $line, "bracket2", 0,0, 'rosybrown1', 'fill', -40 );
+			$self->join_tag( $line, "bracket2", 0.9,0, 'rosybrown1', 'fill', -40 );
+		}
+		$self->push($line);
+	}
+	my $label = new Sanger::Graphics::Glyph::Text({
+												   'text'      => "$chr",	
+												   'font'      => 'Small',
+												   'absolutey' => 1,
+												  });
+	$self->label($label);
+}
 
 sub _init {
     my ($self) = @_;
