@@ -91,7 +91,7 @@ sub new {
     'processed_transcript_NOVEL'       => [ 'skyblue3', 'Novel Processed transcript' ],
     'processed_transcript_PUTATIVE'    => [ 'lightslateblue', 'Putative Processed transcript' ],
     'total_pseudogene_'           => [ 'grey70', 'Total Pseudogenes' ],
-    'pseudogene_'                 => [ 'grey70', 'Novel Pseudogene' ],
+    'pseudogene_'                 => [ 'grey70', 'Pseudogene' ],
     'processed_pseudogene_'       => [ 'grey38', 'Processed pseudogene' ],
     'unprocessed_pseudogene_'     => [ 'grey27', 'Unprocessed pseudogene' ],
     'Ig_segment_NOVEL'                 => [ 'midnightblue', 'Novel Ig segment' ],
