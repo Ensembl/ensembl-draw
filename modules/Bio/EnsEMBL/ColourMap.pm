@@ -95,7 +95,7 @@ sub new {
     'processed_pseudogene_'            => [ 'grey38', 'Processed pseudogene' ],
     'unprocessed_pseudogene_'          => [ 'grey27', 'Unprocessed pseudogene' ],
     'Ig_segment_KNOWN'                 => [ 'midnightblue', 'Known Ig segment' ],
-    'Ig_segment_NOVEL'                 => [ 'navy', 'Novel Ig segment' ],
+    'Ig_segment_NOVEL'                 => [ 'navy', 'Ig segment' ],
     'total_Ig_segment_'                => [ 'midnightblue', 'Ig segment' ],
     'Ig_pseudogene_segment_'           => [ 'mediumpurple4', 'Ig pseudogene' ],
   );
