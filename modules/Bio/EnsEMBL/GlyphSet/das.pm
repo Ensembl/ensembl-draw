@@ -263,7 +263,7 @@ sub RENDER_grouped {
     my $END   = $end > $configuration->{'length'} ? $configuration->{'length'} : $end;
 
     # Compute the length of the label...
-    my $ID    = $f->das_group_id || $f->das_id;
+    my $ID    = $f->das_group_id || $f->das_feature_label || $f->das_feature_id;
     my $label = $f->das_group_label || $ID;
     $f->{grouped_by} = $label;
     # append number of features in group
@@ -282,9 +282,8 @@ sub RENDER_grouped {
     }
 
     my $groupsize = scalar @feature_group;
-
-    my( $href, $zmenu ) = $self->gmenu( $f, $groupsize );
-
+    
+    my( $href, $zmenu ) = $f->das_group_id ? $self->gmenu( $f, $groupsize ) : $self->zmenu( $f);
 
     my $Composite = new Sanger::Graphics::Glyph::Composite({
       'y'            => 0,
@@ -615,7 +614,7 @@ sub zmenu {
   
   $ids = 50;
   if ($f->das_start && $f->das_end) {
-      my $strand = $f->das_strand ? 'Forward' : 'Reverse';
+      my $strand = ($f->das_strand > 0) ? 'Forward' : 'Reverse';
       $zmenu->{"50:FEATURE LOCATION:"} = '';
       $zmenu->{"51:   - Start: ".$f->das_segment->start} = '';
       $zmenu->{"52:   - End: ".$f->das_segment->end} = '';
@@ -744,7 +743,7 @@ sub _init {
   my $dastype = $Extra->{'type'} || 'ensembl_location';
   my @das_features = ();
 
-  $configuration->{colour} = $Config->get($das_config_key, 'col') || $Extra->{color} || 'contigblue1';
+  $configuration->{colour} = $Config->get($das_config_key, 'col') || $Extra->{color} || $Extra->{col} || 'contigblue1';
   $configuration->{depth} =  defined($Config->get($das_config_key, 'dep')) ? $Config->get($das_config_key, 'dep') : $Extra->{depth} || 4;
   $configuration->{use_style} = $Extra->{stylesheet} ? uc($Extra->{stylesheet}) eq 'Y' : uc($Config->get($das_config_key, 'stylesheet')) eq 'Y';
   $configuration->{use_score} = $Extra->{score} ? uc($Extra->{score}) eq 'Y' : uc($Config->get($das_config_key, 'score')) eq 'Y';
@@ -847,7 +846,9 @@ sub _init {
       # but should really use the greatest height in the current featureset
       
       if (exists $_->{'attrs'} && exists $_->{'attrs'}{'height'}){
-	$styleheight = $_->{'attrs'}{'height'} if $_->{'attrs'}{'height'} > $styleheight;
+	my $tmpheight = $_->{'attrs'}{'height'};
+	$tmpheight += abs $_->{'attrs'}{'yoffset'} if $_->{'attrs'}{'yoffset'} ;
+	$styleheight = $tmpheight if $tmpheight > $styleheight;
       }
     } 
     $configuration->{'h'} = $styleheight if $styleheight;
@@ -991,6 +992,7 @@ sub get_symbol {
     my ($self, $style, $featuredata, $y_offset) = @_;
     my $styleattrs = $style->{'attrs'};
     my $glyph_symbol = $style->{'glyph'} || 'box';
+    $y_offset -= $styleattrs->{'yoffset'}||0;
 
     # Load the glyph symbol module that we need to draw this style
     $glyph_symbol = 'Bio::EnsEMBL::Glyph::Symbol::'.$glyph_symbol;
