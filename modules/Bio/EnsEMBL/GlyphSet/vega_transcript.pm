@@ -9,37 +9,17 @@ our %VEGA_TO_SHOW_ON_VEGA;
 
 sub features {
     my ($self) = @_;
-    my $author = $self->my_config('author');
-	my $gene_adaptor = $self->{'container'}->adaptor->db->get_db_adaptor('vega')->get_GeneAdaptor;
-    my $genes = [];
-    if ($author) {
-        # if author is defined in UserConfig, fetch only transcripts by this
-        # author
-        # check data availability first
-        
-        my $chr = $self->{'container'}->seq_region_name;
-        my $avail = (split(/ /, $self->my_config('available')))[1]
-                    . "." . $self->{'container'}->seq_region_name;
-        return ([]) unless($self->species_defs->get_config(
-                    $self->{'container'}{'_config_file_name_'}, 'DB_FEATURES')->{uc($avail)});
-        
-        $genes = $gene_adaptor->fetch_all_by_Slice_and_author($self->{'container'}, $author, 'otter');
-    } else {
-        # else fetch all otter transcripts
-        $genes = $self->{'container'}->get_all_Genes('otter');
+    
+    my $genes = $self->{'container'}->get_all_Genes($self->my_config('logic_name'));
+    
+    # make a list of gene types for the legend
+    foreach my $g (@$genes) {
+        my $status = $g->status;
+        my $biotype = $g->biotype;
+        $VEGA_TO_SHOW_ON_VEGA{"$biotype".'_'."$status"}++;
     }
-    # determine transcript type
-    # $gene_adaptor->set_transcript_type($genes);
-
-	#make a list of gene types for the legend
-	foreach my $g (@$genes) {
-		my $status = $g->status;
-		my $biotype = $g->biotype;
-		$VEGA_TO_SHOW_ON_VEGA{"$biotype".'_'."$status"}++;
-	}
-
  
-   return $genes;
+    return $genes;
 }
 
 sub my_label {
@@ -169,7 +149,10 @@ sub legend {
 }
 
 
-sub error_track_name { return 'Vega transcripts'; }
+sub error_track_name { 
+    my $self = shift;
+    return $self->my_config('track_label');
+}
 
 1;
 
