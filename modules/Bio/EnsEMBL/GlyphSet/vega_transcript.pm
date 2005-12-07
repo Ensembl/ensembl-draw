@@ -54,6 +54,7 @@ sub gene_href {
 sub zmenu {
     my ($self, $gene, $transcript) = @_;
     my $tid = $transcript->stable_id();
+	my $author =  shift(@{$transcript->get_all_Attributes('vega_author')})->value;
     my $translation = $transcript->translation;
     my $pid = $translation->stable_id() if $translation;
     my $gid = $gene->stable_id();
@@ -63,11 +64,12 @@ sub zmenu {
         'caption' 	    => $self->my_config('zmenu_caption'),
         "00:$id"	    => "",
         '01:Type: '.$type => "",
-    	"02:Gene:$gid"   => "/@{[$self->{container}{_config_file_name_}]}/geneview?gene=$gid;db=core",
-        "03:Transcr:$tid"=> "/@{[$self->{container}{_config_file_name_}]}/transview?transcript=$tid;db=core",
-        "04:Exon:$tid"	 => "/@{[$self->{container}{_config_file_name_}]}/exonview?transcript=$tid;db=core",
-        '05:Supporting evidence'    => "/@{[$self->{container}{_config_file_name_}]}/exonview?transcript=$tid;db=core#evidence",
-        '08:Export cDNA'  => "/@{[$self->{container}{_config_file_name_}]}/exportview?option=cdna;action=select;format=fasta;type1=transcript;anchor1=$tid",
+		'02:Author: '.$author => "",
+    	"03:Gene:$gid"   => "/@{[$self->{container}{_config_file_name_}]}/geneview?gene=$gid;db=core",
+        "04:Transcr:$tid"=> "/@{[$self->{container}{_config_file_name_}]}/transview?transcript=$tid;db=core",
+        "05:Exon:$tid"	 => "/@{[$self->{container}{_config_file_name_}]}/exonview?transcript=$tid;db=core",
+        '06:Supporting evidence'    => "/@{[$self->{container}{_config_file_name_}]}/exonview?transcript=$tid;db=core#evidence",
+        '09:Export cDNA'  => "/@{[$self->{container}{_config_file_name_}]}/exportview?option=cdna;action=select;format=fasta;type1=transcript;anchor1=$tid",
     };
 
     if ($pid) {
@@ -80,15 +82,18 @@ sub zmenu {
 
 sub gene_zmenu {
     my ($self, $gene) = @_;
-
     my $gid = $gene->stable_id();
     my $id   = $gene->external_name() eq '' ? $gid : $gene->external_name();
 	my $type = $self->format_vega_name($gene);
+	#hack to get the author off the first transcript (rather than the gene)
+	my $f_trans = shift(@{$gene->get_all_Transcripts()});
+	my $author =  shift(@{$f_trans->get_all_Attributes('vega_author')})->value;
     my $zmenu = {
         'caption' 	    => $self->my_config('zmenu_caption'),
         "00:$id"	    => "",
         '01:Type: ' . $type => "",
-        "02:Gene:$gid"  => qq(/@{[$self->{container}{_config_file_name_}]}/geneview?gene=$gid;db=core),
+		'02:Author: '.$author => "",
+        "03:Gene:$gid"  => qq(/@{[$self->{container}{_config_file_name_}]}/geneview?gene=$gid;db=core),
     };
     return $zmenu;
 }
