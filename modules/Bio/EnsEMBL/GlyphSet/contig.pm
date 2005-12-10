@@ -338,54 +338,6 @@ sub _init_non_assembled_contig {
     'absolutex' => 1,'absolutewidth'=>1,
   }) );
     
-  my $Container_size_limit = $Config->get('_settings', 'default_vc_size');
-  # only draw a red box if we are in contigview top and there is a 
-  # detailed display
-  my $rbs = $Config->get('_settings','red_box_start');
-  my $rbe = $Config->get('_settings','red_box_end');
-
- if ($Config->get('_settings','draw_red_box') eq 'yes') { 
-
-      my $global_start2 = $global_start;
-      my $gwidth = $rbe-$rbs+1;
-
-      if ($Container->{__type__} eq 'alignslice') {
-	  my $hs = $Container->{slice_mapper_pairs}->[0];
-	  $global_start2 = $hs->{slice}->{start};
-	  my $s1 = $rbs - $global_start2;
-	  my $cigar_line = $Container->get_cigar_line();
-	  my @inters = split (/[MD]/, $cigar_line);
-	  my $ms = 0;
-	  my $ds = 0;
-	  while (@inters) {
-	      $ms += (shift (@inters) || 1);
-	      last if ($ms > $s1);
-	      $ds += (shift (@inters) || 1);
-	  }
-	  $rbs += $ds;
-      }
-      
-   
-  
-
-    # only draw focus box on the correct display...
-    $self->unshift( new Sanger::Graphics::Glyph::Rect({
-      'x'            => $rbs - $global_start2,
-      'y'            => $ystart - 4 ,
-      'width'        => $gwidth,
-      'height'       => $h + 16,
-      'bordercolour' => $red,
-      'absolutey'    => 1,
-    }) );
-    $self->unshift( new Sanger::Graphics::Glyph::Rect({
-      'x'            => $rbs - $global_start2,
-      'y'            => $ystart - 3 ,
-      'width'        => $gwidth,
-      'height'       => $h + 14,
-      'bordercolour' => $red,
-      'absolutey'    => 1,
-    }) );
-  } 
 
 # In case of AlignSlice don't display the navigation popup menu for the contig intervals - the same functionality can be found in alignscalebar.
 # Anyway a better way for navigation is on its way (at least we hope :)
