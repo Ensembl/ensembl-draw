@@ -250,7 +250,7 @@ sub zmenu {
 	my $tid = $transcript->stable_id();
 	my $author;
 	if ( defined (@{$transcript->get_all_Attributes('author')}) ) {
-		$author =  shift(@{$transcript->get_all_Attributes('author')})->value || 'not found';
+		$author =  shift( @{$transcript->get_all_Attributes('author')} )->value || 'unknown';
 	}
 	else {
 		$author =   'not defined';
@@ -301,7 +301,7 @@ sub gene_zmenu {
 	my $type = $self->format_vega_name($gene);
 	my $author;
 	if ( defined (@{$gene->get_all_Attributes('author')}) ) {
-		$author =  shift(@{$gene->get_all_Attributes('author')})->value || 'not found';
+		$author =  shift( @{$gene->get_all_Attributes('author')} )->value || 'unknown';
 	}
 	else {
 		$author =   'not defined';
