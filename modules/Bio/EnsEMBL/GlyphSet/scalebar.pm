@@ -28,7 +28,7 @@ sub init_label {
     $chr = "$type $chr";
   }
   if( $self->{'config'}->{'compara'} ) {
-	  if( length($chr) > 13 ) { 
+	  if( length($chr) > 9 ) { 
 		$chr = $chr_raw;
 	  }
     $chr = join( '', map { substr($_,0,1) } split( /_/, $self->{'config'}->{'species'}))." $chr";

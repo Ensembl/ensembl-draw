@@ -23,7 +23,7 @@ sub init_label {
 	my $chr_raw = $chr;
     $chr = "$type $chr" unless $chr =~ /^$type/i;
     if( $self->{'config'}->{'multi'} ) {
-	  if( length($chr) > 13 ) { 
+	  if( length($chr) > 9 ) { 
 		$chr = $chr_raw;
 	  }
       $chr = join( '', map { substr($_,0,1) } split( /_/, $self->{'config'}->{'species'}))." $chr";
