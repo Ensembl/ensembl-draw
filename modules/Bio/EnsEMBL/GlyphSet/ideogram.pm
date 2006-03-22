@@ -20,9 +20,13 @@ sub init_label {
 
     $type = $SHORT{lc($type)} || ucfirst( $type );
     my $chr = $self->{'container'}->seq_region_name();
+	my $chr_raw = $chr;
     $chr = "$type $chr" unless $chr =~ /^$type/i;
     if( $self->{'config'}->{'multi'} ) {
-       $chr = join( '', map { substr($_,0,1) } split( /_/, $self->{'config'}->{'species'}),'.')." $chr";
+	  if( length($chr) > 13 ) { 
+		$chr = $chr_raw;
+	  }
+      $chr = join( '', map { substr($_,0,1) } split( /_/, $self->{'config'}->{'species'}))." $chr";
     }
 
     my $label = new Sanger::Graphics::Glyph::Text({
