@@ -259,7 +259,7 @@ sub zmenu {
     my $pid = $translation->stable_id() if $translation;
     my $gid = $gene->stable_id();
     my $id   = $transcript->external_name() eq '' ? $tid : ( $transcript->external_db.": ".$transcript->external_name() );
-	my $type = $self->format_vega_name($gene,$transcript);
+	my $type = $self->format_vega_name($gene);
     my $zmenu = {
         'caption' 	    => $self->my_config('zmenu_caption'),
         "00:$id"	    => "",
@@ -327,7 +327,7 @@ sub text_label {
     my $Config = $self->{config};
     my $short_labels = $Config->get('_settings','opt_shortlabels');
     unless( $short_labels ){
-        my $type = $self->format_vega_name($gene,$transcript);
+        my $type = $self->format_vega_name($gene);
         $id .= " \n$type ";
     }
     return $id;
