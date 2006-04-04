@@ -109,13 +109,16 @@ sub get_hap_alleles_and_orthologs_urls {
 	my @orth_details;
 	foreach my $other_species (keys %species_shown) {
 		next if ($this_species eq $other_species);
+		eval {
 		if (my @orthologs = $self->get_ortholog_gene_details($this_gene_id,$other_species)) {
 			foreach my $ortholog (@orthologs) {
-				#save details of orthologs on the slices shown onthe display
+				#save details of orthologs on the slices shown on the display
+			SLICE:
 				foreach my $t (@all_slices) {
-					next if ($this_species eq $t->{'real_species'});
-					if ( my $ortholog_slice = $t->{'slice'}{'adaptor'}->fetch_by_gene_stable_id($ortholog->[0]) ) {
-						push @orth_details, {
+					next SLICE if ($this_species eq $t->{'real_species'});
+						eval {
+							if ( my $ortholog_slice = $t->{'slice'}{'adaptor'}->fetch_by_gene_stable_id($ortholog->[0]) ) {
+								push @orth_details, {
 											 species          => $t->{'real_species'},
 											 slice_name       => $ortholog_slice->{'seq_region_name'},
 											 gene_start       => $ortholog_slice->{'start'},
@@ -123,10 +126,12 @@ sub get_hap_alleles_and_orthologs_urls {
 											 ortholog_id      => $ortholog->[0],
 											 ortholog_details => $ortholog->[1],
 											};
-					}
+							}
+					};
 				}
 			}
-		}		
+		}
+	}
 	}
 
 	#check each slice to:
@@ -172,9 +177,10 @@ sub get_hap_alleles_and_orthologs_urls {
 
 sub get_ortholog_gene_details {
 	my( $self, $gene_id, $species ) = @_;
-	my $compara_db = $self->{'container'}->adaptor->db->get_db_adaptor('compara');
+	Bio::EnsEMBL::Registry->add_alias("Multi","compara");
+	my $compara_db = Bio::EnsEMBL::Registry->get_DBAdaptor("compara","compara");
 	my $ma         = $compara_db->get_MemberAdaptor;
-	my $qy_member = $ma->fetch_by_source_stable_id("ENSEMBLGENE",$gene_id);
+	my $qy_member  = $ma->fetch_by_source_stable_id("ENSEMBLGENE",$gene_id);
 	return () unless (defined $qy_member);
 	my $ha = $compara_db->get_HomologyAdaptor;
 	my @orthologs;
