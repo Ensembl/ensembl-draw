@@ -382,6 +382,7 @@ sub features {
   (my $species_2 = $species) =~ s/_/ /; 
   my $assembly = $self->species_defs->other_species($species,'ENSEMBL_GOLDEN_PATH');
   my $START = time();
+  Bio::EnsEMBL::Registry->add_alias("Multi","compara");
   my $T = $self->{'container'}->get_all_compara_DnaAlignFeatures( $species_2, $assembly, $method );
   warn "generic_alignment - $method $species ",time()-$START;
   return $T;
