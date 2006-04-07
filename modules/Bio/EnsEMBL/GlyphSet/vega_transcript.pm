@@ -136,6 +136,10 @@ sub get_hap_alleles_and_orthologs_urls {
 
 	#check each slice to:
 	#(i) get the context (needed so as to not change the size of the region displayed after navigation)
+#######
+
+#this code not actually used since probably leads to confusion, and also can create a bug with very small slices 
+
 	#(ii) see if there's an ortholog on it, and if so add to the URL
 	my $context;
 	foreach my $slice (@all_slices) {
@@ -160,8 +164,11 @@ sub get_hap_alleles_and_orthologs_urls {
 			$no++;
 		}
 	}
-	#add the context argument to the URL if either orthologs or haplotype alleles have been found
-	$href .= ";context=$context" if ($href);
+	#add the context argument to the URL if either orthologs or haplotype alleles have been found	
+	#	$href .= ";context=$context" if ($href);
+######	
+
+	$href .= ";context=1000" if ($href);
 	return $href;
 }
 
@@ -176,6 +183,7 @@ sub get_hap_alleles_and_orthologs_urls {
 =cut
 
 sub get_ortholog_gene_details {
+	use Data::Dumper;
 	my( $self, $gene_id, $species ) = @_;
 	Bio::EnsEMBL::Registry->add_alias("Multi","compara");
 	my $compara_db = Bio::EnsEMBL::Registry->get_DBAdaptor("compara","compara");
@@ -187,8 +195,9 @@ sub get_ortholog_gene_details {
 	foreach my $homology (@{$ha->fetch_by_Member_paired_species($qy_member, $species)}){
 		foreach my $member_attribute (@{$homology->get_all_Member_Attribute}) {
 			my ($member, $attribute) = @{$member_attribute};
-			next if ($member->stable_id eq $qy_member->stable_id);
-			push @orthologs, [$member->stable_id,$attribute];
+			my $member_stable_id = $member->stable_id;
+			next if ($member_stable_id eq $qy_member->stable_id);
+			push @orthologs, [$member_stable_id,$attribute];
 		}
 	}
 	return @orthologs;
