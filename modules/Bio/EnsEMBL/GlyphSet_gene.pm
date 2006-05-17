@@ -240,5 +240,25 @@ sub legend {
 }
 
 
+=head2 format_vega_name
+
+  Arg [1]    : $self
+  Arg [2]    : gene object
+  Example    : my $type = $self->format_vega_name($g);
+  Description: retrieves status and biotype of a gene, and formats it for display using the Colourmap
+  Returntype : string
+
+=cut
+
+sub format_vega_name {
+	my ($self,$gene) = @_;
+	my ($status,$biotype);
+	my %gm = $self->{'config'}->colourmap()->colourSet('vega_gene');
+	$status = $gene->confidence;
+	$biotype = $gene->biotype();
+	my $t = $biotype.'_'.$status;
+	my $label = $gm{$t}[1];
+	return $label;
+}
 
 1;

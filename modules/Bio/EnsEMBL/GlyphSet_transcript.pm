@@ -103,7 +103,7 @@ sub compact_init {
   my $link    = $compara ? $Config->get('_settings','opt_join_transcript') : 0;
   my $join_col1 = 'blue';
   my $join_col2 = 'chocolate1';
-  my $join_z   = -10;
+  my $join_z   = 1;
   foreach my $gene ( @{$self->features()} ) { # For alternate splicing diagram only draw transcripts in gene
     my $gene_strand = $gene->strand;
     my $gene_stable_id = $gene->stable_id;
@@ -365,7 +365,7 @@ sub expanded_init {
     }
     my $join_col1 = 'blue';
 	my $join_col2 = 'chocolate1';
-    my $join_z   = -10;
+    my $join_z   = 1;
 
     foreach my $transcript (@{$gene->get_all_Transcripts()}) {
       next if $transcript->start > $length ||  $transcript->end < 1;
