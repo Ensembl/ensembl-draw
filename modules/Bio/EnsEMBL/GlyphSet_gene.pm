@@ -35,8 +35,8 @@ sub init_label {
 sub my_label {    return 'Sometype of Gene'; }
 sub my_captions { return {}; }
 
-sub ens_ID {      return $_[1]->stable_id; }
-sub gene_label {  return $_[1]->stable_id; }
+sub ens_ID { return $_[1]->stable_id; }
+sub gene_label { return $_[1]->stable_id; }
 
 sub _init {
   my ($self) = @_;
@@ -88,7 +88,7 @@ sub _init {
    my $genes = $self->features( $logic_name, $database );
    foreach my $g (@$genes) {
     my $gene_label = $self->gene_label( $g );
-warn ">>> ", $g->analysis->logic_name, ' -- ', $g->biotype, ' -- ' , $g->status,' <<<';
+#warn ">>> ", $g->analysis->logic_name, ' -- ', $g->biotype, ' -- ' , $g->status,' <<<';
     my $GT         = $self->gene_col( $g );
        $GT =~ s/XREF//g;
    warn $GT unless $colours->{$GT};
@@ -131,6 +131,7 @@ warn ">>> ", $g->analysis->logic_name, ' -- ', $g->biotype, ' -- ' , $g->status,
 	"length: @{[$chr_end-$chr_start+1]}"  => ''
       }; 
       if( $ens_ID ne '' ) {
+		$database ||= 'core';
         $Z->{"Gene: $ens_ID"} = "/@{[$self->{container}{_config_file_name_}]}/geneview?gene=$ens_ID;db=$database"; 
         $HREF= "/@{[$self->{container}{_config_file_name_}]}/geneview?gene=$ens_ID;db=$database";
         $rect->{'href'}  = $HREF;
