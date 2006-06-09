@@ -76,7 +76,7 @@ sub _init {
       my $end        = $segment->from_end;
       my $ctg_slice  = $segment->to_Slice;
       my $ORI        = $ctg_slice->strand;
-warn $ctg_slice->seq_region_name,' ... ', $ctg_slice->coord_system->name, ' ... ';
+#warn $ctg_slice->seq_region_name,' ... ', $ctg_slice->coord_system->name, ' ... ';
       my $feature = { 'start' => $start, 'end' => $end, 'name' => $ctg_slice->seq_region_name };
 
       $feature->{'locations'}{ $ctg_slice->coord_system->name } = [ $ctg_slice->seq_region_name, $ctg_slice->start, $ctg_slice->end, $ctg_slice->strand  ];
