@@ -222,6 +222,13 @@ sub _init_non_assembled_contig {
           my $full_name = $name;
 	  $name =~ s/\.\d+$// if $_ eq 'clone';
           $label ||= $tile->{'locations'}->{$_}->[0];
+          my $species_sr7= $Config->species_defs->SPECIES_COMMON_NAME;
+          if($species_sr7 eq 'Zebrafish'){
+            if($label=~/(.+\.\d+)\.\d+\.\d+/){
+              $label= $1;
+            }
+          }
+          
           (my $T=ucfirst($_))=~s/contig/Contig/g;
           $glyph->{'zmenu'}{"$POS:$T $name"} ='' unless $_ eq 'contig';
           $POS++;
