@@ -65,13 +65,11 @@ sub init_label {
 # Render ungrouped features
 
 sub RENDER_simple {
-
   my( $self, $configuration ) = @_;
   my $empty_flag = 1;
 
   # flag to indicate if not all features have been displayed 
   my $more_features = 0;
-
   foreach my $f( sort { 
     my $c=0;
     my $astyle = $self->get_featurestyle ($a, $configuration);
@@ -79,7 +77,6 @@ sub RENDER_simple {
     $c = ($astyle->{'attrs'}{'zindex'}||0) <=> ($bstyle->{'attrs'}{'zindex'}||0) if exists(${$astyle}{'attrs'}{'zindex'}) or exists(${$bstyle}{'attrs'}{'zindex'});
     $c==0 ? $a->das_start() <=> $b->das_start()  : $c;
   } @{$configuration->{'features'}} ){
-
 
 
     # Handle DAS errors first
@@ -201,14 +198,26 @@ sub RENDER_simple {
 
 
 sub RENDER_grouped {
+#  warn "grouped";
   my( $self, $configuration ) = @_; 
   my %grouped;
 
   my $old_end = -1e9;
   my $empty_flag = 1;
 
+  use Data::Dumper;
+  $Data::Dumper::Indent = 1;
+
+#warn Dumper($configuration);
+
   ## Loop over features and hash into groups
+
+
   foreach my $f (@{$configuration->{'features'}}){
+
+
+
+#warn "f = 2",Dumper($f);
     # Handle DAS errors first
     if($f->das_type_id() eq '__ERROR__') {
       $self->errorTrack( 'Error retrieving '.$self->{'extras'}->{'caption'}.' features ('.$f->das_id.')' );
@@ -221,13 +230,16 @@ sub RENDER_grouped {
 
     # build a hash of features, keyed by id if ungrouped, or G:group_id if
     # grouped
-
+warn "0";
     if ($f->das_groups) {
+      warn "1";
 	foreach my $group ($f->das_groups) {
 	    my $key  = $group->{'group_label'} || $group->{'group_id'};
+	    warn "key = $key";
 	    push @{$grouped{$key}}, $f;
 	}
     } else {
+      warn "2";
 	my $key = $f->das_id;
 	next unless $key;
 	push @{$grouped{$key}}, $f;
@@ -235,6 +247,8 @@ sub RENDER_grouped {
 
     $empty_flag &&= 0; # We have at least one feature
   } # end group hashing
+
+warn Dumper(\%grouped);
 
   if($empty_flag) {
     $self->errorTrack( 'No '.$self->{'extras'}->{'caption'}.' features in this region' );
