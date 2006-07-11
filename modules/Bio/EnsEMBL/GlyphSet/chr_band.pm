@@ -28,7 +28,6 @@ sub init_label {
   }
   my $band_present = 0;
   foreach my $band (@{$self->{'container'}->get_all_KaryotypeBands()}) {
-warn ref($band);
 	$band_present = 1 if $band->name();
   }
   my $label = $band_present ? "$chr band" : "$chr";
