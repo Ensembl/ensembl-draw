@@ -50,7 +50,7 @@ sub features {
     my @snps = 
         map { $_->[1] } 
         sort { $a->[0] <=> $b->[0] }
-        map { [ $ct{$_->display_consequence} * 1e9 + $_->start, $_ ] }
+        map { [ $ct{$_->get_consequence_type} * 1e9 + $_->start, $_ ] }
             @{$self->{'container'}->get_all_ExternalFeatures('GlovarSNP')};
 
     if(@snps) {
@@ -85,7 +85,7 @@ sub zmenu {
       $pos = "$start&nbsp;-&nbsp;$end";
     }
     my $status = join ", ", @{$f->get_all_validation_states};
-    my $cons = join ", ", @{ $f->get_consequence_type || [] };
+    my $cons = $f->get_consequence_type || '';
     $cons = '-' if ($cons eq '_');
 
     my %zmenu = ( 
@@ -119,6 +119,22 @@ sub zmenu {
     }
 
     return \%zmenu;
+}
+
+
+sub colour {
+  my ($self, $f) = @_;
+
+  my $consequence_type = $f->get_consequence_type();
+    unless($self->{'config'}->{'variation_types'}{$consequence_type}) {
+      push @{ $self->{'config'}->{'variation_legend_features'}->{'variations'}->{'legend'}},
+	$self->{'colours'}{$consequence_type}[1],  $self->{'colours'}{$consequence_type}[0];
+
+      $self->{'config'}->{'variation_types'}{$consequence_type} = 1;
+    }
+    return $self->{'colours'}{$consequence_type}[0],
+      $self->{'colours'}{$consequence_type}[2],
+	$f->start > $f->end ? 'invisible' : '';
 }
 
 1;
