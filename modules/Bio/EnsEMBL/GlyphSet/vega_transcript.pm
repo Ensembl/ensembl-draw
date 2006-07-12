@@ -363,6 +363,7 @@ sub gene_text_label {
 
 sub legend {
     my ($self, $colours) = @_;
+	warn "I didn't think this was used anymore";
 	my $labels;
 	if (%VEGA_TO_SHOW_ON_VEGA) {
 		foreach my $k (keys %VEGA_TO_SHOW_ON_VEGA) {
@@ -392,6 +393,23 @@ sub legend {
 	}
 }
 
+sub colour {
+  my ($self, $gene, $transcript, $colours, %highlights) = @_;
+  my $highlight = undef;
+  my $type = $gene->biotype.'_'.$gene->status;
+  my @colour = @{$colours->{$type}||['black','transcript']};
+  if(exists $highlights{lc($transcript->stable_id)}) {
+    $highlight = $colours->{'superhi'};
+  } elsif(exists $highlights{lc($transcript->external_name)}) {
+    $highlight = $colours->{'superhi'};
+  } elsif(exists $highlights{lc($gene->stable_id)}) {
+    $highlight = $colours->{'hi'};
+  } elsif( my $ccds_att = $transcript->get_all_Attributes('ccds')->[0] ) {
+    $highlight = $colours->{'ccdshi'};
+  }
+
+  return (@colour, $highlight); 
+}
 
 sub error_track_name { 
     my $self = shift;
