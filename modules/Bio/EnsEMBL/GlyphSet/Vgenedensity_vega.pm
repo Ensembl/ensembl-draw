@@ -8,9 +8,9 @@ sub init_label {
     my $self = shift;
     my $Config = $self->{'config'};
     my $track = $self->check;
-    my @logic_names = @{ $Config->get($track, 'logicname') };
-    my @labels = @{ $Config->get($track, 'label') };
-    my @colours = @{ $Config->get($track, 'colour') };
+    my @logic_names =  $Config->get($track, 'logicname');
+    my @labels = @{$Config->get($track, 'label')};
+    my @colours = @{$Config->get($track, 'colour')};
     
     my $chr = $self->{'container'}->{'chr'};
     my $slice_adapt   = $self->{'container'}->{'sa'};
@@ -21,14 +21,14 @@ sub init_label {
     foreach my $label (@labels) {
         my $logic_name = shift @logic_names;
         my $colour = shift @colours;
-	my $density;
+		my $density;
         if ($logic_name) {
             $density = $density_adapt->fetch_Featureset_by_Slice($chr_slice, $logic_name, 150, 1);
             $last_max = $density->max_value;
         }
 	
 	## draw label only if there is genes of this type or if we have
-        ## a two-line label
+    ## a two-line label
 	if ($last_max) { 
             my $text = new Sanger::Graphics::Glyph::Text({
                 'text'      => $label,
@@ -47,7 +47,7 @@ sub _init {
     my $self = shift;
     my $Config = $self->{'config'};
     my $track = $self->check;
-    my @logic_names = @{ $Config->get($track, 'logicname') };
+    my @logic_names =  $Config->get($track, 'logicname');
     my @colours = @{ $Config->get($track, 'colour') };
 
     my $chr = $self->{'container'}->{'chr'};
