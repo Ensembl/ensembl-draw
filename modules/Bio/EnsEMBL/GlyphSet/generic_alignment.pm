@@ -89,6 +89,7 @@ sub expanded_init {
   my $BLOCK = 0;
   my $script = $ENV{'ENSEMBL_SCRIPT'} eq 'multicontigview' ? 'contigview' : $ENV{'ENSEMBL_SCRIPT'};
   my $SHORT = $self->species_defs->ENSEMBL_SHORTEST_ALIAS->{ $Config->get( $type, 'species' ) };
+  my $domain = $Config->get( $type, 'linkto' );
   my $HREF  = $Config->get( $type, 'linkto' )."/$SHORT/$script";
 
   # sort alignments by size
@@ -227,13 +228,14 @@ sub expanded_init {
 			$jump_type = $species_2;
 		}
 
-        $zmenu->{"02:Jump to $jump_type"}    = "$HREF?l=$chr_2:$s_2-$e_2";
-		$zmenu->{"03:$CONTIGVIEW_TEXT_LINK"} = "$HREF?l=$chr:$rs-$re";
 		my $short_self    = $Config->species_defs->ENSEMBL_SHORTEST_ALIAS->{ $self_species };
 		my $short_other   = $Config->species_defs->ENSEMBL_SHORTEST_ALIAS->{ $other_species };
 		my $HREF_TEMPLATE = "/$short_self/dotterview?c=$chr:%d;s1=$other_species;c1=%s:%d";
 		my $COMPARA_HTML_EXTRA = '';
 		my $MCV_TEMPLATE  = "/$short_self/multicontigview?c=%s:%d;w=%d;s1=$short_other;c1=%s:%d;w1=%d$COMPARA_HTML_EXTRA";
+        $zmenu->{"02:Jump to $jump_type"}    = "$domain/$short_other/contigview?l=$chr_2:$s_2-$e_2";
+		$zmenu->{"03:$CONTIGVIEW_TEXT_LINK"} = "/$short_self/contigview?l=$chr:$rs-$re";
+
 		my $href = sprintf $HREF_TEMPLATE, ($rs+$re)/2, $chr_2, ($s_2 + $e_2)/2;
 		$zmenu->{ '04:Dotter' }  = $href;
 		$zmenu->{'05:Alignment'} = "alignview?class=DnaDnaAlignFeature;l=$chr:$rs-$re;s1=$other_species;l1=$chr_2:$s_2-$e_2;type=$METHOD";
@@ -259,7 +261,6 @@ sub expanded_init {
 		}
 		$zmenu->{ "06:$MULTICONTIGVIEW_TEXT_LINK" } = sprintf( $MCV_TEMPLATE, $chr, ($rs+$re)/2, $WIDTH/2, $chr_2, ($s_2+$e_2)/2, $WIDTH/2 );
     } else {
-
 		$zmenu->{"02:Jump to $species_2"} = "$HREF?$ZZ";
 	}
     $Composite->zmenu($zmenu);
