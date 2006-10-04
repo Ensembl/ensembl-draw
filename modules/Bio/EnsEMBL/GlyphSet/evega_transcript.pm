@@ -91,26 +91,29 @@ sub zmenu {
   my $pid = $translation->stable_id() if $translation;
   my $gid = $gene->stable_id();
   my $id   = $transcript->external_name() eq '' ? $tid : $transcript->external_name();
-  my $type = $self->format_vega_name($gene);
-  $type =~ s/HUMACE-//g;
+  my $gtype = $self->format_vega_name($gene);
+  my $ttype = $self->format_vega_name($gene,$transcript);
+
+  $gtype =~ s/HUMACE-//g;
   my $ExtUrl = EnsEMBL::Web::ExtURL->new($self->{'config'}->{'species'}, $self->species_defs);
   
   my $zmenu = {
     'caption'             => "Vega Gene",
     "00:$id"              => '',
-    "01:Type: ".$type     => '',
+    "01:Transcript class: ".$ttype     => '',
+    "02:Gene type: ".$gtype     => '',
     "03:Author: ".$author => '',
-    "03:Gene:$gid"        => "/@{[$self->{container}{_config_file_name_}]}/geneview?gene=$gid;db=vega",
-    "04:Transcr:$tid"     => "/@{[$self->{container}{_config_file_name_}]}/transview?transcript=$tid;db=vega",
+    "04:Gene:$gid"        => "/@{[$self->{container}{_config_file_name_}]}/geneview?gene=$gid;db=vega",
+    "05:Transcr:$tid"     => "/@{[$self->{container}{_config_file_name_}]}/transview?transcript=$tid;db=vega",
 
-    "05:Export cDNA"      => "/@{[$self->{container}{_config_file_name_}]}/exportview?option=cdna;action=select;format=fasta;type1=transcript;anchor1=$tid",
-    "07:View in Vega"     => $ExtUrl->get_url('Vega_gene', $gid),
+    "07:Export cDNA"      => "/@{[$self->{container}{_config_file_name_}]}/exportview?option=cdna;action=select;format=fasta;type1=transcript;anchor1=$tid",
+    "10:View in Vega"     => $ExtUrl->get_url('Vega_transcript', $tid),
   };
   
   if($pid) {
-  $zmenu->{"03:Peptide:$pid"}=
+  $zmenu->{"06:Peptide:$pid"}=
     qq(/@{[$self->{container}{_config_file_name_}]}/protview?peptide=$pid;db=vega);
-  $zmenu->{'05:Export Peptide'}=
+  $zmenu->{'08:Export Peptide'}=
     qq(/@{[$self->{container}{_config_file_name_}]}/exportview?option=peptide;action=select;format=fasta;type1=peptide;anchor1=$pid);  
   }
   
@@ -135,7 +138,7 @@ sub gene_zmenu {
   my $zmenu = {
     'caption'             => "Vega Gene",
     "00:$id"	          => "",
-    '01:Type: ' . $type   => "",
+    '01:Gene type: ' . $type   => "",
 	'02:Author: '.$author => "",
     "03:Gene:$gid"        => qq(/@{[$self->{container}{_config_file_name_}]}/geneview?gene=$gid;db=vega),
     "07:View in Vega"     => $ExtUrl->get_url('Vega_gene', $gid),
@@ -150,7 +153,7 @@ sub text_label {
   my $Config = $self->{config};
   my $short_labels = $Config->get('_settings','opt_shortlabels');
   unless( $short_labels ){
-    my $type = $self->format_vega_name($gene);
+    my $type = $self->format_vega_name($gene,$transcript);
     $id .= " \n$type ";
   }
   return $id;
@@ -244,15 +247,16 @@ sub format_vega_name {
 	my ($self,$gene,$trans) = @_;
 	my ($status,$biotype);
 	my %gm = $self->{'config'}->colourmap()->colourSet('vega_gene');
+	my ($t,$label);
 	if ($trans) {
-		$status = $trans->status()||$gene->status;
-		$biotype = $trans->biotype()||$gene->biotype();
+		$label = $trans->biotype()||$gene->biotype();
+		$label =~ s/_/ /;
 	} else {
 		$status = $gene->status;
 		$biotype = $gene->biotype();
+		$t = $biotype.'_'.$status;
+		$label = $gm{$t}[1];
 	}
-	my $t = $biotype.'_'.$status;
-	my $label = $gm{$t}[1];
 	return $label;
 }
 
