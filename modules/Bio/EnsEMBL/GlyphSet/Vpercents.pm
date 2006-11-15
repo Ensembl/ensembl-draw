@@ -11,9 +11,6 @@ use Sanger::Graphics::Glyph::Line;
 sub init_label {
     my ($self) = @_;
     my $Config = $self->{'config'};	
-    my $repeats = $da->fetch_Featureset_by_Slice($chr_slice, 'PercentageRepeat',150,1); 
-    my $gc      = $da->fetch_Featureset_by_Slice($chr_slice, 'PercentGC', 150,1);
-    return unless $repeats->size && $gc->size;
     my $label = new Sanger::Graphics::Glyph::Text({
 		'text'      => '% GC',
 		'font'      => 'Small',
