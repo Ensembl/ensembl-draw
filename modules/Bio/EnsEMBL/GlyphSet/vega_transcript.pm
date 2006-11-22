@@ -5,20 +5,9 @@ use Bio::EnsEMBL::GlyphSet::evega_transcript;
 
 @ISA = qw(Bio::EnsEMBL::GlyphSet::evega_transcript);
 
-our %VEGA_TO_SHOW_ON_VEGA;
-
 sub features {
     my ($self) = @_;
-    
     my $genes = $self->{'container'}->get_all_Genes($self->my_config('logic_name'));
-    
-    # make a list of gene types for the legend
-    foreach my $g (@$genes) {
-        my $status = $g->status;
-        my $biotype = $g->biotype;
-        $VEGA_TO_SHOW_ON_VEGA{"$biotype".'_'."$status"}++;
-    }
- 
     return $genes;
 }
 
@@ -305,10 +294,7 @@ sub zmenu {
 			$zmenu->{"05:Realign display around this gene"} =  "$href";
 		}
 	}
-
-
-
-    return $zmenu;
+	return $zmenu;
 }
 
 sub gene_zmenu {
@@ -363,42 +349,12 @@ sub gene_text_label {
     return $id;
 }
 
-sub legend {
-    my ($self, $colours) = @_;
-	my $labels;
-	if (%VEGA_TO_SHOW_ON_VEGA) {
-		foreach my $k (keys %VEGA_TO_SHOW_ON_VEGA) {
-			if (@{$colours->{$k}}) {
-				push @$labels,$colours->{$k}[1]; 
-				push @$labels,$colours->{$k}[0]; 
-			} else {
-				warn "WARNING - no colour map entry for $k";
-			}
-		}
-		return ('genes',1000,$labels);
-	} else {
-		warn "WARNING - using default colour map";
-		return ('genes',1000,
-				['Known Protein coding'           => $colours->{'protein_coding_KNOWN'}[0],
-				 'Novel Protein coding'           => $colours->{'protein_coding_NOVEL'}[0],
-				 'Novel Processed transcript'     => $colours->{'processed_transcript_NOVEL'}[0],
-				 'Putative Processed transcript'  => $colours->{'processed_transcript_PUTATIVE'}[0],
-				 'Novel Pseudogene'               => $colours->{'pseudogene_NOVEL'}[0],
-				 'Novel Processed pseudogenes'    => $colours->{'processed_pseudogene_NOVEL'}[0],
-				 'Novel Unprocessed pseudogenes'  => $colours->{'unprocessed_pseudogene_NOVEL'}[0],
-				 'Predicted Protein coding'       => $colours->{'protein_coding_PREDICTED'}[0],
-				 'Novel Ig segment'               => $colours->{'Ig_segment_NOVEL'}[0],
-				 'Novel Ig pseudogene'            => $colours->{'Ig_pseudogene_segment_NOVEL'}[0],
-				]
-			   );
-	}
-}
-
-sub colour {
+sub gene_colour {
   my ($self, $gene, $transcript, $colours, %highlights) = @_;
   my $highlight = undef;
   my $type = $gene->biotype.'_'.$gene->status;
   my @colour = @{$colours->{$type}||['black','transcript']};
+  $colour[1] = $self->label_type($colour[1],$self->my_config('logic_name'));
   if(exists $highlights{lc($transcript->stable_id)}) {
     $highlight = $colours->{'superhi'};
   } elsif(exists $highlights{lc($transcript->external_name)}) {
@@ -408,14 +364,26 @@ sub colour {
   } elsif( my $ccds_att = $transcript->get_all_Attributes('ccds')->[0] ) {
     $highlight = $colours->{'ccdshi'};
   }
-
   return (@colour, $highlight); 
+}
+
+sub label_type {
+	my ($self,$colour,$logic_name) = @_;
+	my %sourcenames = (
+					   'otter' => 'Havana ',
+					   'otter_external' => 'External ',
+					   'otter_corf'     => 'CORF',
+					  );
+	my $prefix = $sourcenames{$logic_name};
+	return $prefix.$colour;
 }
 
 sub error_track_name { 
     my $self = shift;
     return $self->my_config('track_label');
 }
+
+
 
 1;
 
