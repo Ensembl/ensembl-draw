@@ -146,6 +146,7 @@ sub label_type {
 					   'otter' => 'Havana ',
 					   'otter_external' => 'External ',
 					   'otter_corf'     => 'CORF ',
+					   'otter_igsf'     => 'IgSF ',
 					  );
 	my $prefix = $sourcenames{$logic_name};
 	return $prefix.$colour;

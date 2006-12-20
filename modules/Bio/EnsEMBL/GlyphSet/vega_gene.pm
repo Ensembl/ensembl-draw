@@ -7,9 +7,10 @@ use Bio::EnsEMBL::GlyphSet::evega_gene;
 sub legend {
     my ($self, $colours) = @_;
 	my %sourcenames = (
-					   'otter' => 'Havana ',
+					   'otter'          => 'Havana ',
 					   'otter_external' => 'External ',
-					   'otter_corf' => 'CORF ',
+					   'otter_corf'     => 'CORF ',
+					   'otter_igsf'     => 'IgSF ',
 					  );
 	my $logic_name =  $self->my_config('logic_name');
     my %X;
