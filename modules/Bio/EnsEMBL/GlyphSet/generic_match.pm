@@ -74,7 +74,7 @@ sub href {
 
 sub zmenu {
   my ($self, $id) = @_;
-  my $ajax = 1;
+  my $ajax = 0;
   if ($ajax) {
     return $self->ajax_zmenu($id);
   } else {
@@ -83,12 +83,12 @@ sub zmenu {
 }
 
 sub ajax_zmenu {
-  my ($self, $id) = @_;
+  my ($self, $id) = @_; 
   my $zmenu = EnsEMBL::Web::Interface::ZMenu->new( (
                                      title => $id,
                                      type  => 'generic_match',
                                      ident => $id,
-                               placeholder => 'yes'
+                                     placeholder => 'yes'
                                       ) );
   return $zmenu;
 }
@@ -96,6 +96,7 @@ sub ajax_zmenu {
 
 sub static_zmenu {
   my ($self, $id ) = @_;
+
   my $T = $self->my_config('ZMENU');
   if( ref( $T ) eq 'HASH' ) {
     $T = $T->{ $self->object_type($id) } || $T->{'default'};
