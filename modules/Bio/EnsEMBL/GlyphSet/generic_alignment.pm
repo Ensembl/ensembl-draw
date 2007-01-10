@@ -68,6 +68,8 @@ sub expanded_init {
   my $link = 0;
   my $TAG_PREFIX;
   my $METHOD         = $Config->get($type, 'method' );
+#  warn "expanded method is $METHOD";
+
   if( $compara) {
     $link = $Config->get($type,'join');
     $TAG_PREFIX  = uc( $compara eq 'primary' ? 
@@ -212,7 +214,7 @@ sub expanded_init {
 
 		#z menu links depend on whether jumping within or between species;
 		my $jump_type;
-		if( $self->species_defs->ENSEMBL_SITETYPE eq 'Vega' ) { #st3 - checked and OK
+		if( $self->species_defs->multiX('VEGA_COMPARA_CONF')) {
 			if( $self_species eq $species_2 ) {
 				$jump_type = "chromosome $chr_2";
 				if( $compara ) {			
@@ -303,6 +305,8 @@ sub compact_init {
   my $TAG_PREFIX;
 
   my $METHOD         = $Config->get($type, 'method' );
+#  warn "compact method is $METHOD";
+
   my $COMPARA_HTML_EXTRA = '';
   my $MULTICONTIGVIEW_TEXT_LINK = 'MultiContigView';
   if( $compara) {
