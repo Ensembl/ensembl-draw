@@ -13,7 +13,7 @@ sub features {
 
 sub my_label {
     my $self = shift;
-    return $self->my_config('label');
+    return $self->{'config'}->{'geneid'} || $self->my_config('label');
 }
 
 sub colours {
