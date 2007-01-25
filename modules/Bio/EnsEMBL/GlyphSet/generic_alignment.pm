@@ -26,6 +26,7 @@ sub _init {
 
   my $strand = $self->strand;
   my $Config = $self->{'config'};
+  use Data::Dumper;
   my $strand_flag    = $Config->get($type, 'str');
   return if( $strand_flag eq 'r' && $strand != -1 || $strand_flag eq 'f' && $strand != 1 );
 
@@ -338,6 +339,7 @@ sub compact_init {
               ($_->start > $length) ||
               ($_->end < 1)
          ) } @{$self->features( $other_species, $METHOD )};
+
   foreach (@T) {
     my $f       = $_->[1];
     my $START   = $_->[0];
@@ -364,7 +366,8 @@ sub compact_init {
     my $href  = '';
     #z menu links depend on whether jumping within or between species;
     my $jump_type;
-    if( $self->species_defs->ENSEMBL_SITETYPE eq 'Vega' ) { #st3 - checked and OK
+	my %vega_config = $self->{'config'}->{'species_defs'}->multiX('VEGA_COMPARA_CONF');
+	if (defined %vega_config) {
       if( $self_species eq $species_2 ) {
         $jump_type = "chromosome $chr_2";
         if( $compara ) {			
@@ -440,14 +443,22 @@ sub compact_init {
 1;
 
 use Time::HiRes qw(time);
+
 sub features {
-  my ($self, $species, $method ) = @_;
-  (my $species_2 = $species) =~ s/_/ /; 
-  my $assembly = $self->species_defs->other_species($species,'ENSEMBL_GOLDEN_PATH');
-  my $START = time();
-  my $compara_db = $self->{'container'}->adaptor->db->get_db_adaptor('compara');
-  my $T = $self->{'container'}->get_all_compara_DnaAlignFeatures( $species_2, $assembly, $method, $compara_db );
-#  warn "generic_alignment - $method $species ",time()-$START;
+	my ($self, $species, $method ) = @_;
+	(my $species_2 = $species) =~ s/_/ /; 
+	my $assembly = $self->species_defs->other_species($species,'ENSEMBL_GOLDEN_PATH');
+	my $START = time();
+	my $compara_db = $self->{'container'}->adaptor->db->get_db_adaptor('compara');
+	my $T = $self->{'container'}->get_all_compara_DnaAlignFeatures( $species_2, $assembly, $method, $compara_db );
+##partial code for retrieving from clones
+#	unless (defined(@$T)) {
+#		my $clone_projection = $self->{'container'}->project('clone');
+#		foreach my $seg (@$clone_projection) {
+#			my $clone = $seg->to_Slice();
+#			$T = $clone->get_all_compara_DnaAlignFeatures( $species_2, $assembly, $method, $compara_db );
+#		}
+#	}
   return $T;
 }
 
