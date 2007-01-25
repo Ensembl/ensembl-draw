@@ -178,7 +178,7 @@ sub _init_non_assembled_contig {
 # Draw the Contig Tiling Path
 #
   my $i = 1;
-  my @colours  = ( [qw(contigblue1 contigblue2)] , [qw(gold2 gold4)] ) ;
+  my @colours  = ( [qw(contigblue1 contigblue2)] , [qw(gold1 gold2)] ) ;
 
   foreach my $tile ( sort { $a->{'start'} <=> $b->{'start'} } @{$contig_tiling_path} ) {
       my $strand = $tile->{'ori'};
