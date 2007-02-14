@@ -180,9 +180,6 @@ sub expanded_init {
     }
     $Composite->href(  "$HREF?$ZZ" );
 
-#	warn "HREF = $HREF";
-
-
 	#decide whether to jump within or between species;
 #	my $jump_type = $self_species eq $species_2 ? "chromosome $seqregion" : $species_2;
 
@@ -216,10 +213,13 @@ sub expanded_init {
 		#z menu links depend on whether jumping within or between species;
 		my $jump_type;
 		if( $self->species_defs->multiX('VEGA_COMPARA_CONF')) {
-			if( $self_species eq $species_2 ) {
-				$jump_type = "chromosome $chr_2";
-				if( $compara ) {			
-					$CONTIGVIEW_TEXT_LINK = "Go to chromosome $chr";
+			if( $self_species eq $species_2 ) {	
+				#hacks to link to 'chromosome' or 'clone' - should really use the haplotype_contig seq_region attribute
+				my $link_type = ( ($METHOD eq 'BLASTZ_CHAIN') && ($chr_2 =~ /\./) ) ? 'clone' : 'chromosome';
+				$jump_type = "$link_type $chr_2";
+				if( $compara ) {
+					my $link = ( ($METHOD eq 'BLASTZ_CHAIN') && ($chr =~ /\./) ) ? 'clone' : 'chromosome';			
+					$CONTIGVIEW_TEXT_LINK = "Go to $link $chr";
 				}
 			} else {	
 				$jump_type = "$other_species chr $chr_2";
@@ -263,6 +263,18 @@ sub expanded_init {
 			$MULTICONTIGVIEW_TEXT_LINK = 'Centre on this match';
 		}
 		$zmenu->{ "06:$MULTICONTIGVIEW_TEXT_LINK" } = sprintf( $MCV_TEMPLATE, $chr, ($rs+$re)/2, $WIDTH/2, $chr_2, ($s_2+$e_2)/2, $WIDTH/2 );
+	}
+	#more code for vega self compara links (zfish chained alignments)
+	elsif ( $self->species_defs->multiX('VEGA_COMPARA_CONF')) {
+		my $chr_2 = $F[0][1]->hseqname;
+		if( $self_species eq $species_2 ) {	
+			#hacks to link to 'chromosome' or 'clone' - should really use the haplotype_contig seq_region attribute
+			my $link_type = ( ($METHOD eq 'BLASTZ_CHAIN') && ($chr_2 =~ /\./) ) ? 'clone' : 'chromosome';
+			$zmenu->{"02:Jump to $link_type $chr_2"} = "$HREF?$ZZ";
+		}
+		else {
+			$zmenu->{"02:Jump to $species_2 chr $chr_2"} = "$HREF?$ZZ";
+		}
     } else {
 		$zmenu->{"02:Jump to $species_2"} = "$HREF?$ZZ";
 	}
@@ -368,17 +380,20 @@ sub compact_init {
     my $jump_type;
 	my %vega_config = $self->{'config'}->{'species_defs'}->multiX('VEGA_COMPARA_CONF');
 	if (defined %vega_config) {
-      if( $self_species eq $species_2 ) {
-        $jump_type = "chromosome $chr_2";
-        if( $compara ) {			
-          $CONTIGVIEW_TEXT_LINK = "Go to chromosome $chr";
-        }
-      } else {	
-        $jump_type = "$other_species chr $chr_2";
-        if( $compara) {			
-          $CONTIGVIEW_TEXT_LINK = "Go to $self_species chr $chr";
-        }
-      }
+		if( $self_species eq $species_2 ) {
+			#hack to link to 'chromosome' or 'clone' - should really use the haplotype_contig seq_region attribute
+			my $link_type = ( ($METHOD eq 'BLASTZ_CHAIN') && ($chr_2 =~ /\./) ) ? 'clone' : 'chromosome';
+			$jump_type = "$link_type $chr_2";
+			if( $compara ) {
+				my $link = ( ($METHOD eq 'BLASTZ_CHAIN') && ($chr =~ /\./) ) ? 'clone' : 'chromosome';			
+				$CONTIGVIEW_TEXT_LINK = "Go to $link $chr";			
+			}
+		} else {	
+			$jump_type = "$other_species chr $chr_2";
+			if( $compara) {			
+				$CONTIGVIEW_TEXT_LINK = "Go to $self_species chr $chr";
+			}
+		}
     } else {
       $jump_type = $species_2;
     }
