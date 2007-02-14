@@ -178,7 +178,8 @@ sub _init_non_assembled_contig {
 # Draw the Contig Tiling Path
 #
   my $i = 1;
-  my @colours  = ( [qw(contigblue1 contigblue2)] , [qw(gold1 gold2)] ) ;
+  my @colours  = ( [qw(contigblue1 contigblue2)] , [qw(lightgoldenrod1 lightgoldenrod2)] ) ;
+  my @label_colours = qw(white black);
 
   foreach my $tile ( sort { $a->{'start'} <=> $b->{'start'} } @{$contig_tiling_path} ) {
       my $strand = $tile->{'ori'};
@@ -283,7 +284,7 @@ sub _init_non_assembled_contig {
         'y'          => $ystart+($h-$res[3])/2+2,
         'font'       => $fontname,
         'ptsize'     => $fontsize,
-        'colour'     => 'white',
+        'colour'     => $label_colours[$i],
         'text'       => $res[0],
         'absolutey'  => 1,
       });
