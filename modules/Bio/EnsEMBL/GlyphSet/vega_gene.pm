@@ -11,6 +11,7 @@ sub legend {
 					   'otter_external' => 'External ',
 					   'otter_corf'     => 'CORF ',
 					   'otter_igsf'     => 'IgSF ',
+                       'otter_eucomm'   => 'Knockout genes',
 					  );
 	my $logic_name =  $self->my_config('logic_name');
     my %X;
