@@ -61,7 +61,6 @@ sub zmenu {
         'caption' 	               => $self->my_config('zmenu_caption'),
         "00:$id"	               => "",
 		"01:Transcript class: ".$ttype => "",
-        '02:Gene type: '.$gtype     => "",
 		'03:Author: '.$author      => "",
     	"07:Gene:$gid"             => "/@{[$self->{container}{_config_file_name_}]}/geneview?gene=$gid;db=core",
         "08:Transcr:$tid"          => "/@{[$self->{container}{_config_file_name_}]}/transview?transcript=$tid;db=core",
@@ -69,6 +68,9 @@ sub zmenu {
         '11:Supporting evidence'   => "/@{[$self->{container}{_config_file_name_}]}/exonview?transcript=$tid;db=core#evidence",
         '12:Export cDNA'           => "/@{[$self->{container}{_config_file_name_}]}/exportview?option=cdna;action=select;format=fasta;type1=transcript;anchor1=$tid",
     };
+
+	#don't show type for an eucomm gene
+	$zmenu->{"02:Gene type:$gtype"} = "" unless ($gene->analysis->logic_name eq 'otter_eucomm');
 
     if ($pid) {
         $zmenu->{"09:Peptide:$pid"}   =  "/@{[$self->{container}{_config_file_name_}]}/protview?peptide=$pid";
@@ -104,10 +106,13 @@ sub gene_zmenu {
     my $zmenu = {
         'caption' 	             => $self->my_config('zmenu_caption'),
         "00:$id"	             => "",
-        '01:Gene Type: ' . $type => "",
 		'02:Author: '.$author    => "",
         "04:Gene:$gid"           => qq(/@{[$self->{container}{_config_file_name_}]}/geneview?gene=$gid;db=core),
     };
+
+	#don't show type for an eucomm gene
+	$zmenu->{"01:Gene Type:$type"} = "" unless ($gene->analysis->logic_name eq 'otter_eucomm');
+
 	if ($script_name eq 'multicontigview') {
 		if (my $href = $self->get_hap_alleles_and_orthologs_urls($gene)) {
 			$zmenu->{"03:Realign display around this gene"} =  "$href";
@@ -147,6 +152,7 @@ sub label_type {
 					   'otter_external' => 'External ',
 					   'otter_corf'     => 'CORF ',
 					   'otter_igsf'     => 'IgSF ',
+                       'otter_eucomm'   => 'Knockout genes',
 					  );
 	my $prefix = $sourcenames{$logic_name};
 	return $prefix.$colour;
