@@ -475,7 +475,12 @@ sub new {
     'lab_unmapped'    => 'black',
     'bacend'          => 'black',
     'seq_len'         => 'black',
-    'fish_tag'        => 'black'
+    'fish_tag'        => 'black',
+  );
+
+ $self->colourSet( 'scaffolds',
+    col => 'gold1',
+	lab => 'black',
   );
 
   $self->colourSet( 'alternating',
