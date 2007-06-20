@@ -15,24 +15,27 @@ sub _init {
 
     my @features;
     push @features,
-        @{ $chr_slice->get_all_MiscFeatures('NoAnnotation') };
-#        @{ $chr_slice->get_all_MiscFeatures('CORFAnnotation') };
+        @{ $chr_slice->get_all_MiscFeatures('NoAnnotation') },
+        @{ $chr_slice->get_all_MiscFeatures('CORFAnnotation') };
+
 
     ## get configuration
     my $tag_pos = $self->{'config'}->get($self->check, 'tag_pos');
     my %colour = (
         'NoAnnotation'      => 'gray75',
 #        'CORFAnnotation'    => 'gray90',
+        'CORFAnnotation'    => 'white',
     );
 
     ## draw the glyphs
     foreach my $f (@features) {
         my ($ms) = @{ $f->get_all_MiscSets('NoAnnotation') };
-#        ($ms) = @{ $f->get_all_MiscSets('CORFAnnotation') } unless $ms;
+        ($ms) = @{ $f->get_all_MiscSets('CORFAnnotation') } unless $ms;
 
-		#set length of feature to the equivalent of 1 pixel if it's less than 1 pixel
-		my $f_length = $f->end - $f->start;
-		my $width = ($f_length > $bp_per_pixel) ? $f_length : $bp_per_pixel;
+
+        #set length of feature to the equivalent of 1 pixel if it's less than 1 pixel
+	    	my $f_length = $f->end - $f->start;
+		    my $width = ($f_length > $bp_per_pixel) ? $f_length : $bp_per_pixel;
 
         my $glyph = new Sanger::Graphics::Glyph::Rect({
             'x'      => $f->start,
