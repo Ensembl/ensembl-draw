@@ -60,7 +60,6 @@ sub zmenu {
     my $zmenu = {
         'caption' 	               => $self->my_config('zmenu_caption'),
         "00:$id"	               => "",
-		"01:Transcript class: ".$ttype => "",
 		'03:Author: '.$author      => "",
     	"07:Gene:$gid"             => "/@{[$self->{container}{_config_file_name_}]}/geneview?gene=$gid;db=core",
         "08:Transcr:$tid"          => "/@{[$self->{container}{_config_file_name_}]}/transview?transcript=$tid;db=core",
@@ -69,8 +68,11 @@ sub zmenu {
         '12:Export cDNA'           => "/@{[$self->{container}{_config_file_name_}]}/exportview?options=cdna;action=select;format=fasta;type1=transcript;anchor1=$tid",
     };
 
-	#don't show type for an eucomm gene
-	$zmenu->{"02:Gene type:$gtype"} = "" unless ($gene->analysis->logic_name eq 'otter_eucomm');
+	#show gene and transcript types for all but eucomm genes
+	if ($gene->analysis->logic_name ne 'otter_eucomm') {
+		$zmenu->{"01:Transcript class:$ttype"} = "";
+		$zmenu->{"02:Gene type:$gtype"} = "";
+	}
 
     if ($pid) {
         $zmenu->{"09:Peptide:$pid"}   =  "/@{[$self->{container}{_config_file_name_}]}/protview?peptide=$pid";
