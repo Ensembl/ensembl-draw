@@ -64,14 +64,14 @@ sub zmenu {
     	"07:Gene:$gid"             => "/@{[$self->{container}{_config_file_name_}]}/geneview?gene=$gid;db=core",
         "08:Transcr:$tid"          => "/@{[$self->{container}{_config_file_name_}]}/transview?transcript=$tid;db=core",
         "10:Exon:$tid"	           => "/@{[$self->{container}{_config_file_name_}]}/exonview?transcript=$tid;db=core",
-        '11:Supporting evidence'   => "/@{[$self->{container}{_config_file_name_}]}/exonview?transcript=$tid;db=core#evidence",
         '12:Export cDNA'           => "/@{[$self->{container}{_config_file_name_}]}/exportview?options=cdna;action=select;format=fasta;type1=transcript;anchor1=$tid",
     };
 
-	#show gene and transcript types for all but eucomm genes
+	#show gene and transcript types, and supporting evidence, for all but eucomm genes
 	if ($gene->analysis->logic_name ne 'otter_eucomm') {
 		$zmenu->{"01:Transcript class:$ttype"} = "";
 		$zmenu->{"02:Gene type:$gtype"} = "";
+		$zmenu->{'11:Supporting evidence'} = "/@{[$self->{container}{_config_file_name_}]}/exonview?transcript=$tid;db=core#evidence";
 	}
 
     if ($pid) {
