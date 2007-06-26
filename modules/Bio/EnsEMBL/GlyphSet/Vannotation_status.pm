@@ -23,8 +23,7 @@ sub _init {
     my $tag_pos = $self->{'config'}->get($self->check, 'tag_pos');
     my %colour = (
         'NoAnnotation'      => 'gray75',
-#        'CORFAnnotation'    => 'gray90',
-        'CORFAnnotation'    => 'white',
+        'CORFAnnotation'    => 'EEEEFF',
     );
 
     ## draw the glyphs

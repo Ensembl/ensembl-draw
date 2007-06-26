@@ -32,8 +32,7 @@ sub tag {
 
     my %defs = (
         'NoAnnotation'      => 'gray75',
-#        'CORFAnnotation'    => 'gray90',
-        'CORFAnnotation'    => 'white',
+        'CORFAnnotation'    => 'EEEEFF',
     );
     
     return {
@@ -68,8 +67,7 @@ sub colour {
 
     my %defs = (
         'NoAnnotation'      => 'gray50',
-#        'CORFAnnotation'    => 'gray75',
-        'CORFAnnotation'    => 'white',
+        'CORFAnnotation'    => 'EEEEFF',
     );
     
     return $defs{ $f->{'_miscset_code'} };
