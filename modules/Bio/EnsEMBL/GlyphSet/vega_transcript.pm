@@ -55,8 +55,12 @@ sub zmenu {
     my $pid = $translation->stable_id() if $translation;
     my $gid = $gene->stable_id();
     my $id   = $transcript->external_name() eq '' ? $tid : ( $transcript->external_db.": ".$transcript->external_name() );
-	my $gtype = $self->format_vega_name($gene);
-	my $ttype = $self->format_vega_name($gene,$transcript);
+	my $gtype = ucfirst(lc($gene->status)).' '.ucfirst(lc($gene->biotype));
+	$gtype =~ s/_/ /g;
+	$gtype =~ s/unknown //i;
+	my $ttype = ucfirst(lc($transcript->status)).' '.ucfirst(lc($transcript->biotype));
+	$ttype =~ s/_/ /g;
+	$ttype =~ s/unknown //i;
     my $zmenu = {
         'caption' 	               => $self->my_config('zmenu_caption'),
         "00:$id"	               => "",
@@ -97,7 +101,9 @@ sub gene_zmenu {
 	my $script_name =  $ENV{'ENSEMBL_SCRIPT'};
     my $gid = $gene->stable_id();
     my $id   = $gene->external_name() eq '' ? $gid : $gene->external_name();
-	my $type = $self->format_vega_name($gene);
+	my $type = ucfirst(lc($gene->status)).' '.ucfirst(lc($gene->biotype));
+	$type =~ s/_/ /g;
+	$type =~ s/unknown//i;
 	my $author;
 	if ( defined (@{$gene->get_all_Attributes('author')}) ) {
 		$author =  shift( @{$gene->get_all_Attributes('author')} )->value || 'unknown';
@@ -129,7 +135,7 @@ sub text_label {
     my $Config = $self->{config};
     my $short_labels = $Config->get('_settings','opt_shortlabels');
     unless( $short_labels ){
-        my $type = $self->format_vega_name($gene,$transcript);
+        my $type = ucfirst(lc($gene->status)).' '.ucfirst(lc($gene->biotype));
         $id .= " \n$type ";
     }
     return $id;
@@ -164,7 +170,6 @@ sub error_track_name {
     my $self = shift;
     return $self->my_config('track_label');
 }
-
 
 
 =head2 get_hap_alleles_and_orthologs_urls

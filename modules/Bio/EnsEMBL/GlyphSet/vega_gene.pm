@@ -11,7 +11,6 @@ sub legend {
 					   'otter'          => 'Havana ',
 					   'otter_external' => 'External ',
 					   'otter_corf'     => 'CORF ',
-					   'otter_igsf'     => 'IgSF ',
                        'otter_eucomm'   => 'Knockout genes',
 					  );
 	my $logic_name =  $self->my_config('logic_name');
@@ -25,12 +24,15 @@ sub legend {
     return \@legend;
 }
 
+#this zmenu is not called for gene track - see GlyphSet_gene.pm instead
 sub zmenu {
     my ($self, $gene) = @_;
 	my $script_name =  $ENV{'ENSEMBL_SCRIPT'};
     my $gid = $gene->stable_id();
     my $id   = $gene->external_name() eq '' ? $gid : $gene->external_name();
-	my $type = $self->format_vega_name($gene);
+	my $type = ucfirst(lc($gene->status)).' '.ucfirst(lc($gene->biotype));
+	$type =~ s/_/ /g;
+	$type =~ s/unknown //i;
 	my $author;
 	if ( defined (@{$gene->get_all_Attributes('author')}) ) {
 		$author =  shift( @{$gene->get_all_Attributes('author')} )->value || 'unknown';
