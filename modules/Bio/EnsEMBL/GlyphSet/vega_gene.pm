@@ -11,7 +11,8 @@ sub legend {
 					   'otter'          => 'Havana ',
 					   'otter_external' => 'External ',
 					   'otter_corf'     => 'CORF ',
-                       'otter_eucomm'   => 'Knockout genes',
+					   'otter_eucomm'   => 'KO genes (EUCOMM)',
+					   'otter_komp'     => 'KO genes (KOMP)',
 					  );
 	my $logic_name =  $self->my_config('logic_name');
     my %X;
@@ -48,7 +49,7 @@ sub zmenu {
     };
 
 	#don't show type for an eucomm gene
-	$zmenu->{"01:Gene Type:$type"} = "" unless ($gene->analysis->logic_name eq 'otter_eucomm');
+	$zmenu->{"01:Gene Type:$type"} = "" unless ($gene->analysis->logic_name =~ /eucomm|komp/);
 
 	if ($script_name eq 'multicontigview') {
 		if (my $href = $self->get_hap_alleles_and_orthologs_urls($gene)) {

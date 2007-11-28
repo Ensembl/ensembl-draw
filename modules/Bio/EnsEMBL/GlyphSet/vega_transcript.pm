@@ -160,7 +160,8 @@ sub label_type {
 					   'otter_external' => 'External ',
 					   'otter_corf'     => 'CORF ',
 					   'otter_igsf'     => 'IgSF ',
-                       'otter_eucomm'   => 'Knockout genes',
+                       'otter_eucomm'   => 'KO genes (EUCOMM)',
+					   'otter_komp'     => 'KO genes (KOMP)',
 					  );
 	my $prefix = $sourcenames{$logic_name};
 	return $prefix.$colour;

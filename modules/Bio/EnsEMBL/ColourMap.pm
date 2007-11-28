@@ -254,6 +254,12 @@ sub new {
     'ccdshi'                           => 'lightblue1',
     'protein_coding'                   => [ 'orangered2', ''],
   );
+  $self->colourSet( 'vega_gene_komp',
+    'hi'                               => 'highlight1',
+    'superhi'                          => 'highlight2',
+    'ccdshi'                           => 'lightblue1',
+    'protein_coding'                   => [ 'orange2', ''],
+  );
   $self->colourSet( 'rna_gene',
     'hi'         => 'highlight1',
     'superhi'    => 'highlight2',
