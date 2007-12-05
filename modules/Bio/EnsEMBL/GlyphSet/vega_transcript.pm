@@ -72,7 +72,7 @@ sub zmenu {
     };
 
 	#show gene and transcript types, and supporting evidence, for all but eucomm genes
-	if ($gene->analysis->logic_name ne 'otter_eucomm') {
+	if ($gene->analysis->logic_name !~ /eucomm|komp/) {
 		$zmenu->{"01:Transcript class:$ttype"} = "";
 		$zmenu->{"02:Gene type:$gtype"} = "";
 		$zmenu->{'11:Supporting evidence'} = "/@{[$self->{container}{_config_file_name_}]}/exonview?transcript=$tid;db=core#evidence";
