@@ -134,8 +134,9 @@ sub text_label {
     my $id = $transcript->external_name() || $transcript->stable_id();
     my $Config = $self->{config};
     my $short_labels = $Config->get('_settings','opt_shortlabels');
-    unless( $short_labels ){
-        my $type = ucfirst(lc($gene->status)).' '.ucfirst(lc($gene->biotype));
+    if ( (! $short_labels ) && ($gene->source ne 'KO')){
+        my $type =ucfirst(lc($gene->biotype));
+		$type =~ s/_/ /;
         $id .= " \n$type ";
     }
     return $id;
@@ -146,8 +147,9 @@ sub gene_text_label {
     my $id = $gene->external_name() || $gene->stable_id();
     my $Config = $self->{config};
     my $short_labels = $Config->get('_settings','opt_shortlabels');
-    unless( $short_labels ){
-        my $type = $self->format_vega_name($gene);
+    if ((! $short_labels ) && ($gene->source ne 'KO')){
+		my $type =ucfirst(lc($gene->biotype));
+		$type =~ s/_/ /;
         $id .= " \n$type ";
     }
     return $id;
