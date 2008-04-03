@@ -231,8 +231,8 @@ sub new {
     'processed_pseudogene'             => [ 'grey70', 'Pseudogene' ],
     'unprocessed_pseudogene'           => [ 'grey70', 'Pseudogene' ],
     'transcribed_pseudogene'           => [ 'grey70', 'Pseudogene' ],
-    'ig_pseudogene_segment'            => [ 'grey70', 'Pseudogene' ],
-    'ig_segment'                       => [ 'navy', 'Ig segment' ],
+    'IG_pseudogene'                    => [ 'grey70', 'Pseudogene' ],
+    'IG_gene'                          => [ 'navy', 'Ig segment' ],
 	'tec'                              => [ 'lightslateblue', 'TEC' ],
 
   );
@@ -249,8 +249,8 @@ sub new {
     'processed_pseudogene'             => [ 'grey75', 'Pseudogene' ],
     'unprocessed_pseudogene'           => [ 'grey75', 'Pseudogene' ],
     'transcribed_pseudogene'           => [ 'grey75', 'Pseudogene' ],
-    'ig_pseudogene_segment'            => [ 'grey75', 'Pseudogene' ],
-    'ig_segment'                       => [ 'chocolate3', 'Ig segment' ],
+    'IG_pseudogene'                    => [ 'grey75', 'Pseudogene' ],
+    'IG_gene'                          => [ 'chocolate3', 'Ig segment' ],
     'tec'                              => [ 'lightsalmon3', 'TEC'],
   );
   $self->colourSet( 'vega_gene_corf',
