@@ -55,10 +55,10 @@ sub zmenu {
     my $pid = $translation->stable_id() if $translation;
     my $gid = $gene->stable_id();
     my $id   = $transcript->external_name() eq '' ? $tid : ( $transcript->external_db.": ".$transcript->external_name() );
-	my $gtype = ucfirst(lc($gene->status)).' '.ucfirst(lc($gene->biotype));
+	my $gtype = ucfirst(lc($gene->status)).' '.$gene->biotype;
 	$gtype =~ s/_/ /g;
 	$gtype =~ s/unknown //i;
-	my $ttype = ucfirst(lc($transcript->status)).' '.ucfirst(lc($transcript->biotype));
+	my $ttype = ucfirst(lc($transcript->status)).' '.$transcript->biotype;
 	$ttype =~ s/_/ /g;
 	$ttype =~ s/unknown //i;
     my $zmenu = {
@@ -101,7 +101,7 @@ sub gene_zmenu {
 	my $script_name =  $ENV{'ENSEMBL_SCRIPT'};
     my $gid = $gene->stable_id();
     my $id   = $gene->external_name() eq '' ? $gid : $gene->external_name();
-	my $type = ucfirst(lc($gene->status)).' '.ucfirst(lc($gene->biotype));
+	my $type = ucfirst(lc($gene->status)).' '.$gene->biotype;
 	$type =~ s/_/ /g;
 	$type =~ s/unknown//i;
 	my $author;
@@ -135,7 +135,7 @@ sub text_label {
     my $Config = $self->{config};
     my $short_labels = $Config->get('_settings','opt_shortlabels');
     if ( (! $short_labels ) && ($gene->source ne 'KO')){
-        my $type =ucfirst(lc($gene->biotype));
+        my $type =$gene->biotype;
 		$type =~ s/_/ /;
         $id .= " \n$type ";
     }
@@ -148,7 +148,7 @@ sub gene_text_label {
     my $Config = $self->{config};
     my $short_labels = $Config->get('_settings','opt_shortlabels');
     if ((! $short_labels ) && ($gene->source ne 'KO')){
-		my $type =ucfirst(lc($gene->biotype));
+		my $type =$gene->biotype;
 		$type =~ s/_/ /;
         $id .= " \n$type ";
     }
@@ -160,8 +160,6 @@ sub label_type {
 	my %sourcenames = (
 					   'otter' => 'Havana ',
 					   'otter_external' => 'External ',
-					   'otter_corf'     => 'CORF ',
-					   'otter_igsf'     => 'IgSF ',
                        'otter_eucomm'   => 'KO genes (EUCOMM)',
 					   'otter_komp'     => 'KO genes (KOMP)',
 					  );

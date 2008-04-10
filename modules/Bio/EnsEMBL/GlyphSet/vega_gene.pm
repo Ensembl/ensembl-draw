@@ -31,7 +31,7 @@ sub zmenu {
 	my $script_name =  $ENV{'ENSEMBL_SCRIPT'};
     my $gid = $gene->stable_id();
     my $id   = $gene->external_name() eq '' ? $gid : $gene->external_name();
-	my $type = ucfirst(lc($gene->status)).' '.ucfirst(lc($gene->biotype));
+	my $type = ucfirst(lc($gene->status)).' '.$gene->biotype;
 	$type =~ s/_/ /g;
 	$type =~ s/unknown //i;
 	my $author;

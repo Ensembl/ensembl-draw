@@ -92,10 +92,10 @@ sub zmenu {
   my $pid = $translation->stable_id() if $translation;
   my $gid = $gene->stable_id();
   my $id   = $transcript->external_name() eq '' ? $tid : $transcript->external_name();
-  my $gtype = ucfirst(lc($gene->status)).' '.ucfirst(lc($gene->biotype));
+  my $gtype = ucfirst(lc($gene->status)).' '.$gene->biotype;
   $gtype =~ s/_/ /g;
   $gtype =~ s/unknown //i;
-  my $ttype = ucfirst(lc($transcript->status)).' '.ucfirst(lc($transcript->biotype));
+  my $ttype = ucfirst(lc($transcript->status)).' '.$transcript->biotype;
   $ttype =~ s/_/ /g;
   $ttype =~ s/unknown //i;
   my $ExtUrl = EnsEMBL::Web::ExtURL->new($self->{'config'}->{'species'}, $self->species_defs);
@@ -134,7 +134,7 @@ sub gene_zmenu {
   else {
     $author =   'not defined';
   }
-  my $type = ucfirst(lc($gene->status)).' '.ucfirst(lc($gene->biotype));
+  my $type = ucfirst(lc($gene->status)).' '.$gene->biotype;
   $type =~ s/_/ /g;
   $type =~ s/unknown //i;
   my $ExtUrl = EnsEMBL::Web::ExtURL->new($self->{'config'}->{'species'}, $self->species_defs);
@@ -162,7 +162,7 @@ sub text_label {
   my $Config = $self->{config};
   my $short_labels = $Config->get('_settings','opt_shortlabels');
   unless( $short_labels ){
-    my $type = ucfirst($gene->biotype);
+    my $type = $gene->biotype;
 	$type =~ s/_/ /;
     $id .= " \n$prefix $type ";
   }
@@ -181,7 +181,7 @@ sub gene_text_label {
   my $Config = $self->{config};
   my $short_labels = $Config->get('_settings','opt_shortlabels');
   unless( $short_labels ){
-	my $type = ucfirst($gene->biotype);
+	my $type = $gene->biotype;
 	$type =~ s/_/ /;
     $id .= " \n$prefix $type ";
   }
