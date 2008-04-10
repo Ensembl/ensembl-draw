@@ -232,8 +232,8 @@ sub new {
     'unprocessed_pseudogene'           => [ 'grey70', 'Pseudogene' ],
     'transcribed_pseudogene'           => [ 'grey70', 'Pseudogene' ],
     'IG_pseudogene'                    => [ 'grey70', 'Pseudogene' ],
-    'IG_gene'                          => [ 'navy', 'Ig segment' ],
-	'tec'                              => [ 'lightslateblue', 'TEC' ],
+    'IG_gene'                          => [ 'navy', 'IG gene' ],
+	'TEC'                              => [ 'lightslateblue', 'TEC' ],
 
   );
   $self->colourSet( 'vega_gene_external',
@@ -250,15 +250,8 @@ sub new {
     'unprocessed_pseudogene'           => [ 'grey75', 'Pseudogene' ],
     'transcribed_pseudogene'           => [ 'grey75', 'Pseudogene' ],
     'IG_pseudogene'                    => [ 'grey75', 'Pseudogene' ],
-    'IG_gene'                          => [ 'chocolate3', 'Ig segment' ],
-    'tec'                              => [ 'lightsalmon3', 'TEC'],
-  );
-  $self->colourSet( 'vega_gene_corf',
-    'hi'                               => 'highlight1',
-    'superhi'                          => 'highlight2',
-    'ccdshi'                           => 'lightblue1',
-    'protein_coding'                   => [ 'olivedrab', 'Protein coding'],
-    'processed_transcript'             => [ 'palegreen2', 'Novel Processed transcript' ],
+    'IG_gene'                          => [ 'chocolate3', 'IG gene' ],
+    'TEC'                              => [ 'lightsalmon3', 'TEC'],
   );
   $self->colourSet( 'vega_gene_eucomm',
     'hi'                               => 'highlight1',
