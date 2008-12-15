@@ -21,35 +21,34 @@ use Carp;
 our $VERSION = do { my @r = (q$Revision$ =~ /\d+/mxg); sprintf '%d.'.'%03d' x $#r, @r };
 
 our $COL = {
-	    'gpos100' => 'black',
-	    'tip'     => 'slategrey',
-	    'gpos75'  => 'grey40',
-	    'gpos50'  => 'grey60',
-	    'gpos25'  => 'grey85',
-	    'gpos'    => 'black',
-	    'gvar'    => 'grey88',
-	    'gneg'    => 'white',
-	    'acen'    => 'slategrey',
-	    'stalk'   => 'slategrey',
-     };
-
+  'gpos100' => 'black',
+  'tip'     => 'slategrey',
+  'gpos75'  => 'grey40',
+  'gpos50'  => 'grey60',
+  'gpos25'  => 'grey85',
+  'gpos'    => 'black',
+  'gvar'    => 'grey88',
+  'gneg'    => 'white',
+  'acen'    => 'slategrey',
+  'stalk'   => 'slategrey',
+};
 
 ####################################################################
 ### set true only while you're generating the vega karyotype image ##
 #####################################################################
-  if (0) {
-     $COL->{'gpos100'}        = 'darkslategray';
-     $COL->{'gpos75'}         = 'cadetblue2';
-     $COL->{'gpos50'}         = 'cadetblue3';
-     $COL->{'gpos25'}         = 'cadetblue4';
-     $COL->{'gpos'}           = 'darkslategray';
-     $COL->{'gvar'}           = 'darkslategray3';
-     $COL->{'gneg'}           = 'white';
-     $COL->{'acen'}           = 'darkslategray4';
-     $COL->{'stalk'}          = 'darkslategray4';
-     $COL->{'NoAnnotation'}   = 'gray75'; # marks start/end of unannotated sequence
-     $COL->{'CORFAnnotation'} = 'gray90'; # marks start/end of CORF project annotated sequence
-  }
+if (0) {
+  $COL->{'gpos100'}        = 'darkslategray';
+  $COL->{'gpos75'}         = 'cadetblue2';
+  $COL->{'gpos50'}         = 'cadetblue3';
+  $COL->{'gpos25'}         = 'cadetblue4';
+  $COL->{'gpos'}           = 'darkslategray';
+  $COL->{'gvar'}           = 'darkslategray3';
+  $COL->{'gneg'}           = 'white';
+  $COL->{'acen'}           = 'darkslategray4';
+  $COL->{'stalk'}          = 'darkslategray4';
+  $COL->{'NoAnnotation'}   = 'gray75'; # marks start/end of unannotated sequence
+  $COL->{'CORFAnnotation'} = 'gray90'; # marks start/end of CORF project annotated sequence
+}
 ## end of vega karyotype static image colours ###                                                
 
 our $RECT = 'Sanger::Graphics::Glyph::Rect';
@@ -122,7 +121,6 @@ sub _init {
   $self->{'bitmap_length'}  = $config->image_width();
   $self->{'reverse_bitmap'} = [];
   $self->{'forward_bitmap'} = [];
-
 
   my $im_width    = $config->image_width();
   my $top_margin  = $config->{'_top_margin'};
@@ -215,125 +213,125 @@ sub _init {
 	my $gband;
 	if ($done_1_acen) {
 	  $gband = $POLY->new({
-			       'points'    => [
-					       $vc_band_start, $h_offset + $h_wid,
-					       $vc_band_end,   $h_offset,
-					       $vc_band_end,   $h_offset + $wid,
-					      ],
-			       'colour'    => $COL->{$stain},
-			       'absolutey' => 1,
-			       'href'      => $HREF,
-			      });
+	    'points'    => [
+	      $vc_band_start, $h_offset + $h_wid,
+	      $vc_band_end,   $h_offset,
+	      $vc_band_end,   $h_offset + $wid,
+	    ],
+	    'colour'    => $COL->{$stain},
+	    'absolutey' => 1,
+	    'href'      => $HREF,
+	  });
 	} else {
 	  $gband = $POLY->new({
-			       'points'    => [
-					       $vc_band_start, $h_offset,
-					       $vc_band_end,   $h_offset + $h_wid,
-					       $vc_band_start, $h_offset + $wid,
-					      ],
-			       'colour'    => $COL->{$stain},
-			       'absolutey' => 1,
-			       'href'      => $HREF,
-			      });
+	    'points'    => [
+	      $vc_band_start, $h_offset,
+	      $vc_band_end,   $h_offset + $h_wid,
+	      $vc_band_start, $h_offset + $wid,
+	    ],
+	    'colour'    => $COL->{$stain},
+	    'absolutey' => 1,
+	    'href'      => $HREF,
+	  });
 	  $done_1_acen = 1;
 	}
 	push @decorations, $gband;
-
+	
       } elsif ($stain eq 'stalk') {
 	push @decorations, $POLY->new({
-				       'points'    => [
-						       $vc_band_start, $h_offset,
-						       $vc_band_end,   $h_offset + $wid,
-						       $vc_band_end,   $h_offset,
-						       $vc_band_start, $h_offset + $wid,
-						      ],
-				       'colour'    => $COL->{$stain},
-				       'absolutey' => 1,
-				       'href'      => $HREF,
-				      });
-
+	  'points'    => [
+	    $vc_band_start, $h_offset,
+	    $vc_band_end,   $h_offset + $wid,
+	    $vc_band_end,   $h_offset,
+	    $vc_band_start, $h_offset + $wid,
+	  ],
+	  'colour'    => $COL->{$stain},
+	  'absolutey' => 1,
+	  'href'      => $HREF,
+	});
+	
 	push @decorations, $RECT->new({
-				       'x'         => $vc_band_start,
-				       'y'         => $h_offset    + int $wid/4,
-				       'width'     => $vc_band_end - $vc_band_start,
-				       'height'    => $h_wid,
-				       'colour'    => $COL->{$stain},
-				       'absolutey' => 1,
-				       'href'      => $HREF,
-				      });
-
+	  'x'         => $vc_band_start,
+	  'y'         => $h_offset    + int $wid/4,
+	  'width'     => $vc_band_end - $vc_band_start,
+	  'height'    => $h_wid,
+	  'colour'    => $COL->{$stain},
+	  'absolutey' => 1,
+	  'href'      => $HREF,
+	});
+	
       } else {
 	if (($self->{'config'}->{'_hide_bands'} || 'no') eq 'yes') {
 	  $stain = 'gneg';
 	}
-
+	
 	my $R     = $vc_band_start;
 	my $T     = $bpperpx * ( (int $vc_band_end/$bpperpx) - (int $vc_band_start/$bpperpx) );
 	$self->push($RECT->new({
-				'x'                => $R,
-				'y'                => $h_offset,
-				'width'            => $T,
-				'height'           => $wid,
-				'colour'           => $COL->{$stain},
-				'absolutey'        => 1,
-				'href'             => $HREF,
-			       }));
-
+	  'x'                => $R,
+	  'y'                => $h_offset,
+	  'width'            => $T,
+	  'height'           => $wid,
+	  'colour'           => $COL->{$stain},
+	  'absolutey'        => 1,
+	  'href'             => $HREF,
+	}));
+	
 	$self->push($LINE->new({
-				'x'                => $R,
-				'y'                => $h_offset,
-				'width'            => $T,
-				'height'           => 0,
-				'colour'           => $black,
-				'absolutey'        => 1,
-			       }));
-
+	  'x'                => $R,
+	  'y'                => $h_offset,
+	  'width'            => $T,
+	  'height'           => 0,
+	  'colour'           => $black,
+	  'absolutey'        => 1,
+	}));
+	
 	$self->push($LINE->new({
-				'x'                => $R,
-				'y'                => $h_offset+$wid,
-				'width'            => $T,
-				'height'           => 0,
-				'colour'           => $black,
-				'absolutey'        => 1,
-			       }));
+	  'x'                => $R,
+	  'y'                => $h_offset+$wid,
+	  'width'            => $T,
+	  'height'           => 0,
+	  'colour'           => $black,
+	  'absolutey'        => 1,
+	}));
       }
-
+      
       #################################################################
       # only add the band label if the box is big enough to hold it...
       #################################################################
       if(!($stain eq 'acen'  ||
-	   $stain eq 'tip'   ||
-	   $stain eq 'stalk' ||
-	   ($self->{'config'}->{'_band_labels'} ne 'on') ||
-	   ($h > ($vc_band_end - $vc_band_start)))) {
-
+	     $stain eq 'tip'   ||
+	       $stain eq 'stalk' ||
+		 ($self->{'config'}->{'_band_labels'} ne 'on') ||
+		   ($h > ($vc_band_end - $vc_band_start)))) {
+	
 	$self->push($TEXT->new({
-				'x'                => ($vc_band_end + $vc_band_start - $h)/2,
-				'y'                => $h_offset+$wid+4,
-				'width'            => $h,
-				'height'           => $w * length($bandname),
-				'font'             => 'Tiny',
-				'colour'           => $black,
-				'text'             => $bandname,
-				'absolutey'        => 1,
-				'href'             => $HREF,
-			       }));
+	  'x'                => ($vc_band_end + $vc_band_start - $h)/2,
+	  'y'                => $h_offset+$wid+4,
+	  'width'            => $h,
+	  'height'           => $w * length($bandname),
+	  'font'             => 'Tiny',
+	  'colour'           => $black,
+	  'text'             => $bandname,
+	  'absolutey'        => 1,
+	  'href'             => $HREF,
+	}));
       }
     }
-
+    
   } else {
     foreach (0, $wid) {
       $self->push($LINE->new({
-			      'x'                => $v_offset-1,
-			      'y'                => $h_offset+$_,
-			      'width'            => $chr_length,
-			      'height'           => 0,
-			      'colour'           => $black,
-			      'absolutey'        => 1,
-			     }));
+	'x'                => $v_offset-1,
+	'y'                => $h_offset+$_,
+	'width'            => $chr_length,
+	'height'           => 0,
+	'colour'           => $black,
+	'absolutey'        => 1,
+      }));
     }
   }
-
+  
   #########
   # lastly draw annotation status bands (if uncommented the colour definition)
   #
@@ -345,31 +343,34 @@ sub _init {
     my $R              = $vc_band_start;
     my $T              = $bpperpx * ( (int $vc_band_end/$bpperpx) - (int $vc_band_start/$bpperpx) );
 
-    $self->push($RECT->new({
-			    'x'                => $R,
-			    'y'                => $h_offset,
-			    'width'            => $T,
-			    'height'           => $wid,
-			    'colour'           => $COL->{$stain},
-			    'absolutey'        => 1,
-			   }));
-    $self->push($LINE->new({
-			    'x'                => $R,
-			    'y'                => $h_offset,
-			    'width'            => $T,
-			    'height'           => 0,
-			    'colour'           => $black,
-			    'absolutey'        => 1,
-			   }));
+##hack to make zfish annotated region look wider!
+ #   next if ( ($stain ne 'gneg') && ($T < 250000) );
 
+    $self->push($RECT->new({
+      'x'                => $R,
+      'y'                => $h_offset,
+      'width'            => $T,
+      'height'           => $wid,
+      'colour'           => $COL->{$stain},
+      'absolutey'        => 1,
+    }));
     $self->push($LINE->new({
-			    'x'                => $R,
-			    'y'                => $h_offset+$wid,
-			    'width'            => $T,
-			    'height'           => 0,
-			    'colour'           => $black,
-			    'absolutey'        => 1,
-			   }));
+      'x'                => $R,
+      'y'                => $h_offset,
+      'width'            => $T,
+      'height'           => 0,
+      'colour'           => $black,
+      'absolutey'        => 1,
+    }));
+    
+    $self->push($LINE->new({
+      'x'                => $R,
+      'y'                => $h_offset+$wid,
+      'width'            => $T,
+      'height'           => 0,
+      'colour'           => $black,
+      'absolutey'        => 1,
+    }));
   }
 
   foreach (@decorations) {
