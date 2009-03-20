@@ -457,12 +457,12 @@ sub compact_init {
 use Time::HiRes qw(time);
 
 sub features {
-	my ($self, $species, $method ) = @_;
-	(my $species_2 = $species) =~ s/_/ /; 
-	my $assembly = $self->species_defs->other_species($species,'ENSEMBL_GOLDEN_PATH');
-	my $START = time();
-	my $compara_db = $self->{'container'}->adaptor->db->get_db_adaptor('compara');
-	my $T = $self->{'container'}->get_all_compara_DnaAlignFeatures( $species_2, $assembly, $method, $compara_db );
+  my ($self, $species, $method ) = @_;
+  (my $species_2 = $species) =~ s/_/ /;
+  my $assembly = $self->species_defs->other_species($species,'ENSEMBL_GOLDEN_PATH');
+  my $START = time();
+  my $compara_db = $self->{'container'}->adaptor->db->get_db_adaptor('compara');
+  my $T = $self->{'container'}->get_all_compara_DnaAlignFeatures( $species_2, $assembly, $method, $compara_db );
 ##partial code for retrieving from clones
 #	unless (defined(@$T)) {
 #		my $clone_projection = $self->{'container'}->project('clone');
