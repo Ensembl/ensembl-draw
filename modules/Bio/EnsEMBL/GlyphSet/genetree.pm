@@ -49,6 +49,10 @@ sub _init {
   # Handle collapsed/removed nodes
   my %collapsed_nodes = ( map{$_=>1} split( ',', $collapsed_nodes_str ) );  
   $self->{_collapsed_nodes} = \%collapsed_nodes;
+  # Keep the collapsed nodes in the URL. This is icky!
+  # I have mailed james to see if the arbitrary URL params can be included 
+  # by default.
+  $self->{'config'}->core_objects->{'parameters'}{'collapse'} = $collapsed_nodes_str;
 
   # $coloured_nodes is an array. It is sorted such as the largest clades
   # are used first. In case or a tie (i.e. all the genes are mammals and
@@ -164,10 +168,9 @@ sub _init {
     $collapsed_colour = 'grey' if (!$collapsed_colour); # Default colour
 
     my $node_href = $self->_url({ 
-      action      => "ComparaTreeNode$skey",
-      node        => $f->{'_id'},
-      genetree_id => $Config->get_parameter('genetree_id'),
-      collapse    => $collapsed_nodes_str
+      'action'      => "ComparaTreeNode$skey",
+      'node'        => $f->{'_id'},
+      'genetree_id' => $Config->get_parameter('genetree_id'),
     });
 
     my $collapsed_xoffset = 0;
@@ -309,14 +312,16 @@ sub _init {
         $txt->{colour} = $bold_colour;
       }
       
-      if ($f->{'_gene'}) {
-        $txt->{'href'} = $self->_url({
-          species  => $f->{'_species'},
-          type     => 'Gene',
-          action   => 'ComparaTree',
-          __clear  => 1,
-          g        => $f->{'_gene'}
-        });
+      if( my $stable_id = $f->{_gene} ){ # Add a gene href
+        my $species = $f->{'_species'};
+        $species =~ s/\s/_/g;
+        my $href = $self->_url( {'species' => $species,
+                                 'type'    => 'Gene',
+                                 'action'  => 'ComparaTree',
+                                 '__clear' => $stable_id != $self->{'config'}->core_objects->{'parameters'}{'g'}, 
+                                 'r'       => undef,
+                                 'g'       => $stable_id } );
+        $txt->{'href'} = $href;
       }
       
       push(@labels, $txt);
@@ -324,7 +329,7 @@ sub _init {
 
     }
   }
-  
+    
   $self->push( @bg_glyphs );
 
   my $max_x = (sort {$a->{x} <=> $b->{x}} @nodes)[-1]->{x};
@@ -583,10 +588,14 @@ sub features {
   # Process alignment
   if ($tree->isa('Bio::EnsEMBL::Compara::AlignedMember')) {
     if ($tree->genome_db) {
-      $f->{'_species'} = ucfirst $tree->genome_db->name; # This will be used in URLs
 
-      # This will be used for display
-      $f->{'_species_label'} = $self->species_defs->get_config($f->{'_species'}, 'SPECIES_SCIENTIFIC_NAME') || $self->species_defs->species_label($f->{'_species'}) || $f->{'_species'}; 
+# This will be used in URLs
+      $f->{'_species'} = $tree->genome_db->name; 
+
+# This will be used for display
+      # FIXME: ucfirst tree->genome_db->name is a hack to get species names right.
+      # There should be a way of retrieving this name correctly instead.
+      $f->{'_species_label'} = $self->species_defs->get_config(ucfirst $tree->genome_db->name, 'SPECIES_SCIENTIFIC_NAME') || $self->species_defs->species_label($tree->genome_db->name) || $tree->genome_db->name; 
       $f->{'_genome_dbs'} ||= {};
       $f->{'_genome_dbs'}->{$tree->genome_db->dbID}++;
     }
@@ -651,5 +660,48 @@ sub image_label {
   my ($self, $f ) = @_; 
   return $f->seqname(), $f->{type} || 'overlaid'; 
 }
+
+#sub zmenu {
+#  my( $self, $f ) = @_;
+#
+#  return( 'gene', $f->{_gene} );
+#
+#  my $href = '';
+#  my $blength = $f->{_cut} ? ($f->{'_distance'} * (10 ** ($f->{'_cut'}))): $f->{'_distance'};
+#  my $zmenu = { 
+#		caption               => $f->{'_id'},
+#		"60:Branch length: $blength"   => '',
+#	      };
+#
+#  $zmenu->{"30:Taxonomy name: $f->{'_name'}"} = '' if ($f->{_name});
+#  $zmenu->{"40:Taxonomy ID: $f->{'_taxon_id'}"} = '' if ($f->{_taxon_id});
+#  $zmenu->{"45:Dupl. Confidence: $f->{'_dupconf'}"} = '' if ($f->{_dupconf});
+#  $zmenu->{"50:Species: $f->{_species_label}"} = '' if ($f->{_species_label});
+#
+#  (my $ensembl_species = $f->{_species}) =~ s/ /\_/g;
+#
+#  if ($f->{_gene}) {
+#      $href = $ensembl_species ? sprintf("/%s/geneview?gene=%s", $ensembl_species, $f->{_gene}) : '';
+#      $zmenu->{"10:Gene: $f->{_gene}"} = $href;
+#  }
+#
+#  if ($f->{_protein}) {
+#      $zmenu->{"20:Protein: $f->{_protein}"} = $ensembl_species ? sprintf("/%s/protview?peptide=%s", $ensembl_species, $f->{_protein}) : '';
+#  }
+#
+#  $zmenu->{"70:Location: $f->{_location}"} = '' if ($f->{_location});
+#
+#  warn (Data::Dumper::Dumper($f));
+#
+#  my $id = 75;
+#  foreach my $link (@{$f->{_link}||[]}) {
+#      $zmenu->{"$id:".$link->{text}} = $link->{href};
+#      $id ++;
+#  }
+#
+##  warn Data::Dumper::Dumper($zmenu);
+#
+#  return ($zmenu, $href) ;
+#}
 
 1;
